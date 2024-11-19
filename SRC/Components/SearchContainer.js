@@ -25,6 +25,7 @@ const SearchContainer = ({
   inputStyle,
   placeHolder,
   rightIcon,
+  height
 }) => {
   return (
     <GestureHandlerRootView>
@@ -32,6 +33,7 @@ const SearchContainer = ({
         <View
           style={[
             styles.container,
+            height && {height: height},
             width && {width: width},
             input && {padding: 0},
             style && style,

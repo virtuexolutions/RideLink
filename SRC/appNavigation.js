@@ -6,12 +6,15 @@ import {useSelector} from 'react-redux';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Drawer from './Drawer/Drawer';
 import LoginScreen from './Screens/LoginScreen';
-import Signup  from './Screens/Signup';
+import Signup from './Screens/Signup';
 import VerifyNumber from './Screens/VerifyNumber';
 import ChangePassword from './Screens/ChangePassword';
 import ResetPassword from './Screens/ResetPassword';
 import VerifyEmail from './Screens/VerifyEmail';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
+import Start from './Screens/Start';
+import RequestScreen from './Screens/RequestScreen';
+import FareScreen from './Screens/FareScreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -24,31 +27,28 @@ const AppNavigator = () => {
   const RootNavLogged = createNativeStackNavigator();
 
   const AppNavigatorContainer = () => {
-    const firstScreen =
-      walkThrough == false
-        ? 'WalkThroughScreen'
-        : 'LoginScreen';
+    const firstScreen = walkThrough == false ? 'WalkThroughScreen' : 'Start';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          initialRouteName={'RequestScreen'}
           screenOptions={{headerShown: false}}>
-          <RootNav.Screen name="MyDrawer" component={MyDrawer} />  
+          <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen
             name="WalkThroughScreen"
             component={WalkThroughScreen}
           />
+          <RootNav.Screen name="Start" component={Start} />
+
           <RootNav.Screen name="LoginScreen" component={LoginScreen} />
-          {/* <RootNav.Screen name="Profile" component={Profil/e} /> */}
+          <RootNav.Screen name="FareScreen" component={FareScreen} />
           <RootNav.Screen name="VerifyEmail" component={VerifyEmail} />
           <RootNav.Screen name="ResetPassword" component={ResetPassword} />
-
-
+          <RootNav.Screen name="RequestScreen" component={RequestScreen} />
           <RootNav.Screen name="ChangePassword" component={ChangePassword} />
-
           <RootNav.Screen name="Signup" component={Signup} />
-          <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
+          <RootNav.Screen name="VerifyNumber" component={Start} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -199,4 +199,3 @@ export const MyDrawer = () => {
 };
 
 export default AppNavigator;
-

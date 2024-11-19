@@ -14,7 +14,7 @@ import {moderateScale, scale} from 'react-native-size-matters';
 import CustomText from './CustomText';
 import Color from '../Assets/Utilities/Color';
 
-const CustomButton = (props ) => {
+const CustomButton = props => {
   const {
     activeOpacity,
     onPress,
@@ -54,7 +54,7 @@ const CustomButton = (props ) => {
         {
           width: width,
           height: height,
-          borderWidth :borderWidth ,
+          borderWidth: borderWidth,
           backgroundColor: bgColor,
           borderColor: borderColor,
           marginTop: marginTop || 0,
@@ -105,7 +105,7 @@ const CustomButton = (props ) => {
             borderRadius: moderateScale(30, 0.3),
           }}
           start={{x: 1, y: 0.2}}
-          end={{x: 1, y:1}}
+          end={{x: 1, y: 1}}
           colors={bgColor}>
           {loader && (
             <ActivityIndicator
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     // fontWeight: 'bold',
     textTransform: 'uppercase',
     textAlign: 'center',
-    letterSpacing:1.5
+    letterSpacing: 0.9,
     // ...FONTS.Medium11
   },
   indicatorStyle: {

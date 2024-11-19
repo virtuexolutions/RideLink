@@ -19,7 +19,7 @@ export default Color = {
   blue : '#00ADEF',
   lightBlue :'#D2E4E4',
   orange:'#f79c00',
-  darkBlue:'#033B55',
+  darkBlue:'#1877F2',
   theme2 :'#FF000A',
   
   purple: '#0D668E',
