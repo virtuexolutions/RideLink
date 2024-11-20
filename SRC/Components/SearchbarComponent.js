@@ -14,6 +14,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {moderateScale} from 'react-native-size-matters';
 import {windowWidth, windowHeight} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
+import { Icon } from 'native-base';
 
 const SearchbarComponent = ({
   setNewData,
@@ -48,30 +49,25 @@ const SearchbarComponent = ({
   };
 
   return (
-    <View
-      
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
+    
       <View
         style={[
          { width: windowWidth * 0.9,
           height: windowHeight * 0.06,
-          borderWidth: 1,
+          borderWidth: 0.3,
           borderColor: Color.veryLightGray,
+          marginTop:moderateScale(5,0.6),
           borderRadius: moderateScale(20, 0.3),
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingLeft: moderateScale(10, 0.6)},
+          paddingHorizontal:moderateScale(10,0.6),flexDirection:'row',
+        justifyContent:'space-between',alignItems:'center',alignSelf:'center'},
+          
           SearchStyle
         ]}>
-        <Feather name="search" size={25} color={Color.Grey} />
+        
         <TextInput
           style={{color:'black'}}          
-          placeholder={placeholderName ? placeholderName : 'Search item here'}
-          placeholderTextColor={placeHolderColor ? placeHolderColor : '#000'}
+          placeholder={placeholderName ? placeholderName : 'Search'}
+          placeholderTextColor={placeHolderColor ? placeHolderColor : Color.veryLightGray}
           fontSize={fontSize ? fontSize : 14}
           numberOfLines={1}
           value={search}
@@ -81,9 +77,11 @@ const SearchbarComponent = ({
           }}
           editable={disable}
         />
+     <Icon as={Feather} name="search" size={moderateScale(17,0.6)} color={Color.grey} />
+    
       </View>
-
-    </View>
+      
+  
 
   );
 };

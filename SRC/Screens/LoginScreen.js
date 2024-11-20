@@ -105,7 +105,9 @@ const LoginScreen = props => {
                 Forgot password ?
               </CustomText>
               <View style={{marginTop: moderateScale(20, 0.6)}} />
-              <CustomButton
+              <CustomButton onPress={()=>{
+                navigation.navigate('Home')
+              }}
                 text={'sign in '}
                 fontSize={moderateScale(14, 0.3)}
                 textColor={Color.white}

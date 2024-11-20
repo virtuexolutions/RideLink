@@ -18,6 +18,7 @@ import {setUserToken} from '../Store/slices/auth-slice';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import { Icon } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather'
+import Home from './Home';
 
 
 const Signup = () => {
@@ -144,7 +145,7 @@ const Signup = () => {
             </CustomText>
           </View>
           <CustomButton
-
+          
             text={'sign in '}
             fontSize={moderateScale(14, 0.3)}
             textColor={Color.white}

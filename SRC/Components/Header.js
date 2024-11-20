@@ -82,12 +82,12 @@ const Header = props => {
       style={[styles.header2, index && {zIndex: 1}]}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}
-      colors={headerColor ? headerColor : Color.themeBgColor}>
+      colors={headerColor ? headerColor : [Color.white, Color.white] }>
       <View
         style={{
           height: moderateScale(30, 0.3),
           width: moderateScale(30, 0.3),
-          borderRadius: moderateScale(5, 0.3),
+          // borderRadius: moderateScale(5, 0.3),
           justifyContent: 'center',
           alignItems: 'center',
           // backgroundColor: showBack || showList ? 'white' : 'transparent',
@@ -104,10 +104,10 @@ const Header = props => {
           />
         ) : (
           <Icon
-            style={[styles.menu, styles.shadowporp]}
+            style={styles.menu}
             name={'menu'}
             as={Feather}
-            size={moderateScale(25, 0.3)}
+            size={moderateScale(28, 0.3)}
             color={Color.black}
             onPress={() => {
               console.log('hello mg ');
@@ -169,7 +169,7 @@ const Header = props => {
           <Icon
             name={'shopping-cart'}
             as={Feather}
-            size={moderateScale(25, 0.3)}
+            size={moderateScale(27, 0.3)}
             color={Color.black}
             onPress={() => {
               if (token == null) {
@@ -188,19 +188,24 @@ const Header = props => {
       ) : (
         <View
           style={{
-            width: windowHeight * 0.045,
+            width: windowHeight * 0.055,
             justifyContent: 'center',
             alignItems: 'center',
-            elevation: 12,
-            height: windowHeight * 0.045,
+            // elevation: 12,
+            height: windowHeight * 0.055,
             // overflow:'hidden',
-            backgroundColor: '#dedbdbc8',
-            borderRadius: (windowHeight * 0.045) / 2,
+            // backgroundColor: 'red',
+            // borderRadius: (windowHeight * 0.055) / 2,
           }}>
-          {/* <CustomImage
-            source={require('../Assets/Images/Group13.png')}
-            style={{width: windowHeight * 0.04, height: windowHeight * 0.04}}
-          /> */}
+          
+          <CustomImage
+            source={require('../Assets/Images/headerPhoto.png')}
+            style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
+          />
+          <View style={{height:windowHeight *0.018,width:windowHeight*0.018,
+            borderRadius:windowHeight *0.018/2,backgroundColor:'#04FF3F',position:'absolute',
+            top:moderateScale(30,0.6),right:moderateScale(25,0.6)
+          }}></View>
         </View>
       )}
     </LinearGradient>
