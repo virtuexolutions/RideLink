@@ -119,7 +119,7 @@ const Header = props => {
         )}
       </View>
       {title ? (
-        <CustomText style={[styles.text, textstyle]} isBold>
+        <CustomText style={[styles.text, textstyle]} >
           {title}
         </CustomText>
       ) : (
@@ -231,6 +231,7 @@ const styles = ScaledSheet.create({
   text: {
     fontSize: moderateScale(18, 0.6),
     color: Color.black,
+    fontWeight:'bold'
   },
   menu: {
     height: windowHeight * 0.05,

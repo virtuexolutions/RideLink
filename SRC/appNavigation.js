@@ -13,6 +13,7 @@ import ResetPassword from './Screens/ResetPassword';
 import VerifyEmail from './Screens/VerifyEmail';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
 import Home from './Screens/Home';
+import RateScreen from './Screens/RateScreen';
 
 
 const AppNavigator = () => {
@@ -34,7 +35,7 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />  
           <RootNav.Screen
@@ -52,6 +53,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Home" component={Home} />
+          <RootNav.Screen name="RateScreen" component={RateScreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
