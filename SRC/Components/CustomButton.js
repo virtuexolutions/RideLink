@@ -44,6 +44,7 @@ const CustomButton = props => {
     marginRight,
     textstyle,
     fontcase,
+    style
   } = props;
   return (
     <TouchableOpacity
@@ -92,6 +93,7 @@ const CustomButton = props => {
           borderColor: Color.themeLightGray,
           color: Color.white,
         },
+        style
       ]}
       disabled={disabled}>
       {disabled == false && isGradient ? (

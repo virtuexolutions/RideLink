@@ -3,19 +3,15 @@ import {
   ImageBackground,
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import {moderateScale} from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Icon} from 'native-base';
 import CustomButton from '../Components/CustomButton';
 import AskLocation from '../Components/AskLocation';
 
@@ -42,6 +38,8 @@ const RequestScreen = () => {
       price: '$ 30.00',
     },
   ];
+
+  const [completePayment, setCompletePayment] = useState(false);
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -89,7 +87,7 @@ const RequestScreen = () => {
               );
             }}
           />
-          <AskLocation />
+          <AskLocation heading={'Where are you Going?'} isIcon islocation />
           {/* <View style={styles.location_View}>
             <View style={styles.location_subview}>
               <CustomText style={styles.location_head}>
@@ -188,7 +186,7 @@ const RequestScreen = () => {
             textColor={Color.white}
             textTransform={'none'}
             text={'CONFIRM NOW'}
-            marginBottom={moderateScale(20, 0.6)}
+            marginBottom={moderateScale(10, 0.6)}
           />
         </View>
       </ImageBackground>

@@ -8,95 +8,106 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {moderateScale} from 'react-native-size-matters';
 
-const AskLocation = () => {
+const AskLocation = ({
+  islocation,
+  isIcon,
+  main_view_style,
+  heading,
+  renderView,
+}) => {
   return (
-    <View style={styles.location_View}>
+    <View style={[styles.location_View, main_view_style]}>
       <View style={styles.location_subview}>
-        <CustomText style={styles.location_head}>
-          Where are you Going
-        </CustomText>
-        <View style={styles.icon_view}>
-          <Icon
-            name="keyboard-arrow-down"
-            as={MaterialIcons}
-            size={moderateScale(12, 0.6)}
-            color={Color.black}
-          />
-        </View>
-      </View>
-      <View style={styles.seatView}>
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingVertical: moderateScale(5, 0.6),
-            }}>
+        <CustomText style={styles.location_head}>{heading}</CustomText>
+        {isIcon && (
+          <View style={styles.icon_view}>
             <Icon
-              name="map-marker"
-              as={FontAwesome}
-              size={moderateScale(16, 0.6)}
-              color={Color.yellow}
+              name="keyboard-arrow-down"
+              as={MaterialIcons}
+              size={moderateScale(12, 0.6)}
+              color={Color.black}
             />
+          </View>
+        )}
+      </View>
+      {renderView}
+      {islocation && (
+        <View style={styles.seatView}>
+          <View>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingVertical: moderateScale(5, 0.6),
+              }}>
+              <Icon
+                name="map-marker"
+                as={FontAwesome}
+                size={moderateScale(16, 0.6)}
+                color={Color.yellow}
+              />
+              <CustomText
+                style={[
+                  styles.text1,
+                  {
+                    paddingBottom: moderateScale(10, 0.6),
+                  },
+                ]}>
+                {'284 Long Street Gainesville'}
+              </CustomText>
+            </View>
             <CustomText
+              isBold
               style={[
                 styles.text1,
                 {
-                  paddingBottom: moderateScale(10, 0.6),
+                  position: 'absolute',
+                  color: 'black',
+                  top: 25,
+                  marginLeft: moderateScale(-5, 0.6),
+                  transform: [{rotate: '-90deg'}],
                 },
               ]}>
-              {'284 Long Street Gainesville'}
+              -----
             </CustomText>
-          </View>
-          <CustomText
-            isBold
-            style={[
-              styles.text1,
-              {
-                position: 'absolute',
-                color: 'black',
-                top: 25,
-                marginLeft: moderateScale(-5, 0.6),
-                transform: [{rotate: '-90deg'}],
-              },
-            ]}>
-            -----
-          </CustomText>
-          <View
-            style={{
-              width: windowWidth * 0.75,
-              height: moderateScale(0.5, 0.5),
-              backgroundColor: Color.grey,
-              marginLeft: moderateScale(14, 0.6),
-            }}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingVertical: moderateScale(10, 0.6),
-            }}>
-            <Icon
-              name="map-marker"
-              as={FontAwesome}
-              size={moderateScale(16, 0.6)}
-              color={Color.red}
-            />
-            <CustomText style={styles.text1}>{'I’m going to ....'}</CustomText>
-            <TouchableOpacity
+            <View
               style={{
-                position: 'absolute',
-                right: -10,
-                marginTop: moderateScale(10, 0.6),
+                width: windowWidth * 0.75,
+                height: moderateScale(0.5, 0.5),
+                backgroundColor: Color.grey,
+                marginLeft: moderateScale(14, 0.6),
+              }}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingVertical: moderateScale(10, 0.6),
               }}>
               <Icon
-                name="plus"
+                name="map-marker"
                 as={FontAwesome}
-                size={moderateScale(12, 0.6)}
-                color={Color.black}
+                size={moderateScale(16, 0.6)}
+                color={Color.red}
               />
-            </TouchableOpacity>
+              <CustomText style={styles.text1}>
+                {'I’m going to ....'}
+              </CustomText>
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  right: -10,
+                  marginTop: moderateScale(10, 0.6),
+                }}>
+                <Icon
+                  name="plus"
+                  as={FontAwesome}
+                  size={moderateScale(12, 0.6)}
+                  color={Color.black}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };
