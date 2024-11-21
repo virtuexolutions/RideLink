@@ -37,6 +37,7 @@ export default Color = {
   themeLightGray: '#8D8D8D',
   themeBlack: '#000000',
   btn_Color:'#282723',
+  btntextColor:'#2F2F37',
   //gradientColors
   themeBgColor: ['#E9CB5800','#E9CB58'],
   themeBgColorNegotiator : ['#0D668E' , '#00ADEF'],

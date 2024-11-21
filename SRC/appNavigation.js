@@ -20,6 +20,8 @@ import RideScreen from './Screens/RideScreen';
 import PaymentScreen from './Screens/PaymentScreen';
 import Home from './Screens/Home';
 import RateScreen from './Screens/RateScreen';
+import Walletscreen from './Screens/Walletscreen';
+import Earningsscreen from './Screens/Earningsscreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -37,7 +39,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          // initialRouteName={firstScreen}
+          initialRouteName={'Earningsscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
@@ -59,6 +62,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Home" component={Home} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
+          <RootNav.Screen name="Walletscreen" component={Walletscreen} />
+          <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
