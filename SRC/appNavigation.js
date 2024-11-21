@@ -20,6 +20,7 @@ import RideScreen from './Screens/RideScreen';
 import PaymentScreen from './Screens/PaymentScreen';
 import Home from './Screens/Home';
 import RateScreen from './Screens/RateScreen';
+import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -59,6 +60,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Home" component={Home} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
+          <RootNav.Screen name="RecieptScreen" component={SendTripRecieptScreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
