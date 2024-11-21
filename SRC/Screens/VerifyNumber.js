@@ -29,7 +29,7 @@ import CustomStatusBar from '../Components/CustomStatusBar';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Icon} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const VerifyNumber = props => {
   const SelecteduserRole = useSelector(
@@ -40,6 +40,7 @@ const VerifyNumber = props => {
   //params
   const fromForgot = props?.route?.params?.fromForgot;
   const phoneNumber = props?.route?.params?.phoneNumber;
+  const {user_type} = useSelector(state => state.authReducer);
 
   //states
   const [code, setCode] = useState('');
@@ -74,110 +75,101 @@ const VerifyNumber = props => {
   return (
     <>
       <CustomStatusBar
-       backgroundColor={
-       Color.white
-      }
+        backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
 
-        <TouchableOpacity
+      <TouchableOpacity
+        onPress={() => {
+          navigationN.goBack();
+        }}
+        activeOpacity={0.8}
+        style={{
+          position: 'absolute',
+          top: moderateScale(20, 0.3),
+          left: moderateScale(20, 0.3),
+          height: moderateScale(30, 0.3),
+          width: moderateScale(30, 0.3),
+          borderRadius: moderateScale(5, 0.3),
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: Color.themeBlack,
+          zIndex: 1,
+        }}>
+        <Icon
+          name={'arrowleft'}
+          as={AntDesign}
+          size={moderateScale(22, 0.3)}
+          color={Color.white}
           onPress={() => {
             navigationN.goBack();
           }}
-          activeOpacity={0.8}
-          style={{
-            position: 'absolute',
-            top: moderateScale(20, 0.3),
-            left: moderateScale(20, 0.3),
-            height: moderateScale(30, 0.3),
-            width: moderateScale(30, 0.3),
-            borderRadius: moderateScale(5, 0.3),
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: Color.themeBlack,
-            zIndex: 1,
-          }}>
-          <Icon
-            name={'arrowleft'}
-            as={AntDesign}
-            size={moderateScale(22, 0.3)}
-            color={Color.white}
+        />
+      </TouchableOpacity>
+
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: moderateScale(20, 0.3),
+          marginTop: windowHeight * 0.13,
+          alignItems: 'center',
+          // justifyContent: 'center',
+          width: '100%',
+          height: windowHeight,
+        }}>
+        <CustomText style={styles.h1}>Verification</CustomText>
+        <CustomText style={styles.h2}>Sent a verification code </CustomText>
+        <CodeField
+          placeholder={'0'}
+          ref={ref}
+          value={code}
+          onChangeText={setCode}
+          cellCount={CELL_COUNT}
+          rootStyle={styles.codeFieldRoot}
+          keyboardType="number-pad"
+          textContentType="oneTimeCode"
+          renderCell={({index, symbol, isFocused}) => (
+            <View
+              onLayout={getCellOnLayoutHandler(index)}
+              key={index}
+              style={[styles.cellRoot, isFocused && styles.focusCell]}>
+              <CustomText
+                style={[styles.cellText, isFocused && {color: Color.black}]}>
+                {symbol || (isFocused ? <Cursor /> : null)}
+              </CustomText>
+            </View>
+          )}
+        />
+        <CustomText style={[styles.txt3, {width: windowWidth * 0.6}]}>
+          Didn’t get Code yet?
+        </CustomText>
+        {
+          <TouchableOpacity
+            disabled={timerLabel == 'Resend otp ' ? false : true}
             onPress={() => {
-              navigationN.goBack();
-            }}
-          />
-        </TouchableOpacity>
-
-        <KeyboardAwareScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: moderateScale(20, 0.3),
-            marginTop:windowHeight*0.13,
-            alignItems:'center',
-            // justifyContent: 'center',
-            width: '100%',
-            height: windowHeight,
-          }}>
-            <CustomText  style={styles.h1}>Verification</CustomText>
-            <CustomText  style={styles.h2}>Sent a verification code </CustomText>
-            <CodeField
-              placeholder={'0'}
-              ref={ref}
-              value={code}
-              onChangeText={setCode}
-              cellCount={CELL_COUNT}
-              rootStyle={styles.codeFieldRoot}
-              keyboardType="number-pad"
-              textContentType="oneTimeCode"
-              renderCell={({index, symbol, isFocused}) => (
-                <View
-                  onLayout={getCellOnLayoutHandler(index)}
-                  key={index}
-                  style={[styles.cellRoot, isFocused && styles.focusCell]}>
-                  <CustomText
-                    style={[
-                      styles.cellText,
-                      isFocused && {color: Color.black},
-                    ]}>
-                    {symbol || (isFocused ? <Cursor /> : null)}
-                  </CustomText>
-                </View>
-              )}
-            />
-            <CustomText style={[styles.txt3, {width: windowWidth * 0.6}]}>
-            Didn’t get Code yet?
-              
+              settimerLabel('ReSend in '), settime(120);
+            }}>
+            <CustomText style={[styles.txt4]}>
+              {timerLabel} {time}
             </CustomText>
-            {
-                <TouchableOpacity
-                  disabled={timerLabel == 'Resend otp ' ? false : true}
-                  onPress={() => {
-                    settimerLabel('ReSend in '), settime(120);
-                  }}>
-                  <CustomText style={[styles.txt4]}>
-
-                    {timerLabel} {time}
-                  </CustomText>
-                </TouchableOpacity>
-              }
-            <CustomButton
-              text={ 'Verify'  }
-              isBold
-              textColor={Color.white}
-              width={windowWidth * 0.85}
-              height={windowHeight * 0.065}
-              borderRadius={30}
-              marginTop={moderateScale(20, 0.3)}
-              onPress={() => {
-                navigationService.navigate('ResetPassword', {
-                  phone: phoneNumber,
-                });
-              }}
-              bgColor={Color.themeBlack
-              }
-            />
-        </KeyboardAwareScrollView>
-    
+          </TouchableOpacity>
+        }
+        <CustomButton
+          text={'Verify'}
+          isBold
+          textColor={Color.white}
+          width={windowWidth * 0.85}
+          height={windowHeight * 0.065}
+          borderRadius={30}
+          marginTop={moderateScale(20, 0.3)}
+          onPress={() => {
+            navigationService.navigate('ResetPassword', {
+              phone: phoneNumber,
+            });
+          }}
+          bgColor={user_type === 'driver' ? Color.darkBlue : Color.themeBlack}
+        />
+      </KeyboardAwareScrollView>
     </>
   );
 };
@@ -201,7 +193,7 @@ const styles = ScaledSheet.create({
     fontSize: moderateScale(13, 0.6),
     borderBottomWidth: 1,
     borderColor: Color.white,
-    fontWeight:'600'
+    fontWeight: '600',
     // alignSelf : 'center'
   },
   txt5: {
@@ -227,7 +219,7 @@ const styles = ScaledSheet.create({
     borderRadius: moderateScale(5, 0.3),
   },
   focusCell: {
-  borderColor: Color.themeBlack,
+    borderColor: Color.themeBlack,
     borderWidth: 1,
   },
   cellText: {
@@ -235,22 +227,23 @@ const styles = ScaledSheet.create({
     fontSize: moderateScale(20, 0.3),
     textAlign: 'center',
   },
-  h1:{
-    fontSize:moderateScale(22,.6),
-    color:Color.themeBlack,
-    textAlign:'left',
-    width:'80%',
-    fontWeight:'700',
-    letterSpacing:0.6
-  },h2:{
-    fontSize:moderateScale(20.6),
-    color:Color.mediumGray,
-    textAlign:'left',
-    width:'80%',
-    fontWeight:'600',
-    letterSpacing:0.8,
-    textTransform:'none'
-  }
+  h1: {
+    fontSize: moderateScale(22, 0.6),
+    color: Color.themeBlack,
+    textAlign: 'left',
+    width: '80%',
+    fontWeight: '700',
+    letterSpacing: 0.6,
+  },
+  h2: {
+    fontSize: moderateScale(20.6),
+    color: Color.mediumGray,
+    textAlign: 'left',
+    width: '80%',
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'none',
+  },
 });
 
 export default VerifyNumber;

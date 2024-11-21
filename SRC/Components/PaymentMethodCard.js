@@ -4,8 +4,19 @@ import CustomText from './CustomText';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import {windowHeight, windowWidth} from '../Utillity/utils';
+import CustomImage from './CustomImage';
+import CustomButton from './CustomButton';
+import {Icon} from 'native-base';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const PaymentMethodCard = () => {
+const PaymentMethodCard = ({
+  isuserCard,
+  isAcceptBtn,
+  pickuplocation,
+  dropofflocation,
+  image,
+  name,
+}) => {
   const [isPaymentCom, setPaymentCom] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
@@ -13,40 +24,138 @@ const PaymentMethodCard = () => {
 
   return (
     <View style={styles.card_view}>
-      <CustomText style={styles.price}>$50</CustomText>
-      <CustomText style={styles.text}>Payment Method</CustomText>
-      <View style={styles.payment_view}>
-        <View style={styles.payment_subview}>
-          <TouchableOpacity
-            onPress={() => setPaymentMethod('Card')}
-            style={styles.check_box}>
-            {paymentMethod === 'Card' && <View style={styles.dot} />}
-          </TouchableOpacity>
-          <CustomText style={styles.sub_text}>Credit Card</CustomText>
+      {isuserCard ? (
+        <View>
+          <View style={styles.profile_view}>
+            <View style={styles.image_view}>
+              <CustomImage style={styles.image} source={image} />
+            </View>
+            <CustomText
+              isBold
+              style={[
+                styles.text,
+                {
+                  width: isAcceptBtn ? '50%' : '80%',
+                  marginLeft: moderateScale(10, 0.6),
+                },
+              ]}>
+              {name}
+            </CustomText>
+            {isAcceptBtn && (
+              <CustomButton
+                text={'Accept'}
+                fontSize={moderateScale(12, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.25}
+                height={windowHeight * 0.05}
+                bgColor={Color.green}
+                textTransform={'capitalize'}
+                elevation
+              />
+            )}
+          </View>
+          <View style={styles.seatView}>
+            <View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingVertical: moderateScale(5, 0.6),
+                }}>
+                <View style={styles.icon_view}>
+                  <Icon
+                    name="battery-charging"
+                    as={MaterialCommunityIcons}
+                    size={moderateScale(12, 0.6)}
+                    color={Color.white}
+                  />
+                </View>
+                <View>
+                  <CustomText isBold style={[styles.text1]}>
+                    PickUp
+                  </CustomText>
+                  <CustomText style={[styles.text1]}>
+                    {pickuplocation}
+                  </CustomText>
+                </View>
+              </View>
+              <CustomText
+                isBold
+                style={[
+                  styles.text1,
+                  {
+                    position: 'absolute',
+                    color: 'black',
+                    top: 27,
+                    marginLeft: moderateScale(-5, 0.6),
+                    transform: [{rotate: '-90deg'}],
+                  },
+                ]}>
+                -----
+              </CustomText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingVertical: moderateScale(10, 0.6),
+                }}>
+                <View style={styles.icon_view}>
+                  <Icon
+                    name="battery-charging"
+                    as={MaterialCommunityIcons}
+                    size={moderateScale(12, 0.6)}
+                    color={Color.white}
+                  />
+                </View>
+                <View>
+                  <CustomText isBold style={[styles.text1]}>
+                    DropOff
+                  </CustomText>
+                  <CustomText style={[styles.text1]}>
+                    {dropofflocation}
+                  </CustomText>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
-        <View
-          style={[
-            styles.payment_subview,
-            {marginLeft: moderateScale(10, 0.6)},
-          ]}>
-          <TouchableOpacity
-            onPress={() => setPaymentMethod('Paypal')}
-            style={styles.check_box}>
-            {paymentMethod === 'Paypal' && <View style={styles.dot} />}
-          </TouchableOpacity>
-          <CustomText style={styles.sub_text}>Paypal</CustomText>
-        </View>
-      </View>
-      <CustomText style={styles.des}>
-        Automatically Accept The Nearest Drive For Your Fare
-      </CustomText>
-      <Switch
-        trackColor={{false: '#767577', true: Color.themeBlack}}
-        thumbColor={isEnabled ? '#fffff' : '#f4f3f4'}
-        ios_backgroundColor="#fffff"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
+      ) : (
+        <>
+          <CustomText style={styles.price}>$50</CustomText>
+          <CustomText style={styles.text}>Payment Method</CustomText>
+          <View style={styles.payment_view}>
+            <View style={styles.payment_subview}>
+              <TouchableOpacity
+                onPress={() => setPaymentMethod('Card')}
+                style={styles.check_box}>
+                {paymentMethod === 'Card' && <View style={styles.dot} />}
+              </TouchableOpacity>
+              <CustomText style={styles.sub_text}>Credit Card</CustomText>
+            </View>
+            <View
+              style={[
+                styles.payment_subview,
+                {marginLeft: moderateScale(10, 0.6)},
+              ]}>
+              <TouchableOpacity
+                onPress={() => setPaymentMethod('Paypal')}
+                style={styles.check_box}>
+                {paymentMethod === 'Paypal' && <View style={styles.dot} />}
+              </TouchableOpacity>
+              <CustomText style={styles.sub_text}>Paypal</CustomText>
+            </View>
+          </View>
+          <CustomText style={styles.des}>
+            Automatically Accept The Nearest Drive For Your Fare
+          </CustomText>
+          <Switch
+            trackColor={{false: '#767577', true: Color.themeBlack}}
+            thumbColor={isEnabled ? '#fffff' : '#f4f3f4'}
+            ios_backgroundColor="#fffff"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+        </>
+      )}
     </View>
   );
 };
@@ -122,5 +231,41 @@ const styles = StyleSheet.create({
     height: moderateScale(6, 0.6),
     backgroundColor: Color.black,
     borderRadius: moderateScale(20, 0.6),
+  },
+  image_view: {
+    height: windowWidth * 0.15,
+    width: windowWidth * 0.15,
+    borderRadius: windowHeight,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  profile_view: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 0.5,
+    paddingBottom: moderateScale(10, 0.6),
+    borderBottomColor: Color.lightGrey,
+  },
+  seatView: {
+    justifyContent: 'space-between',
+    paddingHorizontal: moderateScale(15, 0.6),
+    flexDirection: 'row',
+    marginTop: moderateScale(12, 0.6),
+  },
+  text1: {
+    fontSize: moderateScale(9, 0.6),
+    textAlign: 'left',
+    marginLeft: moderateScale(10, 0.6),
+  },
+  icon_view: {
+    width: moderateScale(15, 0.6),
+    height: moderateScale(15, 0.6),
+    backgroundColor: Color.black,
+    borderRadius: windowWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

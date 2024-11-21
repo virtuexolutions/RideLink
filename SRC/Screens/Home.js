@@ -21,12 +21,14 @@ import DeliveryBox from '../Components/DeliveryBox';
 import CustomButton from '../Components/CustomButton';
 import Userbox from '../Components/Userbox';
 import Feather from 'react-native-vector-icons/Feather';
-import {ScrollView} from 'native-base';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Icon, ScrollView} from 'native-base';
 import navigationService from '../navigationService';
+import {useSelector} from 'react-redux';
 
 const Home = () => {
   const [activebutton, setactivebutton] = useState('current');
-  console.log('aftab', activebutton);
+  const {user_type} = useSelector(state => state.authReducer);
   const deliveryList = [
     {
       id: 1,
@@ -64,9 +66,55 @@ const Home = () => {
       toLocation: 'New Hampshire, Manchester',
     },
   ];
+
+  const user_list = [
+    {
+      id: 1,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_Image.png'),
+    },
+    {
+      id: 2,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_image2.png'),
+    },
+    {
+      id: 3,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_image3.png'),
+    },
+    {
+      id: 4,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_image4.png'),
+    },
+    {
+      id: 5,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_Image.png'),
+    },
+    {
+      id: 6,
+      name: 'Dominic Ement',
+      location: 'Mercedes (ET YL421)',
+      date: '17 March 2022',
+      image: require('../Assets/Images/user_image2.png'),
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header />
+      <Header title={user_type === 'driver' ? 'Driver Online' : ''} />
       <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
@@ -118,84 +166,143 @@ const Home = () => {
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
-              <View style={styles.second_Image}>
-                <CustomImage
-                  style={{height: '100%', width: '100%'}}
-                  source={require('../Assets/Images/ridelink.png')}
+              {user_type === 'driver' ? (
+                <CustomButton
+                  text={'Explore'}
+                  fontSize={moderateScale(14, 0.3)}
+                  textColor={Color.btn_Color}
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.3}
+                  //   marginTop={moderateScale(10,.3)}
+                  height={windowHeight * 0.05}
+                  bgColor={Color.lightGrey}
+                  textTransform={'capitalize'}
+                  borderWidth={1}
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    bottom: 10,
+                  }}
                 />
-              </View>
+              ) : (
+                <View style={styles.second_Image}>
+                  <CustomImage
+                    style={{height: '100%', width: '100%'}}
+                    source={require('../Assets/Images/ridelink.png')}
+                  />
+                </View>
+              )}
             </View>
           </ImageBackground>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View>
+
+        {user_type === 'driver' ? (
+          <ScrollView showsVerticalScrollIndicator={false}>
             <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              data={deliveryList}
-              style={styles.container_Style}
-              contentContainerStyle={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={item => item?.id}
+              data={user_list}
+              contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
+              style={{marginBottom: moderateScale(20, 0.6)}}
               renderItem={({item}) => {
-                return <DeliveryBox data={item} />;
+                return (
+                  <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigationService.navigate('RideScreen')}>
+                    <View style={styles.image_view}>
+                      <CustomImage source={item.image} style={styles.image} />
+                    </View>
+                    <View style={styles.text_view}>
+                      <CustomText style={styles.text}>{item.name}</CustomText>
+                      <CustomText style={styles.location}>
+                        {item.location}
+                      </CustomText>
+                      <CustomText style={styles.date}>{item.date}</CustomText>
+                    </View>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="right"
+                        as={AntDesign}
+                        size={moderateScale(14, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
               }}
             />
-          </View>
-          <View style={styles.button_Box}>
-            <CustomButton
-              onPress={() => {
-                setactivebutton('current');
+          </ScrollView>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View>
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                data={deliveryList}
+                style={styles.container_Style}
+                contentContainerStyle={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                renderItem={({item}) => {
+                  return <DeliveryBox data={item} />;
+                }}
+              />
+            </View>
+            <View style={styles.button_Box}>
+              <CustomButton
+                onPress={() => {
+                  setactivebutton('current');
+                }}
+                text={'Current '}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={
+                  activebutton === 'current' ? Color.white : Color.btn_Color
+                }
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.42}
+                //   marginTop={moderateScale(10,.3)}
+                height={windowHeight * 0.06}
+                bgColor={
+                  activebutton === 'current' ? Color.btn_Color : Color.white
+                }
+                textTransform={'capitalize'}
+              />
+              <CustomButton
+                onPress={() => {
+                  setactivebutton('history');
+                }}
+                text={'History'}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={
+                  activebutton === 'history' ? Color.white : Color.btn_Color
+                }
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.42}
+                //   marginTop={moderateScale(10,.3)}
+                height={windowHeight * 0.06}
+                bgColor={
+                  activebutton === 'history' ? Color.btn_Color : Color.lightGrey
+                }
+                textTransform={'capitalize'}
+              />
+            </View>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              style={{paddingBottom: moderateScale(150, 0.6)}}
+              contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+              data={userBox}
+              renderItem={({item}) => {
+                return (
+                  <Userbox
+                    data={item}
+                    onPress={() => navigationService.navigate('RequestScreen')}
+                  />
+                );
               }}
-              text={'Current '}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={
-                activebutton === 'current' ? Color.white : Color.btn_Color
-              }
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.42}
-              //   marginTop={moderateScale(10,.3)}
-              height={windowHeight * 0.06}
-              bgColor={
-                activebutton === 'current' ? Color.btn_Color : Color.white
-              }
-              textTransform={'capitalize'}
             />
-            <CustomButton
-              onPress={() => {
-                setactivebutton('history');
-              }}
-              text={'History'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={
-                activebutton === 'history' ? Color.white : Color.btn_Color
-              }
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.42}
-              //   marginTop={moderateScale(10,.3)}
-              height={windowHeight * 0.06}
-              bgColor={
-                activebutton === 'history' ? Color.btn_Color : Color.lightGrey
-              }
-              textTransform={'capitalize'}
-            />
-          </View>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            style={{paddingBottom: moderateScale(150, 0.6)}}
-            contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-            data={userBox}
-            renderItem={({item}) => {
-              return (
-                <Userbox
-                  data={item}
-                  onPress={() => navigationService.navigate('RequestScreen')}
-                />
-              );
-            }}
-          />
-        </ScrollView>
+          </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -258,5 +365,57 @@ const styles = StyleSheet.create({
     backgroundColor: Color.lightGrey,
     // backgroundColor:'green',
     // position:'absolute'
+  },
+  card: {
+    width: windowWidth * 0.89,
+    height: windowHeight * 0.1,
+    borderRadius: windowWidth,
+    marginTop: moderateScale(15, 0.6),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(15, 0.6),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    backgroundColor: Color.white,
+    alignSelf: 'center',
+  },
+  image_view: {
+    height: windowWidth * 0.15,
+    width: windowWidth * 0.15,
+    borderRadius: windowHeight,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  text_view: {
+    width: '60%',
+  },
+  icon_view: {
+    width: moderateScale(40, 0.6),
+    height: moderateScale(40, 0.6),
+    backgroundColor: Color.black,
+    borderRadius: windowHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: moderateScale(14, 0.6),
+    color: Color.black,
+  },
+  location: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.grey,
+  },
+  date: {
+    fontSize: moderateScale(11, 0.6),
+    color: Color.veryLightGray,
   },
 });
