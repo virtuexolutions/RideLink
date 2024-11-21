@@ -79,9 +79,9 @@ const FareScreen = () => {
             isBold
             onPress={() => {
               if (isPaymentCom === true) {
-                setPaymentCom(true);
-              } else {
                 navigationService.navigate('MapScreen');
+              } else {
+                setPaymentCom(true);
               }
             }}
           />

@@ -8,7 +8,7 @@ export default Color = {
   black: '#000000',
   darkGray: '#4B4242',
   mediumGray: '#9B9B9B',
-  lightGrey: '#EBEBEB',
+  lightGrey: '#F3F4F6',
   veryLightGray: '#A8A8A8',
   green: '#528C00',
   lightGreen: '#11A44C',

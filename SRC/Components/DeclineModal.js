@@ -7,7 +7,12 @@ import Modal from 'react-native-modal';
 import CustomText from './CustomText';
 import CustomButton from './CustomButton';
 
-const DeclineModal = ({isVisible, onBackdropPress}) => {
+const DeclineModal = ({
+  isVisible,
+  onPressCancel,
+  onpressAccept,
+  onBackdropPress,
+}) => {
   return (
     <Modal
       isVisible={isVisible}
@@ -34,7 +39,7 @@ const DeclineModal = ({isVisible, onBackdropPress}) => {
           isBold
           style={{top: moderateScale(-40)}}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={onBackdropPress}
+          onPress={onpressAccept}
         />
         <CustomButton
           width={windowWidth * 0.92}
@@ -48,7 +53,7 @@ const DeclineModal = ({isVisible, onBackdropPress}) => {
           style={{top: moderateScale(-40)}}
           marginBottom={moderateScale(10, 0.6)}
           borderWidth={2}
-          onPress={onBackdropPress}
+          onPress={onPressCancel}
         />
       </View>
     </Modal>

@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale} from 'react-native-size-matters';
+import {moderateScale, s} from 'react-native-size-matters';
 import Header from '../Components/Header';
 import Color from '../Assets/Utilities/Color';
 import SearchbarComponent from '../Components/SearchbarComponent';
@@ -20,12 +20,13 @@ import CustomText from '../Components/CustomText';
 import DeliveryBox from '../Components/DeliveryBox';
 import CustomButton from '../Components/CustomButton';
 import Userbox from '../Components/Userbox';
-import { current } from '@reduxjs/toolkit';
-import { ScrollView } from 'native-base';
+import Feather from 'react-native-vector-icons/Feather';
+import {ScrollView} from 'native-base';
+import navigationService from '../navigationService';
 
 const Home = () => {
-  const [activebutton,setactivebutton] = useState('current')
-  console.log('aftab',activebutton)
+  const [activebutton, setactivebutton] = useState('current');
+  console.log('aftab', activebutton);
   const deliveryList = [
     {
       id: 1,
@@ -45,28 +46,39 @@ const Home = () => {
   ];
   const userBox = [
     {
-      id:1,
+      id: 1,
       image: require('../Assets/Images/headerPhoto.png'),
       userID: 'Y3I4USQ2',
-      subtext:'Natalya Undergrowth',
+      subtext: 'Natalya Undergrowth',
       time: '07:30am',
       fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester'
+      toLocation: 'New Hampshire, Manchester',
     },
     {
-      id:2,
+      id: 2,
       image: require('../Assets/Images/headerPhoto.png'),
       userID: 'Y3I4USQ2',
-      subtext:'Natalya Undergrowth',
+      subtext: 'Natalya Undergrowth',
       time: '07:30am',
       fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester'
-    }
-  ]
+      toLocation: 'New Hampshire, Manchester',
+    },
+  ];
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safe_area}>
       <Header />
-      <SearchbarComponent />
+      <SearchbarComponent
+        SearchStyle={{
+          width: windowWidth * 0.9,
+          height: windowHeight * 0.058,
+          backgroundColor: Color.white,
+        }}
+        placeholderName={null}
+        isRightIcon={true}
+        name={'search'}
+        as={Feather}
+        color={Color.grey}
+      />
       <View style={styles.main_Container}>
         <View style={styles.ridelink_Box}>
           <ImageBackground
@@ -115,55 +127,74 @@ const Home = () => {
             </View>
           </ImageBackground>
         </View>
-        <ScrollView>
-        <View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={deliveryList}
+              style={styles.container_Style}
+              contentContainerStyle={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              renderItem={({item}) => {
+                return <DeliveryBox data={item} />;
+              }}
+            />
+          </View>
+          <View style={styles.button_Box}>
+            <CustomButton
+              onPress={() => {
+                setactivebutton('current');
+              }}
+              text={'Current '}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'current' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              //   marginTop={moderateScale(10,.3)}
+              height={windowHeight * 0.06}
+              bgColor={
+                activebutton === 'current' ? Color.btn_Color : Color.white
+              }
+              textTransform={'capitalize'}
+            />
+            <CustomButton
+              onPress={() => {
+                setactivebutton('history');
+              }}
+              text={'History'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'history' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              //   marginTop={moderateScale(10,.3)}
+              height={windowHeight * 0.06}
+              bgColor={
+                activebutton === 'history' ? Color.btn_Color : Color.lightGrey
+              }
+              textTransform={'capitalize'}
+            />
+          </View>
           <FlatList
-            horizontal
-            data={deliveryList}
-            style={styles.container_Style}
+            showsVerticalScrollIndicator={false}
+            style={{paddingBottom: moderateScale(150, 0.6)}}
+            contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+            data={userBox}
             renderItem={({item}) => {
-              return <DeliveryBox data={item} />;
+              return (
+                <Userbox
+                  data={item}
+                  onPress={() => navigationService.navigate('RequestScreen')}
+                />
+              );
             }}
           />
-        </View>
-        <View style={styles.button_Box}>
-        <CustomButton
-        onPress={()=>{
-          setactivebutton('current')
-        }}
-          text={'Current '}
-          fontSize={moderateScale(14, 0.3)}
-          textColor={activebutton === 'current' ? Color.white : Color.btn_Color}
-          borderRadius={moderateScale(30, 0.3)}
-          width={windowWidth * 0.42}
-        //   marginTop={moderateScale(10,.3)}
-          height={windowHeight * 0.06}
-          bgColor={ activebutton === 'current' ? Color.btn_Color : Color.white}
-          textTransform={'capitalize'}
-        />
-        <CustomButton
-          onPress={()=>{
-            setactivebutton('history')
-          }}
-          text={'History'}
-          fontSize={moderateScale(14, 0.3)}
-          textColor={ activebutton === 'history' ? Color.white : Color.btn_Color}
-          borderRadius={moderateScale(30, 0.3)}
-          width={windowWidth * 0.42}
-        //   marginTop={moderateScale(10,.3)}
-          height={windowHeight * 0.06}
-          bgColor={activebutton === 'history' ? Color.btn_Color : Color.white}
-          textTransform={'capitalize'}
-        
-        />
-        </View>
-        <FlatList style={{paddingBottom:moderateScale(150,0.6)}} contentContainerStyle={{gap:moderateScale(10,0.6)}}
-        data={userBox}
-        renderItem={({item}) =>{
-          return(
-            <Userbox data={item}/>
-          )
-        }}/>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -173,6 +204,11 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
+  safe_area: {
+    width: windowWidth,
+    height: windowHeight,
+    bac: Color.white,
+  },
   main_Container: {
     height: windowHeight,
     width: windowWidth,
@@ -216,9 +252,10 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(30, 0.6),
     borderColor: Color.boxgrey,
     bottom: moderateScale(20, 0.6),
-    flexDirection:'row',
-    gap:moderateScale(5,0.6),
-    paddingHorizontal:moderateScale(5,0.6)
+    flexDirection: 'row',
+    gap: moderateScale(5, 0.6),
+    paddingHorizontal: moderateScale(5, 0.6),
+    backgroundColor: Color.lightGrey,
     // backgroundColor:'green',
     // position:'absolute'
   },

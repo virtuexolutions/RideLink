@@ -14,6 +14,7 @@ import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomButton from '../Components/CustomButton';
 import AskLocation from '../Components/AskLocation';
+import navigationService from '../navigationService';
 
 const RequestScreen = () => {
   const cablist = [
@@ -187,6 +188,7 @@ const RequestScreen = () => {
             textTransform={'none'}
             text={'CONFIRM NOW'}
             marginBottom={moderateScale(10, 0.6)}
+          onPress={() => navigationService.navigate('FareScreen')}
           />
         </View>
       </ImageBackground>

@@ -56,9 +56,7 @@ const Start = () => {
           <CustomButton
             onPress={() => {
               if (done != true) {
-                setDone(true);
                 dispatch(setUserType('user'));
-              } else {
                 navigationService.navigate('LoginScreen');
               }
             }}
@@ -117,7 +115,5 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(20, 0.6),
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
-  
 });

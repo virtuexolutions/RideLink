@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Header from '../Components/Header';
 import Color from '../Assets/Utilities/Color';
@@ -15,9 +15,15 @@ import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import navigationService from '../navigationService';
 
 const RideScreen = () => {
   const [additionalTime, setAdditionalTime] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      navigationService.navigate('PaymentScreen');
+    }, 3000);
+  }, []);
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -88,7 +94,7 @@ const RideScreen = () => {
             <View
               style={[styles.row_view, {marginTop: moderateScale(10, 0.6)}]}>
               <TouchableOpacity
-                onPress={() => setAdditionalTime(true)}
+                // onPress={() => setAdditionalTime(true)}
                 style={[styles.row_view, {justifyContent: 'flex-start'}]}>
                 <Icon
                   name="plus"

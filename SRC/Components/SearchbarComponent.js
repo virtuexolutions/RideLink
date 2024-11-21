@@ -1,7 +1,5 @@
 import {View, TextInput} from 'react-native';
 import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-import Feather from 'react-native-vector-icons/Feather';
 import {moderateScale} from 'react-native-size-matters';
 import {windowWidth, windowHeight} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';

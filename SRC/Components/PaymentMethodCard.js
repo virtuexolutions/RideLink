@@ -1,13 +1,15 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import CustomText from './CustomText';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const PaymentMethodCard = () => {
   const [isPaymentCom, setPaymentCom] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Card');
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
     <View style={styles.card_view}>
@@ -38,6 +40,13 @@ const PaymentMethodCard = () => {
       <CustomText style={styles.des}>
         Automatically Accept The Nearest Drive For Your Fare
       </CustomText>
+      <Switch
+        trackColor={{false: '#767577', true: Color.themeBlack}}
+        thumbColor={isEnabled ? '#fffff' : '#f4f3f4'}
+        ios_backgroundColor="#fffff"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
     </View>
   );
 };

@@ -9,6 +9,7 @@ import CustomText from './CustomText';
 import {Icon} from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomButton from './CustomButton';
+import {Rating} from 'react-native-ratings';
 
 const RequestModal = ({
   isVisible,
@@ -38,6 +39,16 @@ const RequestModal = ({
               <CustomText isBold style={styles.name}>
                 Theodora J. Gardner
               </CustomText>
+              <Rating
+                type="custom"
+                //   readonly
+                startingValue={55}
+                ratingCount={5}
+                ratingColor={Color.yellow}
+                imageSize={moderateScale(10, 0.3)}
+                tintColor={Color.white}
+                style={{alignSelf: 'flex-start'}}
+              />
               <CustomText style={styles.text}>X Regular</CustomText>
             </View>
             <View>

@@ -21,7 +21,6 @@ import PaymentScreen from './Screens/PaymentScreen';
 import Home from './Screens/Home';
 import RateScreen from './Screens/RateScreen';
 
-
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);
@@ -38,7 +37,7 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={'FareScreen'}
+          initialRouteName={firstScreen}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
@@ -47,7 +46,6 @@ const AppNavigator = () => {
             component={WalkThroughScreen}
           />
           <RootNav.Screen name="Start" component={Start} />
-
           <RootNav.Screen name="LoginScreen" component={LoginScreen} />
           <RootNav.Screen name="FareScreen" component={FareScreen} />
           <RootNav.Screen name="VerifyEmail" component={VerifyEmail} />
@@ -55,7 +53,6 @@ const AppNavigator = () => {
           <RootNav.Screen name="RequestScreen" component={RequestScreen} />
           <RootNav.Screen name="ChangePassword" component={ChangePassword} />
           <RootNav.Screen name="Signup" component={Signup} />
-          <RootNav.Screen name="VerifyNumber" component={Start} />
           <RootNav.Screen name="MapScreen" component={MapScreen} />
           <RootNav.Screen name="RideScreen" component={RideScreen} />
           <RootNav.Screen name="PaymentScreen" component={PaymentScreen} />

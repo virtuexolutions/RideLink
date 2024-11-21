@@ -127,7 +127,7 @@ const LoginScreen = props => {
             bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
             textTransform={'capitalize'}
             elevation={user_type === 'driver' ? true : false}
-            // isBold
+            onPress={() => navigation.navigate('Home')}
           />
         </View>
         <View style={styles.button_container}>

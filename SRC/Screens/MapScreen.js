@@ -15,13 +15,14 @@ import {Icon} from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AskLocation from '../Components/AskLocation';
 import CustomText from '../Components/CustomText';
-import {mode} from 'native-base/lib/typescript/theme/tools';
 import CustomButton from '../Components/CustomButton';
 import RequestModal from '../Components/RequestModal';
-import Header from '../Components/Header';
 import DeclineModal from '../Components/DeclineModal';
+import navigationService from '../navigationService';
+import {useNavigation} from '@react-navigation/native';
 
 const MapScreen = () => {
+  const navigation = useNavigation();
   const [price, setPrice] = useState(50);
   const [modalVisible, setModalVisible] = useState(false);
   const [declineModal, setDeclineModal] = useState(false);
@@ -104,10 +105,13 @@ const MapScreen = () => {
             setModalVisible(false);
             setDeclineModal(true);
           }}
+          onPressAccept={() => navigationService.navigate('RideScreen')}
         />
         <DeclineModal
           isVisible={declineModal}
           onBackdropPress={() => setDeclineModal(false)}
+          onpressAccept={() => navigation.goBack()}
+          onPressCancel={() => navigationService.navigate('Home')}
         />
       </ImageBackground>
     </SafeAreaView>
