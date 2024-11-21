@@ -21,7 +21,7 @@ export default Color = {
   orange:'#f79c00',
   darkBlue:'#1877F2',
   theme2 :'#FF000A',
-  
+  boxgrey:'#0000004F',
   purple: '#0D668E',
   // theme colors
   themeColor: '#00309E',
@@ -32,7 +32,7 @@ export default Color = {
   tabBarGradient : ['#000000','#464646'],
   themePink : '#F84569',
   themeColor1: '#52C4BF',
-
+  circleblue: '#404552',
   themeDarkGray: '#535353',
   themeLightGray: '#8D8D8D',
   themeBlack: '#000000',

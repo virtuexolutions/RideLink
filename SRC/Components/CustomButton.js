@@ -191,6 +191,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: moderateScale(10, 0.3),
     paddingVertical: moderateScale(2, 0.3),
+
+    
   },
   text: {
     color: 'white',
