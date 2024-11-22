@@ -25,6 +25,9 @@ import PassengerDetails from './Screens/PassengerDetails';
 import GoOnlineScreen from './Screens/GoOnlineScreen';
 import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
 import {moderateScale} from 'react-native-size-matters';
+import Walletscreen from './Screens/Walletscreen';
+import Earningsscreen from './Screens/Earningsscreen';
+import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -43,6 +46,7 @@ const AppNavigator = () => {
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
           initialRouteName={firstScreen}
+          // initialRouteName={'Walletscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
@@ -74,6 +78,9 @@ const AppNavigator = () => {
             name="RecieptScreen"
             component={SendTripRecieptScreen}
           />
+          <RootNav.Screen name="Walletscreen" component={Walletscreen} />
+          <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
+          <RootNav.Screen name="ChooseDeclineReasonScreen" component={ChooseDeclineReasonScreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );

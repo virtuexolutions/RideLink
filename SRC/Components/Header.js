@@ -47,6 +47,7 @@ const Header = props => {
     hideUser,
     navigation,
     textstyle,
+    isFilledButton,
   } = props;
 
   const [searchText, setSearchText] = useState('');
@@ -78,11 +79,9 @@ const Header = props => {
   };
 
   return (
-    <LinearGradient
-      style={[styles.header2, index && {zIndex: 1}]}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      colors={headerColor ? headerColor : [Color.white, Color.white]}>
+    <View
+      style={[styles.header2, {backgroundColor: headerColor ? headerColor : Color.white}]}
+      >
       <View
         style={{
           height: moderateScale(30, 0.3),
@@ -103,19 +102,40 @@ const Header = props => {
             }}
           />
         ) : (
-          <Icon
-            style={styles.menu}
-            name={'menu'}
-            as={Feather}
-            size={moderateScale(28, 0.3)}
-            color={Color.black}
-            onPress={() => {
-              console.log('hello mg ');
-              navigationN.toggleDrawer();
-              // navigation.openDrawer()
-              // navigationN.dispatch(DrawerActions.toggleDrawer());
-            }}
-          />
+          <>
+            {isFilledButton ? (
+              <TouchableOpacity style={styles.filledButton}>
+               <Icon
+                  // style={styles.menu}
+                  name={'menu'}
+                  as={Feather}
+                  size={moderateScale(21, 0.3)}
+                  color={Color.white}
+                  // onPress={() => {
+                  //   console.log('hello mg ');
+                  //   navigationN.toggleDrawer();
+                  //   // navigation.openDrawer()
+                  //   // navigationN.dispatch(DrawerActions.toggleDrawer());
+                  // }}
+                />
+              </TouchableOpacity>
+            ) : (
+                <Icon
+                  style={styles.menu}
+                  name={'menu'}
+                  as={Feather}
+                  size={moderateScale(28, 0.3)}
+                  color={Color.black}
+                  onPress={() => {
+                    console.log('hello mg ');
+                    navigationN.toggleDrawer();
+                    // navigation.openDrawer()
+                    // navigationN.dispatch(DrawerActions.toggleDrawer());
+                  }}
+                />
+            )}
+            ,
+          </>
         )}
       </View>
       {title ? (
@@ -199,6 +219,7 @@ const Header = props => {
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
           />
+
           <View
             style={{
               height: windowHeight * 0.018,
@@ -211,7 +232,7 @@ const Header = props => {
             }}></View>
         </View>
       )}
-    </LinearGradient>
+    </View>
   );
 };
 const styles = ScaledSheet.create({
@@ -272,7 +293,7 @@ const styles = ScaledSheet.create({
   },
   header2: {
     width: windowWidth,
-    backgroundColor: Color.themeColor,
+    backgroundColor: Color.white,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: moderateScale(20, 0.3),
@@ -287,5 +308,12 @@ const styles = ScaledSheet.create({
     backgroundColor: Color.green,
     right: moderateScale(5, 0.3),
   },
+  filledButton:{
+    width:windowWidth *0.1,
+    height:windowWidth *0.1,
+    borderRadius:windowWidth *0.1/2,
+    backgroundColor:Color.darkBlue,
+    alignItems:'center',justifyContent:'center'
+  }
 });
 export default Header;
