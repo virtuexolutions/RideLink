@@ -208,7 +208,7 @@ const Home = () => {
                 return (
                   <TouchableOpacity
                     style={styles.card}
-                    onPress={() => navigationService.navigate('RideScreen')}>
+                    onPress={() => navigationService.navigate('RideRequest', {type : ''})}>
                     <View style={styles.image_view}>
                       <CustomImage source={item.image} style={styles.image} />
                     </View>

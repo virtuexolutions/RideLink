@@ -44,7 +44,7 @@ const CustomButton = props => {
     marginRight,
     textstyle,
     fontcase,
-    style
+    style,
   } = props;
   return (
     <TouchableOpacity
@@ -93,7 +93,7 @@ const CustomButton = props => {
           borderColor: Color.themeLightGray,
           color: Color.white,
         },
-        style
+        style,
       ]}
       disabled={disabled}>
       {disabled == false && isGradient ? (
@@ -191,8 +191,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: moderateScale(10, 0.3),
     paddingVertical: moderateScale(2, 0.3),
-
-    
   },
   text: {
     color: 'white',

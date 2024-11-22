@@ -11,7 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const RiderRideAccept = ({
   isuserCard,
-  isAcceptBtn,
+  isButton,
   pickuplocation,
   dropofflocation,
   image,
@@ -42,7 +42,7 @@ const RiderRideAccept = ({
                   style={[
                     styles.text,
                     {
-                      width: isAcceptBtn ? '50%' : '100%',
+                      width: isButton ? '50%' : '100%',
                       marginLeft: moderateScale(10, 0.6),
                     },
                   ]}>
@@ -194,7 +194,7 @@ const RiderRideAccept = ({
           marginTop={moderateScale(10, 0.6)}
         />
         <CustomButton
-          text={'Accept'}
+          text={'Decline'}
           isBold
           fontSize={moderateScale(14, 0.3)}
           textColor={Color.black}

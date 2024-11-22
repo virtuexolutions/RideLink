@@ -24,6 +24,7 @@ import RideRequest from './Screens/RideRequest';
 import PassengerDetails from './Screens/PassengerDetails';
 import GoOnlineScreen from './Screens/GoOnlineScreen';
 import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
+import {moderateScale} from 'react-native-size-matters';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -69,7 +70,10 @@ const AppNavigator = () => {
             component={PassengerDetails}
           />
           <RootNav.Screen name="GoOnlineScreen" component={GoOnlineScreen} />
-          <RootNav.Screen name="RecieptScreen" component={SendTripRecieptScreen} />
+          <RootNav.Screen
+            name="RecieptScreen"
+            component={SendTripRecieptScreen}
+          />
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -190,7 +194,11 @@ export const MyDrawer = () => {
       initialRouteName={'Home'}
       screenOptions={{
         headerShown: false,
-        drawerStyle: {width: '80%'},
+        drawerStyle: {
+          width: '80%',
+          borderTopRightRadius: moderateScale(120, 0.6),
+          borderBottomRightRadius: moderateScale(120, 0.6),
+        },
       }}>
       <DrawerNavigation.Screen name="Home" component={Home} />
     </DrawerNavigation.Navigator>

@@ -11,11 +11,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const PaymentMethodCard = ({
   isuserCard,
-  isAcceptBtn,
+  isButton,
   pickuplocation,
   dropofflocation,
   image,
   name,
+  style,
+  iscomplete,
+  btn_text,
 }) => {
   const [isPaymentCom, setPaymentCom] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Card');
@@ -23,7 +26,7 @@ const PaymentMethodCard = ({
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
-    <View style={styles.card_view}>
+    <View style={[styles.card_view, style]}>
       {isuserCard ? (
         <View>
           <View style={styles.profile_view}>
@@ -35,21 +38,21 @@ const PaymentMethodCard = ({
               style={[
                 styles.text,
                 {
-                  width: isAcceptBtn ? '50%' : '80%',
+                  width: isButton ? '50%' : '80%',
                   marginLeft: moderateScale(10, 0.6),
                 },
               ]}>
               {name}
             </CustomText>
-            {isAcceptBtn && (
+            {isButton && (
               <CustomButton
-                text={'Accept'}
+                text={iscomplete ? 'Complete' : btn_text ? btn_text : 'Accept'}
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.25}
                 height={windowHeight * 0.05}
-                bgColor={Color.green}
+                bgColor={btn_text ? Color.red : Color.green}
                 textTransform={'capitalize'}
                 elevation
               />
@@ -180,6 +183,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6.68,
     elevation: 11,
     borderRadius: moderateScale(15, 0.6),
+    alignSelf: 'center',
   },
   price: {
     fontSize: moderateScale(12, 0.6),
