@@ -132,7 +132,7 @@ const Earningsscreen = () => {
           iconStyle={{
             fontSize: moderateScale(17, 0.6),
             color: Color.darkBlue,
-            marginRight: moderateScale(20, 0.6),
+            marginRight: moderateScale(10, 0.6),
             // backgroundColor:'red',
             // width:moderateScale(40,0.6),
             // height:moderateScale(40,0.3),
@@ -147,9 +147,11 @@ const Earningsscreen = () => {
           height={windowHeight * 0.07}
           bgColor={Color.white}
           textTransform={'capitalize'}
-          iconName={'star-outlined'}
+          // iconName={'star-outlined'}
           elevation={true}
-          iconType={Entypo}
+          // iconType={Entypo}
+          iconIsImage={true}
+          // image={require('')}
           textstyle={{
             fontSize: moderateScale(20, 0.6),
           }}
@@ -157,14 +159,14 @@ const Earningsscreen = () => {
             justifyContent: 'flexStart',
             marginTop: moderateScale(15, 0.6),
           }}
-          iconStyle={{
-            fontSize: moderateScale(17, 0.6),
-            color: Color.darkBlue,
-            marginRight: moderateScale(20, 0.6),
-            // backgroundColor:'red',
-            // width:moderateScale(40,0.6),
-            // height:moderateScale(40,0.3),
-          }}
+          // iconStyle={{
+          //   fontSize: moderateScale(17, 0.6),
+          //   color: Color.darkBlue,
+          //   marginRight: moderateScale(20, 0.6),
+          //   // backgroundColor:'red',
+          //   // width:moderateScale(40,0.6),
+          //   // height:moderateScale(40,0.3),
+          // }}
         />
         <View style={styles.reviewBox}>
           <View style={{width: windowWidth * 0.75}}>

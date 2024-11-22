@@ -13,6 +13,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {moderateScale, scale} from 'react-native-size-matters';
 import CustomText from './CustomText';
 import Color from '../Assets/Utilities/Color';
+import CustomImage from './CustomImage';
+import { windowWidth } from '../Utillity/utils';
 
 const CustomButton = props => {
   const {
@@ -43,6 +45,8 @@ const CustomButton = props => {
     elevation,
     marginRight,
     textstyle,
+    iconIsImage,
+    image,
     fontcase,
     style
   } = props;
@@ -116,6 +120,16 @@ const CustomButton = props => {
               color={loaderColor ? loaderColor : Color.white}
             />
           )}
+          {iconIsImage && (
+            <View style={{width:windowWidth * 0.1, height:windowWidth * 0.1, overflow:'hidden'}}>
+              <CustomImage
+              source={require('../Assets/Images/goal.png')}
+              style={{width:'100%', height:"100%"}}              
+              />
+              </View>
+          )
+
+          }
           {iconName && (
             <Icon
               name={iconName}
@@ -147,6 +161,17 @@ const CustomButton = props => {
               size="small"
               color={loaderColor ? loaderColor : Color.white}
             />
+          )}
+           {iconIsImage && (
+            <View style={{width:windowWidth * 0.07, 
+            marginRight:moderateScale(5,0.2),
+            height:windowWidth * 0.07, overflow:'hidden'}}>
+              <CustomImage
+              source={require('../Assets/Images/goal.png')}
+              style={{width:'100%', height:"100%", tintColor:"black"}}              
+              
+              />
+              </View>
           )}
           {iconName && (
             <Icon

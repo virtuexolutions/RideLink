@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   chipBox: {
     width: windowHeight * 0.07,
     height: windowHeight * 0.04,
-    backgroundColor: Color.white,
+    backgroundColor: Color.grey,
     borderRadius: moderateScale(10, 0.6),
   },
   Amount_BalanceBox: {
