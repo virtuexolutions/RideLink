@@ -48,7 +48,8 @@ const CustomButton = props => {
     iconIsImage,
     image,
     fontcase,
-    style
+    style,
+    size
   } = props;
   return (
     <TouchableOpacity
@@ -178,6 +179,7 @@ const CustomButton = props => {
             <Icon
               name={iconName}
               as={iconType}
+              size={size}
               style={[styles.iconCustom, iconStyle && iconStyle]}
             />
           )}
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
   },
   iconCustom: {
     color: 'white',
-    fontSize: moderateScale(17, 0.6),
+    // fontSize: moderateScale(17, 0.6),
     marginRight: moderateScale(5, 0.3),
     // paddingRight: 10,
     // paddingLeft: I18nManager.isRTL ? 20 : 0,

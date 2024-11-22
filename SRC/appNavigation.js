@@ -40,8 +40,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
-          // initialRouteName={'Walletscreen'}
+          // initialRouteName={firstScreen}
+          initialRouteName={'Earningsscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />

@@ -123,6 +123,7 @@ const Earningsscreen = () => {
           iconName={'star-outlined'}
           elevation={true}
           iconType={Entypo}
+          size={moderateScale(24,0.6)}
           textstyle={{
             fontSize: moderateScale(20, 0.6),
           }}
@@ -130,7 +131,8 @@ const Earningsscreen = () => {
             justifyContent: 'flexStart',
           }}
           iconStyle={{
-            fontSize: moderateScale(17, 0.6),
+            // fontSize: moderateScale(24, 0.6),
+
             color: Color.darkBlue,
             marginRight: moderateScale(10, 0.6),
             // backgroundColor:'red',
