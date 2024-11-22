@@ -22,6 +22,7 @@ import Home from './Screens/Home';
 import RateScreen from './Screens/RateScreen';
 import Walletscreen from './Screens/Walletscreen';
 import Earningsscreen from './Screens/Earningsscreen';
+import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -64,6 +65,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="Walletscreen" component={Walletscreen} />
           <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
+          <RootNav.Screen name="ChooseDeclineReasonScreen" component={ChooseDeclineReasonScreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
