@@ -24,6 +24,8 @@ import RideRequest from './Screens/RideRequest';
 import PassengerDetails from './Screens/PassengerDetails';
 import GoOnlineScreen from './Screens/GoOnlineScreen';
 import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
+import Walletscreen from './Screens/Walletscreen';
+import Earningsscreen from './Screens/Earningsscreen';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -41,7 +43,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          // initialRouteName={firstScreen}
+          initialRouteName={'Earningsscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
@@ -70,6 +73,8 @@ const AppNavigator = () => {
           />
           <RootNav.Screen name="GoOnlineScreen" component={GoOnlineScreen} />
           <RootNav.Screen name="RecieptScreen" component={SendTripRecieptScreen} />
+          <RootNav.Screen name="Walletscreen" component={Walletscreen} />
+          <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
