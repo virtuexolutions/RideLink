@@ -1,11 +1,10 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import {moderateScale, ScaledSheet} from 'react-native-size-matters';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Fontisto from 'react-native-vector-icons/Fontisto';
+import {Icon} from 'native-base';
+import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
@@ -14,10 +13,7 @@ import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {setUserToken} from '../Store/slices/auth-slice';
 import {windowHeight, windowWidth} from '../Utillity/utils';
-import {Icon} from 'native-base';
-import Feather from 'react-native-vector-icons/Feather';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -172,12 +168,12 @@ const Signup = () => {
             fontSize={moderateScale(14, 0.3)}
             textColor={Color.white}
             borderWidth={1.5}
-            borderColor={Color.white}
+            borderColor={user_type === 'driver' ? Color.darkBlue : Color.white}
             borderRadius={moderateScale(30, 0.3)}
             width={windowWidth * 0.8}
             marginTop={moderateScale(10, 0.3)}
             height={windowHeight * 0.075}
-            bgColor={Color.btn_Color}
+            bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
             textTransform={'capitalize'}
             elevation
             // isBold

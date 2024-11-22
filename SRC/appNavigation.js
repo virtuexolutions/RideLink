@@ -20,6 +20,11 @@ import RideScreen from './Screens/RideScreen';
 import PaymentScreen from './Screens/PaymentScreen';
 import Home from './Screens/Home';
 import RateScreen from './Screens/RateScreen';
+import RideRequest from './Screens/RideRequest';
+import PassengerDetails from './Screens/PassengerDetails';
+import GoOnlineScreen from './Screens/GoOnlineScreen';
+import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
+import {moderateScale} from 'react-native-size-matters';
 import Walletscreen from './Screens/Walletscreen';
 import Earningsscreen from './Screens/Earningsscreen';
 import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
@@ -61,8 +66,18 @@ const AppNavigator = () => {
           <RootNav.Screen name="RideScreen" component={RideScreen} />
           <RootNav.Screen name="PaymentScreen" component={PaymentScreen} />
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
-          <RootNav.Screen name="Home" component={Home} />
+          {/* <RootNav.Screen name="Home" component={Home} /> */}
           <RootNav.Screen name="RateScreen" component={RateScreen} />
+          <RootNav.Screen name="RideRequest" component={RideRequest} />
+          <RootNav.Screen
+            name="PassengerDetails"
+            component={PassengerDetails}
+          />
+          <RootNav.Screen name="GoOnlineScreen" component={GoOnlineScreen} />
+          <RootNav.Screen
+            name="RecieptScreen"
+            component={SendTripRecieptScreen}
+          />
           <RootNav.Screen name="Walletscreen" component={Walletscreen} />
           <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
           <RootNav.Screen name="ChooseDeclineReasonScreen" component={ChooseDeclineReasonScreen} />
@@ -183,34 +198,16 @@ export const MyDrawer = () => {
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={'HomeScreen'}
+      initialRouteName={'Home'}
       screenOptions={{
         headerShown: false,
-
-        drawerStyle: {width: '80%'},
+        drawerStyle: {
+          width: '80%',
+          borderTopRightRadius: moderateScale(120, 0.6),
+          borderBottomRightRadius: moderateScale(120, 0.6),
+        },
       }}>
-      {/* <DrawerNavigation.Screen name="HomeScreen" component={HomeScreen} /> */}
-      {/* <DrawerNavigation.Screen
-        name="PaymentHistory"
-        component={PaymentHistory}
-      />
-      <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
-
-      <DrawerNavigation.Screen
-        name="BoardingPointSearchScreen"
-        component={BoardingPointSearchScreen}
-      />
-      <DrawerNavigation.Screen
-        name="BoardingPointScreen"
-        component={BoardingPointScreen}
-      />
-      <DrawerNavigation.Screen
-        name="TermsAndConditions"
-        component={TermsAndConditions}
-      />
-      <DrawerNavigation.Screen name="Help" component={Help} />
-      <DrawerNavigation.Screen name="MyWallet" component={MyWallet} />
-      <DrawerNavigation.Screen name="MyJourneys" component={MyJourneys} /> */}
+      <DrawerNavigation.Screen name="Home" component={Home} />
     </DrawerNavigation.Navigator>
   );
 };

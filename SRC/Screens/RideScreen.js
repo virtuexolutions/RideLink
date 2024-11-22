@@ -1,29 +1,28 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Header from '../Components/Header';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import CustomImage from '../Components/CustomImage';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 
 const RideScreen = () => {
   const [additionalTime, setAdditionalTime] = useState(false);
-  useEffect(() => {
-    setTimeout(() => {
-      navigationService.navigate('PaymentScreen');
-    }, 3000);
-  }, []);
+  const {user_type} = useSelector(state => state.authReducer);
+  const [start_waiting, setStartWaiting] = useState(null);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigationService.navigate('PaymentScreen');
+  //   }, 3000);
+  // }, []);
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -36,79 +35,166 @@ const RideScreen = () => {
             styles={styles.image}
           />
         </View>
-        {additionalTime ? (
-          <View
-            style={[
-              styles.waiting_card,
-              {
-                height: windowHeight * 0.15,
-                bottom: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            ]}>
-            <CustomText isBold style={styles.time}>
-              01 : 59
-            </CustomText>
-          </View>
+        {user_type === 'driver' && start_waiting === true ? (
+          <>
+            <CustomButton
+              text={'+ ADD ADDITIONAL TIME'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.85}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.07}
+              bgColor={Color.darkBlue}
+              textTransform={'capitalize'}
+              isBold
+              onPress={() => setAdditionalTime(true)}
+            />
+            <CustomButton
+              text={'DRIVE'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={Color.black}
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.85}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.07}
+              bgColor={Color.white}
+              borderWidth={1.5}
+              borderColor={Color.darkBlue}
+              textTransform={'capitalize'}
+              isBold
+              onPress={() =>
+                navigationService.navigate('PassengerDetails', {
+                  type: 'passangerIdentity',
+                })
+              }
+            />
+          </>
         ) : (
-          <View style={styles.waiting_card}>
-            <View style={[styles.row_view, {justifyContent: 'center'}]}>
-              <CustomText style={styles.text_view}>Waiting PickUp</CustomText>
-              <Icon
-                name="cross"
-                as={Entypo}
-                size={moderateScale(18, 0.6)}
-                color={Color.veryLightGray}
-                style={{position: 'absolute', right: 0}}
-              />
-            </View>
-            <View style={styles.location_text_view}>
-              <Icon
-                name="map-marker-alt"
-                as={FontAwesome5}
-                size={moderateScale(14, 0.6)}
-                color={Color.veryLightGray}
-                style={{left: 5}}
-              />
-              <CustomText style={styles.text}>
-                Fannie Street San Angelo, Texas
-              </CustomText>
-            </View>
-            <View
-              style={[
-                styles.location_text_view,
-                {marginTop: moderateScale(10, 0.6)},
-              ]}>
-              <Icon
-                name="map-marker-alt"
-                as={FontAwesome5}
-                size={moderateScale(14, 0.6)}
-                color={Color.veryLightGray}
-                style={{left: 5}}
-              />
-              <CustomText style={styles.text}>
-                Neville Street Salem, Colorado
-              </CustomText>
-            </View>
-            <View
-              style={[styles.row_view, {marginTop: moderateScale(10, 0.6)}]}>
-              <TouchableOpacity
-                // onPress={() => setAdditionalTime(true)}
-                style={[styles.row_view, {justifyContent: 'flex-start'}]}>
-                <Icon
-                  name="plus"
-                  as={FontAwesome5}
-                  color={Color.grey}
-                  size={moderateScale(10, 0.6)}
-                />
-                <CustomText style={styles.text2}>
-                  ADD ADDITIONAL TIME
+          <>
+            {additionalTime ? (
+              <View
+                style={[
+                  styles.waiting_card,
+                  {
+                    height: windowHeight * 0.15,
+                    bottom: 5,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                ]}>
+                <CustomText isBold style={styles.time}>
+                  01 : 59
                 </CustomText>
-              </TouchableOpacity>
-              <CustomText style={styles.text2}>CANCEL RIDE</CustomText>
-            </View>
-          </View>
+              </View>
+            ) : (
+              <View
+                style={{position: 'absolute', bottom: 30, alignSelf: 'center'}}>
+                <View
+                  style={[
+                    styles.waiting_card,
+                    {
+                      height:
+                        user_type === 'driver'
+                          ? windowHeight * 0.32
+                          : windowHeight * 0.25,
+                    },
+                  ]}>
+                  <View style={[styles.row_view, {justifyContent: 'center'}]}>
+                    <CustomText style={styles.text_view}>
+                      Waiting PickUp
+                    </CustomText>
+                    <Icon
+                      name="cross"
+                      as={Entypo}
+                      size={moderateScale(18, 0.6)}
+                      color={Color.veryLightGray}
+                      style={{position: 'absolute', right: 0}}
+                    />
+                  </View>
+                  <View style={styles.location_text_view}>
+                    <Icon
+                      name="map-marker-alt"
+                      as={FontAwesome5}
+                      size={moderateScale(14, 0.6)}
+                      color={Color.veryLightGray}
+                      style={{left: 5}}
+                    />
+                    <CustomText style={styles.text}>
+                      Fannie Street San Angelo, Texas
+                    </CustomText>
+                  </View>
+                  <View
+                    style={[
+                      styles.location_text_view,
+                      {marginTop: moderateScale(10, 0.6)},
+                    ]}>
+                    <Icon
+                      name="map-marker-alt"
+                      as={FontAwesome5}
+                      size={moderateScale(14, 0.6)}
+                      color={Color.veryLightGray}
+                      style={{left: 5}}
+                    />
+                    <CustomText style={styles.text}>
+                      Neville Street Salem, Colorado
+                    </CustomText>
+                  </View>
+                  <View
+                    style={[
+                      styles.row_view,
+                      {marginTop: moderateScale(10, 0.6)},
+                    ]}>
+                    <TouchableOpacity
+                      // onPress={() => setAdditionalTime(true)}
+                      style={[styles.row_view, {justifyContent: 'flex-start'}]}>
+                      <Icon
+                        name="plus"
+                        as={FontAwesome5}
+                        color={Color.grey}
+                        size={moderateScale(10, 0.6)}
+                      />
+                      <CustomText style={styles.text2}>
+                        ADD ADDITIONAL TIME
+                      </CustomText>
+                    </TouchableOpacity>
+                    <CustomText style={styles.text2}>CANCEL RIDE</CustomText>
+                  </View>
+                  {user_type === 'driver' && (
+                    <CustomButton
+                      text={'ARRIVE LOCATION'}
+                      fontSize={moderateScale(14, 0.3)}
+                      textColor={Color.white}
+                      borderRadius={moderateScale(30, 0.3)}
+                      width={windowWidth * 0.85}
+                      marginTop={moderateScale(10, 0.3)}
+                      height={windowHeight * 0.07}
+                      bgColor={Color.darkBlue}
+                      textTransform={'capitalize'}
+                      isBold
+                    />
+                  )}
+                </View>
+                {user_type === 'driver' && (
+                  <CustomButton
+                    text={'START WAITING'}
+                    fontSize={moderateScale(14, 0.3)}
+                    textColor={Color.black}
+                    borderRadius={moderateScale(30, 0.3)}
+                    width={windowWidth * 0.85}
+                    height={windowHeight * 0.07}
+                    bgColor={Color.white}
+                    borderWidth={1}
+                    borderColor={Color.blue}
+                    textTransform={'capitalize'}
+                    style={{bottom: 60}}
+                    isBold
+                    onPress={() => setStartWaiting(true)}
+                  />
+                )}
+              </View>
+            )}
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -153,7 +239,7 @@ const styles = StyleSheet.create({
     elevation: 24,
     paddingHorizontal: moderateScale(15, 0.6),
     paddingVertical: moderateScale(15, 0.6),
-    bottom: 50,
+    bottom: 70,
   },
   text_view: {
     fontSize: moderateScale(15, 0.6),

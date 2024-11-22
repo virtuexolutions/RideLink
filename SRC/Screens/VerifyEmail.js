@@ -15,7 +15,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import CustomText from '../Components/CustomText'
+import CustomText from '../Components/CustomText';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 
@@ -27,7 +27,7 @@ const VerifyEmail = props => {
   const navigationN = useNavigation();
   const [password, setPassword] = useState('');
   const [ConfirmPass, setConfirmPass] = useState('');
-
+  const {user_type} = useSelector(state => state.authReducer);
 
   return (
     <>
@@ -89,10 +89,12 @@ const VerifyEmail = props => {
               height={windowHeight * 0.06}
               marginTop={moderateScale(20, 0.3)}
               onPress={() => {
-                navigationN.navigate('VerifyNumber')
+                navigationN.navigate('VerifyNumber');
               }}
               borderRadius={30}
-              bgColor={Color.themeBlack}
+              bgColor={
+                user_type === 'driver' ? Color.darkBlue : Color.themeBlack
+              }
             />
           </View>
         </KeyboardAwareScrollView>
@@ -119,7 +121,7 @@ const styles = ScaledSheet.create({
     marginVertical: moderateScale(15, 0.3),
     lineHeight: moderateScale(17, 0.3),
   },
-  back:{
+  back: {
     position: 'absolute',
     top: moderateScale(20, 0.3),
     left: moderateScale(20, 0.3),
@@ -140,13 +142,13 @@ const styles = ScaledSheet.create({
     borderRadius: 20,
     paddingTop: windowHeight * 0.03,
   },
-  container:{
+  container: {
     paddingBottom: moderateScale(20, 0.3),
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
     height: windowHeight,
-  }
+  },
 });
 
 export default VerifyEmail;

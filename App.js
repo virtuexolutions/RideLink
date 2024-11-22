@@ -20,6 +20,7 @@ import {
 import SplashScreen from './SRC/Screens/SplashScreen';
 import AppNavigator from './SRC/appNavigation';
 import { SafeAreaView, Text } from 'react-native';
+import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
 import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
 
 const App = () => {
@@ -46,6 +47,8 @@ const App = () => {
             </Text>
           </SafeAreaView> */}
           <MainContainer />
+          
+           {/* <SendTripRecieptScreen/> */}
         </NativeBaseProvider>
       </PersistGate>
     </Provider>

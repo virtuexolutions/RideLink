@@ -10,7 +10,7 @@ export default Color = {
   mediumGray: '#9B9B9B',
   lightGrey: '#F3F4F6',
   veryLightGray: '#A8A8A8',
-  green: '#528C00',
+  green: '#14B25C',
   lightGreen: '#11A44C',
   themeGreen: '#72A131',
   yellow:'#EBB645',

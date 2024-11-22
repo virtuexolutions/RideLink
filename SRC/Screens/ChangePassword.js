@@ -17,6 +17,7 @@ import navigationService from '../navigationService';
 import {Icon} from 'native-base';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
 const ChangePassword = () => {
   const navigation = useNavigation();
@@ -24,6 +25,7 @@ const ChangePassword = () => {
   const [currPassword, setCurrPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const {user_type} = useSelector(state => state.authReducer);
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -44,8 +46,7 @@ const ChangePassword = () => {
           }}
         />
       </TouchableOpacity>
-      <View
-        style={styles.main_container}>
+      <View style={styles.main_container}>
         <CustomText style={styles.txt5}>Change Password</CustomText>
         <View style={styles.text_input}>
           <TextInputWithTitle
@@ -112,7 +113,7 @@ const ChangePassword = () => {
             width={windowWidth * 0.8}
             height={windowHeight * 0.065}
             marginTop={moderateScale(20, 0.3)}
-            bgColor={Color.themeBlack}
+            bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
             isBold
             elevation
           />
@@ -124,20 +125,20 @@ const ChangePassword = () => {
 
 export default ChangePassword;
 const styles = ScaledSheet.create({
-  main_container:{
+  main_container: {
     height: windowHeight,
     width: windowWidth,
     alignItems: 'center',
     backgroundColor: 'white',
-    justifyContent:'center'
+    justifyContent: 'center',
   },
   txt5: {
-    textAlign:'center',
+    textAlign: 'center',
     fontSize: moderateScale(24, 0.6),
     fontWeight: 'bold',
     width: windowWidth * 0.85,
     color: Color.themeBlack,
-    marginVertical:moderateScale(25,.3)
+    marginVertical: moderateScale(25, 0.3),
   },
   text_input: {
     alignItems: 'center',
@@ -146,7 +147,7 @@ const styles = ScaledSheet.create({
     borderColor: Color.mediumGray,
     height: windowHeight * 0.47,
     borderRadius: 20,
-    paddingTop: windowHeight * 0.03 ,
+    paddingTop: windowHeight * 0.03,
   },
   back: {
     width: moderateScale(35, 0.6),
