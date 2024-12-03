@@ -78,9 +78,12 @@ const AppNavigator = () => {
             name="RecieptScreen"
             component={SendTripRecieptScreen}
           />
-          <RootNav.Screen name="Walletscreen" component={Walletscreen} />
-          <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />
-          <RootNav.Screen name="ChooseDeclineReasonScreen" component={ChooseDeclineReasonScreen} />
+          {/* <RootNav.Screen name="Walletscreen" component={Walletscreen} /> */}
+          {/* <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />? */}
+          <RootNav.Screen
+            name="ChooseDeclineReasonScreen"
+            component={ChooseDeclineReasonScreen}
+          />
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -208,6 +211,11 @@ export const MyDrawer = () => {
         },
       }}>
       <DrawerNavigation.Screen name="Home" component={Home} />
+      <DrawerNavigation.Screen name="Walletscreen" component={Walletscreen} />
+      <DrawerNavigation.Screen
+        name="Earningsscreen"
+        component={Earningsscreen}
+      />
     </DrawerNavigation.Navigator>
   );
 };

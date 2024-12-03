@@ -37,7 +37,7 @@ const RideRequest = ({route}) => {
 
   return (
     <SafeAreaView style={styles.safe_are}>
-      <Header title={'Ride Request'} />
+      <Header title={decline ? "Cancel Ride" : 'Ride Request'} />
       <View style={styles.main_view}>
         <View style={[styles.map_view]}>
           <CustomImage
@@ -315,9 +315,7 @@ const RideRequest = ({route}) => {
                 elevation
                 marginBottom={moderateScale(40, 0.6)}
                 onPress={() =>
-                  navigationService.navigate('RecieptScreen', {
-                    type: 'fromDecline',
-                  })
+                  navigationService.navigate('ChooseDeclineReasonScreen')
                 }
               />
             ) : (

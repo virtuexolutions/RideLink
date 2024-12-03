@@ -33,7 +33,7 @@ const Drawer = () => {
     {
       name: 'Earnings',
       onPress: () => {
-        navigation.navigate('MyWallet');
+        navigation.navigate('Earningsscreen');
       },
     },
     {
@@ -76,7 +76,7 @@ const Drawer = () => {
             }}
           />
           <CustomText isBold style={styles.heading_text}>
-            PAT H. JHONSON
+            PAT H. JHONSON 
           </CustomText>
           <CustomText style={styles.text}>Diver : Car Name</CustomText>
         </View>
@@ -87,6 +87,7 @@ const Drawer = () => {
           {adminData.map((item, index) => (
             <>
               <TouchableOpacity
+                onPress={item.onPress}
                 style={{
                   width: windowWidth * 0.7,
                   borderColor: Color.black,

@@ -89,7 +89,7 @@ const RideScreen = () => {
               </View>
             ) : (
               <View
-                style={{position: 'absolute', bottom: 30, alignSelf: 'center'}}>
+                style={{position: 'absolute', bottom: 80, alignSelf: 'center'}}>
                 <View
                   style={[
                     styles.waiting_card,
@@ -160,6 +160,19 @@ const RideScreen = () => {
                     </TouchableOpacity>
                     <CustomText style={styles.text2}>CANCEL RIDE</CustomText>
                   </View>
+                  <CustomButton
+                    text={'PAY Now'}
+                    fontSize={moderateScale(14, 0.3)}
+                    textColor={Color.white}
+                    borderRadius={moderateScale(30, 0.3)}
+                    width={windowWidth * 0.85}
+                    marginTop={moderateScale(10, 0.3)}
+                    height={windowHeight * 0.07}
+                    bgColor={Color.darkBlue}
+                    textTransform={'capitalize'}
+                    isBold
+                    onPress={() => navigationService.navigate('PaymentScreen')}
+                  />
                   {user_type === 'driver' && (
                     <CustomButton
                       text={'ARRIVE LOCATION'}
