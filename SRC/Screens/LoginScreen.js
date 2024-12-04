@@ -14,12 +14,18 @@ import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import VerifyEmail from './VerifyEmail';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import SmsRetrieverModule from 'react-native-sms-retriever';
+import { Post } from '../Axios/AxiosInterceptorFunction';
+import { setUserToken } from '../Store/slices/auth-slice';
+import { setUserData } from '../Store/slices/common';
 
 const LoginScreen = props => {
   const dispatch = useDispatch();
+  const  token  = useSelector(state =>state.authReducer.token)
   const [username, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -27,10 +33,23 @@ const LoginScreen = props => {
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
   const navigation = useNavigation();
-
+  const [loginMethod, setLoginMethod] = useState('');
+  // const [loginWithGoogle ,setLoginWithGoogle] =useState({})
   const {user_type} = useSelector(state => state.authReducer);
   console.log(user_type, 'userrtypeeeeee');
 
+   const loginWithGoogle = async(response1) =>{
+    const body = {...response1 , loginMethod: 'Google',}
+    const url = '/google-login'
+    const response = await Post(url ,body ,apiHeader(token))
+    if(response != undefined ){
+      dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(setUserData(response?.data?.user_info));
+      // dispatch(setUserWallet(response?.data?.user_info?.wallet));
+
+    }
+
+   }
   return (
     <SafeAreaView style={{flex: 1}}>
       <CustomStatusBar
@@ -76,18 +95,19 @@ const LoginScreen = props => {
           <TextInputWithTitle
             title={'email Id *'}
             titleText={'Username'}
-            placeholder={'Email '}
+            placeholder={'Email'}
             setText={setUserName}
             value={username}
             viewHeight={user_type === 'driver' ? 0.055 : 0.06}
             viewWidth={user_type === 'driver' ? 0.82 : 0.85}
             inputWidth={0.8}
             border={1}
+            fontSize={moderateScale(10, 0.6)}
             borderRadius={30}
             backgroundColor={'transparent'}
             borderColor={Color.lightGrey}
             marginTop={moderateScale(10, 0.3)}
-            placeholderColor={Color.themeBlack}
+            placeholderColor={Color.darkGray}
             titleStlye={{right: 10}}
           />
           <TextInputWithTitle
@@ -104,7 +124,7 @@ const LoginScreen = props => {
             borderColor={Color.lightGrey}
             marginTop={moderateScale(10, 0.3)}
             // color={Color.white}
-            placeholderColor={Color.themeBlack}
+            placeholderColor={Color.darkGray}
             titleStlye={{right: 10}}
           />
           <CustomText
@@ -120,7 +140,7 @@ const LoginScreen = props => {
             fontSize={moderateScale(15, 0.3)}
             textColor={Color.white}
             borderWidth={user_type === 'driver' ? 0 : 1.5}
-            borderColor={Color.white}
+            borderColor={Color.white}                                                
             borderRadius={moderateScale(30, 0.3)}
             width={windowWidth * 0.8}
             height={windowHeight * 0.075}
@@ -132,10 +152,38 @@ const LoginScreen = props => {
         </View>
         <View style={styles.button_container}>
           <CustomText style={styles.soc_text}>
-            or connecting using social account{' '}
+            or connecting using social account
           </CustomText>
           <CustomButton
-            text={'connect with facebook'}
+            onPress={() => {
+              setLoginMethod('Google');
+              GoogleSignin.configure({
+                webClientId:'256104968520-jh3nmrqlqf4df43156b7upehat6og4o7.apps.googleusercontent.com',
+                // webClientId : '308425731760-d3vg1qt7htafihdc77f2bgcvnp74old0.apps.googleusercontent.com'
+                // iosClientId: 'ADD_YOUR_iOS_CLIENT_ID_HERE',
+              });
+              GoogleSignin.hasPlayServices()
+                .then(hasPlayService => {
+                  console.log('========================== << < << ',hasPlayService)
+                  if (hasPlayService) {
+                    GoogleSignin.signIn()
+                      .then(userInfo => {
+                      console.log(
+                          'helllllllllllooooooooooooooooo',
+                          JSON.stringify(userInfo ,null, 2),
+                        );
+                        setLoginWithGoogle(userInfo);
+                      })
+                      .catch(e => {
+                        console.log('ERROR IS=============: ' + JSON.stringify(e));
+                      });
+                  }
+                })
+                .catch(e => {
+                  console.log('ERROR IS: ' + JSON.stringify(e, null, 2));
+                });
+            }}
+            text={'connect with google'}
             fontSize={moderateScale(12, 0.3)}
             textColor={Color.white}
             borderWidth={1.5}
@@ -147,6 +195,9 @@ const LoginScreen = props => {
             textTransform={'capitalize'}
           />
           <CustomButton
+          onPress={() =>{
+            onPhoneNumberPressed()
+          }}
             text={'connect with number'}
             fontSize={moderateScale(13, 0.3)}
             textColor={Color.themeBlack}

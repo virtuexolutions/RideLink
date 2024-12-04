@@ -146,7 +146,8 @@ const TextInputWithTitle = props => {
                         paddingBottom: 10,
                         fontSize: props?.fontSize
                           ? props?.fontSize
-                          : moderateScale(12, 0.6),
+                          :
+                           moderateScale(12, 0.6),
                         fontWeight: '400',
                       },
                     ]
@@ -164,6 +165,7 @@ const TextInputWithTitle = props => {
               placeholderTextColor={
                 props.placeholderColor ? props.placeholderColor : Color.white
               }
+              
               keyboardType={props.keyboardType}
               autoCapitalize="none"
             />

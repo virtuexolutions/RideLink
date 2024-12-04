@@ -28,6 +28,8 @@ import {moderateScale} from 'react-native-size-matters';
 import Walletscreen from './Screens/Walletscreen';
 import Earningsscreen from './Screens/Earningsscreen';
 import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
+import Profile from './Screens/Profile';
+import EditProfile from './Screens/EditProfile';
 
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
@@ -66,7 +68,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="RideScreen" component={RideScreen} />
           <RootNav.Screen name="PaymentScreen" component={PaymentScreen} />
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
-          {/* <RootNav.Screen name="Home" component={Home} /> */}
+          <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="RideRequest" component={RideRequest} />
           <RootNav.Screen
@@ -78,8 +80,6 @@ const AppNavigator = () => {
             name="RecieptScreen"
             component={SendTripRecieptScreen}
           />
-          {/* <RootNav.Screen name="Walletscreen" component={Walletscreen} /> */}
-          {/* <RootNav.Screen name="Earningsscreen" component={Earningsscreen} />? */}
           <RootNav.Screen
             name="ChooseDeclineReasonScreen"
             component={ChooseDeclineReasonScreen}
@@ -215,6 +215,21 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen
         name="Earningsscreen"
         component={Earningsscreen}
+      />
+      <DrawerNavigation.Screen name={'RateScreen'} component={RateScreen} />
+      <DrawerNavigation.Screen name="RideRequest" component={RideRequest} />
+      <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
+      <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
+      <DrawerNavigation.Screen
+        name="RecieptScreen"
+        component={SendTripRecieptScreen}
+      />
+      <DrawerNavigation.Screen name='Profile'  component={Profile} />
+      {/* <DrawerNavigation.Screen name="Profile" component={Profile} /> */}
+
+      <DrawerNavigation.Screen
+        name="PassengerDetails"
+        component={PassengerDetails}
       />
     </DrawerNavigation.Navigator>
   );

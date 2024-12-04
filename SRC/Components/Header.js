@@ -209,11 +209,7 @@ const Header = props => {
             width: windowHeight * 0.055,
             justifyContent: 'center',
             alignItems: 'center',
-            // elevation: 12,
             height: windowHeight * 0.055,
-            // overflow:'hidden',
-            // backgroundColor: 'red',
-            // borderRadius: (windowHeight * 0.055) / 2,
           }}>
           <CustomImage
             source={require('../Assets/Images/user_Image.png')}

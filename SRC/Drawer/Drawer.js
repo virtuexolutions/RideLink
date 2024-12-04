@@ -39,7 +39,7 @@ const Drawer = () => {
     {
       name: 'Accounts ',
       onPress: () => {
-        // navigation.navigate('HomeScreen');
+        navigation.navigate('Profile');
       },
     },
   ];
