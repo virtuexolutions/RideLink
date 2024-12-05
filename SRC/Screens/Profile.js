@@ -1,50 +1,36 @@
 import React, {useState} from 'react';
-import * as Animatable from 'react-native-animatable';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import ScreenBoiler from '../Components/ScreenBoiler';
-
 import {
   ActivityIndicator,
   ScrollView,
   View,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
+  Platform,
 } from 'react-native';
-import CustomText from '../Components/CustomText';
 import CustomButton from '../Components/CustomButton';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import CountryPicker, {DARK_THEME} from 'react-native-country-picker-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-
 import navigationService from '../navigationService';
-import {useDispatch} from 'react-redux';
-
 import {Icon} from 'native-base';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import {useNavigation} from '@react-navigation/native';
 import Header from '../Components/Header';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+
 const Profile = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [showNumberModal, setShowNumberModal] = useState(false);
-  console.log(
-    '🚀 ~ file: Signup.js:48 ~ Signup ~ showNumberModal:',
-    showNumberModal,
-  );
   const [countryCode, setCountryCode] = useState('US');
   const [imagePicker, setImagePicker] = useState(false);
-  console.log('🚀 ~ file: Signup.js:50 ~ Signup ~ imagePicker:', imagePicker);
   const [image, setImage] = useState({});
-  console.log("🚀 ~ Profile ~ image:", image)
-
+  console.log('🚀 ~ Profile ~ image:', image);
   const [country, setCountry] = useState({
     callingCode: ['1'],
     cca2: 'US',
@@ -62,6 +48,17 @@ const Profile = () => {
     setCountryCode(country.cca2);
     setCountry(country);
   };
+
+  // const profileUpdate = async() =>{
+  //   const body ={}
+  //   const url =''
+  //   setIsLoading(true)
+  //   const response =await Post(url ,body , apiHeader(token))
+  //   if(response != undefined){
+  //     Platform.OS == 'android'
+
+  //   }
+  // }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -82,19 +79,21 @@ const Profile = () => {
           }}
         />
       </TouchableOpacity> */}
-      <Header title={'accounts'}/>
+      <Header title={'accounts'} />
       <View style={styles.main}>
-
         <View style={styles.fields_box}>
           <View style={styles.image}>
             <CustomImage
               resizeMode="cover"
-              source={image ? {uri : image?.uri} : require('../Assets/Images/riderphoto.png')}
+              source={
+                image
+                  ? {uri: image?.uri}
+                  : require('../Assets/Images/riderphoto.png')
+              }
               style={{
                 width: '100%',
                 height: '100%',
                 borderRadius: moderateScale((windowHeight * 0.13) / 2),
-              
               }}
             />
 
@@ -263,10 +262,10 @@ const styles = ScaledSheet.create({
     width: windowWidth,
     minHeight: windowHeight,
     paddingBottom: moderateScale(40, 0.6),
-    paddingTop : windowHeight*0.1, 
+    paddingTop: windowHeight * 0.1,
     // justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor : Color.white  
+    backgroundColor: Color.white,
   },
   birthday: {
     width: windowWidth * 0.75,
@@ -336,7 +335,7 @@ const styles = ScaledSheet.create({
     elevation: 8,
   },
   image: {
-    marginTop : moderateScale(10,.3),
+    marginTop: moderateScale(10, 0.3),
     height: windowHeight * 0.12,
     width: windowHeight * 0.12,
     borderRadius: moderateScale((windowHeight * 0.13) / 2),

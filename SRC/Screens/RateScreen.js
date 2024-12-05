@@ -239,16 +239,16 @@ const RateScreen = () => {
             text={'SUBMIT'}
             fontSize={moderateScale(15, 0.3)}
             textColor={Color.white}
-            borderWidth={user_type === 'driver' ? 0 : 1.5}
+            borderWidth={user_type === 'Rider' ? 0 : 1.5}
             borderColor={Color.white}
             borderRadius={moderateScale(30, 0.3)}
             width={windowWidth * 0.9}
             height={windowHeight * 0.075}
-            bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
+            bgColor={user_type === 'Rider' ? Color.darkBlue : Color.btn_Color}
             textTransform={'capitalize'}
-            elevation={user_type === 'driver' ? true : false}
+            elevation={user_type === 'Rider' ? true : false}
             onPress={() => {
-              if (user_type === 'driver') {
+              if (user_type === 'Rider') {
                 navigationService.navigate('RecieptScreen', {type: ''});
               } else {
                 navigationService.navigate('Home');

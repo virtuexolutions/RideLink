@@ -35,7 +35,7 @@ const RideScreen = () => {
             styles={styles.image}
           />
         </View>
-        {user_type === 'driver' && start_waiting === true ? (
+        {user_type === 'Rider' && start_waiting === true ? (
           <>
             <CustomButton
               text={'+ ADD ADDITIONAL TIME'}
@@ -95,7 +95,7 @@ const RideScreen = () => {
                     styles.waiting_card,
                     {
                       height:
-                        user_type === 'driver'
+                        user_type === 'Rider'
                           ? windowHeight * 0.32
                           : windowHeight * 0.25,
                     },
@@ -173,7 +173,7 @@ const RideScreen = () => {
                     isBold
                     onPress={() => navigationService.navigate('PaymentScreen')}
                   />
-                  {user_type === 'driver' && (
+                  {user_type === 'Rider' && (
                     <CustomButton
                       text={'ARRIVE LOCATION'}
                       fontSize={moderateScale(14, 0.3)}
@@ -188,7 +188,7 @@ const RideScreen = () => {
                     />
                   )}
                 </View>
-                {user_type === 'driver' && (
+                {user_type === 'Rider' && (
                   <CustomButton
                     text={'START WAITING'}
                     fontSize={moderateScale(14, 0.3)}

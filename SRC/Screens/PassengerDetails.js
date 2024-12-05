@@ -271,7 +271,7 @@ const PassengerDetails = ({route}) => {
                 marginBottom={moderateScale(40, 0.6)}
                 isBold
                 onPress={() => {
-                  if (user_type === 'driver') {
+                  if (user_type === 'Rider') {
                     if (type === 'fromDecline') {
                       navigationService.navigate('GoOnlineScreen');
                     } else {

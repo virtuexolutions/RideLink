@@ -37,7 +37,7 @@ const Start = () => {
         </CustomText>
         <View style={styles.button_box}>
           <CustomButton
-            text={done === true ? 'Commission' : 'Driver'}
+            text={done === true ? 'Commission' : 'Rider'}
             width={windowWidth * 0.7}
             height={windowHeight * 0.075}
             bgColor={Color.darkBlue}
@@ -47,7 +47,7 @@ const Start = () => {
             onPress={() => {
               if (done != true) {
                 setDone(true);
-                dispatch(setUserType('driver'));
+                dispatch(setUserType('Rider'));
               } else {
                 navigationService.navigate('LoginScreen');
               }
@@ -56,11 +56,11 @@ const Start = () => {
           <CustomButton
             onPress={() => {
               if (done != true) {
-                dispatch(setUserType('user'));
+                dispatch(setUserType('Customer'));
                 navigationService.navigate('LoginScreen');
               }
             }}
-            text={done === true ? 'Subscription' : 'User'}
+            text={done === true ? 'Subscription' : 'Customer'}
             width={windowWidth * 0.7}
             borderWidth={1.5}
             borderColor={Color.darkBlue}

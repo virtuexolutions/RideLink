@@ -114,7 +114,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header title={user_type === 'driver' ? 'Driver Online' : ''} />
+      <Header title={user_type === 'Rider' ? 'Driver Online' : ''} />
       <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
@@ -166,7 +166,7 @@ const Home = () => {
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
-              {user_type === 'driver' ? (
+              {user_type === 'Rider' ? (
                 <CustomButton
                   text={'Explore'}
                   fontSize={moderateScale(14, 0.3)}
@@ -196,7 +196,7 @@ const Home = () => {
           </ImageBackground>
         </View>
 
-        {user_type === 'driver' ? (
+        {user_type === 'Rider' ? (
           <ScrollView showsVerticalScrollIndicator={false}>
             <FlatList
               showsVerticalScrollIndicator={false}

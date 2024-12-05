@@ -67,10 +67,43 @@ const VerifyNumber = props => {
     label();
   }, [time]);
 
-  // useEffect(()=>{
-  //   if(timerLabel == )
-  //   sendOTP();
-  // },[timerLabel])
+  const sendOTP = async () => {
+    const url = 'password/email';
+    setIsLoading(true);
+    const response = await Post(url, { email: email }, apiHeader());
+    setIsLoading(false);
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(`OTP sent to ${email}`, ToastAndroid.SHORT)
+        : alert(`OTP sent to ${email}`);
+    }
+  };
+
+  const VerifyOTP = async () => {
+    const url = 'password/code/check';
+    setIsLoading(true);
+    console.log(code);
+    const response = await Post(url, { code: code }, apiHeader());
+    setIsLoading(false);
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(`otp verified`, ToastAndroid.SHORT)
+        : alert(`otp verified`);
+
+      navigationService.navigate('ResetPassword', { email: email });
+    }
+  };
+
+  useEffect(() => {
+    label();
+  }, [time]);
+
+  useEffect(() => {
+    if (timerLabel == 0) {
+      sendOTP();
+    }
+  }, [timerLabel]);
+
 
   return (
     <>
@@ -167,7 +200,7 @@ const VerifyNumber = props => {
               phone: phoneNumber,
             });
           }}
-          bgColor={user_type === 'driver' ? Color.darkBlue : Color.themeBlack}
+          bgColor={user_type === 'Rider' ? Color.darkBlue : Color.themeBlack}
         />
       </KeyboardAwareScrollView>
     </>
