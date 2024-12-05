@@ -18,8 +18,11 @@ import {Icon} from 'native-base';
 import {Rating} from 'react-native-ratings';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
+import {useSelector} from 'react-redux';
 
 const RateScreen = () => {
+  const {user_type} = useSelector(state => state.authReducer);
+
   return (
     <SafeAreaView>
       <View style={styles.mainContainer}>
@@ -226,17 +229,33 @@ const RateScreen = () => {
           tintColor={Color.white}
           style={{marginTop: moderateScale(30, 0.6)}}
         />
-        <CustomButton
-          text={'SUBMIT'}
-          fontSize={moderateScale(14, 0.3)}
-          textColor={Color.white}
-          borderRadius={moderateScale(30, 0.3)}
-          width={windowWidth * 0.9}
-          height={windowHeight * 0.075}
-          marginTop={'48%'}
-          bgColor={Color.themeBlack}
-          onPress={() => navigationService.navigate('Home')}
-        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: moderateScale(30, 0.6),
+            alignSelf: 'center',
+          }}>
+          <CustomButton
+            text={'SUBMIT'}
+            fontSize={moderateScale(15, 0.3)}
+            textColor={Color.white}
+            borderWidth={user_type === 'Rider' ? 0 : 1.5}
+            borderColor={Color.white}
+            borderRadius={moderateScale(30, 0.3)}
+            width={windowWidth * 0.9}
+            height={windowHeight * 0.075}
+            bgColor={user_type === 'Rider' ? Color.darkBlue : Color.btn_Color}
+            textTransform={'capitalize'}
+            elevation={user_type === 'Rider' ? true : false}
+            onPress={() => {
+              if (user_type === 'Rider') {
+                navigationService.navigate('RecieptScreen', {type: ''});
+              } else {
+                navigationService.navigate('Home');
+              }
+            }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

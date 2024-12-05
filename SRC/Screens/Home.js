@@ -114,7 +114,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header title={user_type === 'driver' ? 'Driver Online' : ''} />
+      <Header title={user_type === 'Rider' ? 'Driver Online' : ''} />
       <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
@@ -166,7 +166,7 @@ const Home = () => {
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
-              {user_type === 'driver' ? (
+              {user_type === 'Rider' ? (
                 <CustomButton
                   text={'Explore'}
                   fontSize={moderateScale(14, 0.3)}
@@ -196,7 +196,7 @@ const Home = () => {
           </ImageBackground>
         </View>
 
-        {user_type === 'driver' ? (
+        {user_type === 'Rider' ? (
           <ScrollView showsVerticalScrollIndicator={false}>
             <FlatList
               showsVerticalScrollIndicator={false}
@@ -208,7 +208,9 @@ const Home = () => {
                 return (
                   <TouchableOpacity
                     style={styles.card}
-                    onPress={() => navigationService.navigate('RideScreen')}>
+                    onPress={() =>
+                      navigationService.navigate('RideRequest', {type: ''})
+                    }>
                     <View style={styles.image_view}>
                       <CustomImage source={item.image} style={styles.image} />
                     </View>
@@ -262,9 +264,9 @@ const Home = () => {
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.42}
                 //   marginTop={moderateScale(10,.3)}
-                height={windowHeight * 0.06}
+                height={windowHeight * 0.053}
                 bgColor={
-                  activebutton === 'current' ? Color.btn_Color : Color.white
+                  activebutton === 'current' ? Color.btn_Color : 'transparent'
                 }
                 textTransform={'capitalize'}
               />
@@ -280,9 +282,9 @@ const Home = () => {
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.42}
                 //   marginTop={moderateScale(10,.3)}
-                height={windowHeight * 0.06}
+                height={windowHeight * 0.055}
                 bgColor={
-                  activebutton === 'history' ? Color.btn_Color : Color.lightGrey
+                  activebutton === 'history' ? Color.btn_Color : 'transparent'
                 }
                 textTransform={'capitalize'}
               />
@@ -314,28 +316,24 @@ const styles = StyleSheet.create({
   safe_area: {
     width: windowWidth,
     height: windowHeight,
-    bac: Color.white,
+    backgroundColor: Color.white,
   },
   main_Container: {
     height: windowHeight,
     width: windowWidth,
     backgroundColor: Color.white,
-    // backgroundColor:"red",
     paddingHorizontal: moderateScale(20, 0.6),
     paddingVertical: moderateScale(10, 0.6),
   },
   ridelink_Box: {
     width: windowWidth * 0.88,
     height: windowHeight * 0.255,
-    // backgroundColor:'red',
     alignSelf: 'center',
     borderRadius: moderateScale(17, 0.6),
-    borderWidth: 1.8,
     borderColor: Color.boxgrey,
-  },
+  },    
   link_Image: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.25,
     borderRadius: moderateScale(17, 0.6),
     alignSelf: 'center',
   },

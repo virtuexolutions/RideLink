@@ -16,17 +16,41 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText'
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 
 import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 
 const ResetPassword = props => {
   const dispatch = useDispatch();
   const navigationN = useNavigation();
   const [password, setPassword] = useState('');
   const [ConfirmPass, setConfirmPass] = useState('');
+  const [isLoading ,setIsLoading] = useState(false)
+
+
+  
+  const resetPassword = async () => {
+    const url = 'password/reset';
+    const data = {
+      email: email,
+      password: password,
+      confirm_password: ConfirmPass,
+    };
+    setIsLoading(true);
+    const response = await Post(url, data, apiHeader());
+    setIsLoading(false);
+    if (response != undefined) {
+      console.log('response data =>', response?.data);
+      Platform.OS == 'android'
+        ? ToastAndroid.show(`Password Reset SuccessFully`, ToastAndroid.SHORT)
+        : alert(`Password Reset SuccessFully`);
+      navigationN.navigate('LoginScreen');
+    }
+  };
+
 
 
   return (

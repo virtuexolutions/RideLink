@@ -13,6 +13,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {moderateScale, scale} from 'react-native-size-matters';
 import CustomText from './CustomText';
 import Color from '../Assets/Utilities/Color';
+import CustomImage from './CustomImage';
+import { windowWidth } from '../Utillity/utils';
 
 const CustomButton = props => {
   const {
@@ -43,8 +45,10 @@ const CustomButton = props => {
     elevation,
     marginRight,
     textstyle,
+    iconIsImage,
+    image,
     fontcase,
-    style
+    style,
   } = props;
   return (
     <TouchableOpacity
@@ -93,7 +97,7 @@ const CustomButton = props => {
           borderColor: Color.themeLightGray,
           color: Color.white,
         },
-        style
+        style,
       ]}
       disabled={disabled}>
       {disabled == false && isGradient ? (
@@ -116,6 +120,16 @@ const CustomButton = props => {
               color={loaderColor ? loaderColor : Color.white}
             />
           )}
+          {iconIsImage && (
+            <View style={{width:windowWidth * 0.1, height:windowWidth * 0.1, overflow:'hidden'}}>
+              <CustomImage
+              source={require('../Assets/Images/goal.png')}
+              style={{width:'100%', height:"100%"}}              
+              />
+              </View>
+          )
+
+          }
           {iconName && (
             <Icon
               name={iconName}
@@ -126,6 +140,7 @@ const CustomButton = props => {
           <CustomText
             style={[
               styles.text,
+              textStyle && textStyle,
               {
                 color: textColor,
                 fontSize: fontSize ? fontSize : moderateScale(13, 0.3),
@@ -147,6 +162,17 @@ const CustomButton = props => {
               size="small"
               color={loaderColor ? loaderColor : Color.white}
             />
+          )}
+           {iconIsImage && (
+            <View style={{width:windowWidth * 0.07, 
+            marginRight:moderateScale(5,0.2),
+            height:windowWidth * 0.07, overflow:'hidden'}}>
+              <CustomImage
+              source={require('../Assets/Images/goal.png')}
+              style={{width:'100%', height:"100%", tintColor:"black"}}              
+              
+              />
+              </View>
           )}
           {iconName && (
             <Icon
@@ -191,8 +217,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: moderateScale(10, 0.3),
     paddingVertical: moderateScale(2, 0.3),
-
-    
   },
   text: {
     color: 'white',

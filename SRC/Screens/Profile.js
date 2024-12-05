@@ -1,48 +1,36 @@
 import React, {useState} from 'react';
-import * as Animatable from 'react-native-animatable';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import ScreenBoiler from '../Components/ScreenBoiler';
-
 import {
   ActivityIndicator,
   ScrollView,
   View,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
+  Platform,
 } from 'react-native';
-import CustomText from '../Components/CustomText';
 import CustomButton from '../Components/CustomButton';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import CountryPicker, {DARK_THEME} from 'react-native-country-picker-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-
 import navigationService from '../navigationService';
-import {useDispatch} from 'react-redux';
-
 import {Icon} from 'native-base';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import Header from '../Components/Header';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+
 const Profile = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [showNumberModal, setShowNumberModal] = useState(false);
-  console.log(
-    '🚀 ~ file: Signup.js:48 ~ Signup ~ showNumberModal:',
-    showNumberModal,
-  );
   const [countryCode, setCountryCode] = useState('US');
   const [imagePicker, setImagePicker] = useState(false);
-  console.log('🚀 ~ file: Signup.js:50 ~ Signup ~ imagePicker:', imagePicker);
   const [image, setImage] = useState({});
-
+  console.log('🚀 ~ Profile ~ image:', image);
   const [country, setCountry] = useState({
     callingCode: ['1'],
     cca2: 'US',
@@ -61,13 +49,24 @@ const Profile = () => {
     setCountry(country);
   };
 
+  // const profileUpdate = async() =>{
+  //   const body ={}
+  //   const url =''
+  //   setIsLoading(true)
+  //   const response =await Post(url ,body , apiHeader(token))
+  //   if(response != undefined){
+  //     Platform.OS == 'android'
+
+  //   }
+  // }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={()=>{
-        navigation.goBack()
-      }}
+      {/* <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          navigation.goBack();
+        }}
         style={styles.back}>
         <Icon
           name="arrowleft"
@@ -75,43 +74,28 @@ const Profile = () => {
           style={styles.icon2}
           color={Color.white}
           size={moderateScale(20, 0.3)}
-          onPress={()=>{
-            navigation.goBack()
+          onPress={() => {
+            navigation.goBack();
           }}
         />
-      </TouchableOpacity>
-      {/* <ImageBackground
-          style={{
-            width: windowWidth,
-            minHeight: windowHeight,
-            paddingBottom: moderateScale(40, 0.6),
-            justifyContent: 'center',
-            // backgroundColor:'red',
-            // height: windowHeight*0.8,
-            alignItems: 'center',
-          }}
-          source={require('../Assets/Images/setting_Bg.png')}> */}
-          
-
-          <View
-            style={{
-           
-              height: windowHeight * 0.13,
-              width: windowHeight * 0.13,
-              borderRadius: moderateScale((windowHeight * 0.13) / 2),
-              // overflow : 'hidden'
-            }}>
-            {/* <CustomImage
-              resizeMode="contain"
-              source={require('../Assets/Images/dummyUser1.png')}
+      </TouchableOpacity> */}
+      <Header title={'accounts'} />
+      <View style={styles.main}>
+        <View style={styles.fields_box}>
+          <View style={styles.image}>
+            <CustomImage
+              resizeMode="cover"
+              source={
+                image
+                  ? {uri: image?.uri}
+                  : require('../Assets/Images/riderphoto.png')
+              }
               style={{
                 width: '100%',
                 height: '100%',
-                backgroundColor: 'blue',
-
                 borderRadius: moderateScale((windowHeight * 0.13) / 2),
               }}
-            /> */}
+            />
 
             <TouchableOpacity
               activeOpacity={0.6}
@@ -131,56 +115,48 @@ const Profile = () => {
               />
             </TouchableOpacity>
           </View>
-          <View
-            style={{
-              gap: 18,
-              // paddingVertical: moderateScale(30, 0.3),
-              alignItems: 'center',
-              // justifyContent: 'center',
-              marginTop: moderateScale(20, 0.3),
-            }}>
-            <TextInputWithTitle
-              iconName={'user-circle-o'}
-              iconType={FontAwesome}
-              LeftIcon={true}
-              titleText={'Username'}
-              placeholder={'Username'}
-              setText={setUserName}
-              value={username}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
+          <TextInputWithTitle
+            iconName={'user-circle-o'}
+            iconType={FontAwesome}
+            LeftIcon={true}
+            titleText={'Username'}
+            placeholder={'Username'}
+            setText={setUserName}
+            value={username}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            backgroundColor={Color.white}
+            borderColor={Color.lightGrey}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+            // elevation
+          />
 
-            <TextInputWithTitle
-              iconName={'email'}
-              iconType={Fontisto}
-              LeftIcon={true}
-              titleText={'Email'}
-              placeholder={'Email'}
-              setText={setEmail}
-              value={email}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={Color.black}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
-            <TouchableOpacity
+          <TextInputWithTitle
+            iconName={'email'}
+            iconType={Fontisto}
+            LeftIcon={true}
+            titleText={'Email'}
+            placeholder={'Email'}
+            setText={setEmail}
+            value={email}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            borderColor={Color.lightGrey}
+            backgroundColor={Color.white}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+            // elevation
+          />
+          {/* <TouchableOpacity
               onPress={() => {
                 setShowNumberModal(true);
                 console.log('first');
@@ -228,61 +204,69 @@ const Profile = () => {
                   right: moderateScale(5, 0.3),
                 }}
               />
-            </TouchableOpacity>
-            <TextInputWithTitle
-              iconName={'phone'}
-              iconType={FontAwesome}
-              LeftIcon={true}
-              titleText={'Phone'}
-              placeholder={'Phone'}
-              setText={setPhone}
-              value={phone}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={Color.black}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
-           
-          
-              <CustomButton
-                onPress={() => navigationService.navigate('LoginScreen')}
-                text={
-                  isLoading ? (
-                    <ActivityIndicator color={Color.white} size={'small'} />
-                  ) : (
-                    'SUBMIT'
-                  )
-                }
-                fontSize={moderateScale(12, 0.3)}
-                textColor={Color.white}
-                borderRadius={moderateScale(30, 0.3)}
-                width={windowWidth * 0.75}
-                height={windowHeight * 0.06}
-                marginTop={moderateScale(20, 0.3)}
-                bgColor={Color.themeColor2}
-                isBold
-                // isGradient
-              />
-          </View>
-        {/* </ImageBackground> */}
-        <ImagePickerModal
-          show={imagePicker}
-          setShow={setImagePicker}
-          setFileObject={setImage}
-        />
+            </TouchableOpacity> */}
+          <TextInputWithTitle
+            iconName={'phone'}
+            iconType={FontAwesome}
+            LeftIcon={true}
+            titleText={'Phone'}
+            placeholder={'Phone'}
+            setText={setPhone}
+            value={phone}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            borderColor={Color.lightGrey}
+            backgroundColor={Color.white}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+            // elevation
+          />
+
+          <CustomButton
+            onPress={() => navigationService.navigate('LoginScreen')}
+            text={
+              isLoading ? (
+                <ActivityIndicator color={Color.white} size={'small'} />
+              ) : (
+                'SUBMIT'
+              )
+            }
+            fontSize={moderateScale(12, 0.3)}
+            textColor={Color.white}
+            borderRadius={moderateScale(30, 0.3)}
+            width={windowWidth * 0.75}
+            height={windowHeight * 0.06}
+            marginTop={moderateScale(25, 0.3)}
+            bgColor={Color.darkBlue}
+            isBold
+            // isGradient
+          />
+        </View>
+      </View>
+      <ImagePickerModal
+        show={imagePicker}
+        setShow={setImagePicker}
+        setFileObject={setImage}
+      />
     </ScrollView>
   );
 };
 
 export default Profile;
 const styles = ScaledSheet.create({
+  main: {
+    width: windowWidth,
+    minHeight: windowHeight,
+    paddingBottom: moderateScale(40, 0.6),
+    paddingTop: windowHeight * 0.1,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Color.white,
+  },
   birthday: {
     width: windowWidth * 0.75,
     height: windowHeight * 0.06,
@@ -295,7 +279,7 @@ const styles = ScaledSheet.create({
     paddingHorizontal: moderateScale(10, 0.6),
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: Color.themeColor,
+    shadowColor: Color.themeDarkGray,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -310,7 +294,6 @@ const styles = ScaledSheet.create({
     width: moderateScale(20, 0.3),
     height: moderateScale(20, 0.3),
     position: 'absolute',
-    // top: 110,
     bottom: -2,
     right: 5,
     borderRadius: moderateScale(10, 0.3),
@@ -319,7 +302,7 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
- back : {
+  back: {
     width: moderateScale(35, 0.6),
     height: moderateScale(35, 0.6),
     borderRadius: moderateScale(5, 0.6),
@@ -329,8 +312,34 @@ const styles = ScaledSheet.create({
     left: moderateScale(10, 0.6),
     top: moderateScale(10, 0.6),
     zIndex: 1,
-    margin :5 ,
-    alignItems : 'center',
-    justifyContent : 'center'
-  }
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fields_box: {
+    borderWidth: 0.3,
+    borderColor: '#28272369',
+    borderRadius: 20,
+    height: windowHeight * 0.5,
+    width: windowWidth * 0.9,
+    alignItems: 'center',
+    paddingTop: moderateScale(15, 0.6),
+    backgroundColor: Color.white,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  image: {
+    marginTop: moderateScale(10, 0.3),
+    height: windowHeight * 0.12,
+    width: windowHeight * 0.12,
+    borderRadius: moderateScale((windowHeight * 0.13) / 2),
+    borderWidth: 1.5,
+    borderColor: Color.darkGray,
+  },
 });

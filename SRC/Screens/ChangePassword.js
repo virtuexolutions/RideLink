@@ -113,7 +113,7 @@ const ChangePassword = () => {
             width={windowWidth * 0.8}
             height={windowHeight * 0.065}
             marginTop={moderateScale(20, 0.3)}
-            bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
+            bgColor={user_type === 'Rider' ? Color.darkBlue : Color.btn_Color}
             isBold
             elevation
           />

@@ -209,11 +209,7 @@ const Header = props => {
             width: windowHeight * 0.055,
             justifyContent: 'center',
             alignItems: 'center',
-            // elevation: 12,
             height: windowHeight * 0.055,
-            // overflow:'hidden',
-            // backgroundColor: 'red',
-            // borderRadius: (windowHeight * 0.055) / 2,
           }}>
           <CustomImage
             source={require('../Assets/Images/user_Image.png')}
@@ -227,8 +223,8 @@ const Header = props => {
               borderRadius: (windowHeight * 0.018) / 2,
               backgroundColor: '#04FF3F',
               position: 'absolute',
-              top: moderateScale(30, 0.6),
-              right: moderateScale(25, 0.6),
+              top: moderateScale(35, 0.6),
+              right: moderateScale(29, 0.6),
             }}></View>
         </View>
       )}

@@ -12,6 +12,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {useSelector} from 'react-redux';
 
 const PassengerDetails = ({route}) => {
   const {type} = route.params;
@@ -20,6 +21,7 @@ const PassengerDetails = ({route}) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const {user_type} = useSelector(state => state.authReducer);
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -37,6 +39,8 @@ const PassengerDetails = ({route}) => {
           name={' Theodora J. Gardner'}
           pickuplocation={'Fannie Street San Angelo, Texas'}
           dropofflocation={'Fannie Street San Angelo, Texas'}
+          isButton={type === 'fromDecline' ? true : false}
+          btn_text={'Decline'}
         />
         {type === 'passangerIdentity' ? (
           <View>
@@ -146,6 +150,11 @@ const PassengerDetails = ({route}) => {
               text={'CONFIRM'}
               isBold
               marginTop={moderateScale(20, 0.6)}
+              onPress={() =>
+                navigationService.navigate('RideRequest', {
+                  type: 'fromIdentity',
+                })
+              }
             />
             <CustomButton
               width={windowWidth * 0.9}
@@ -160,6 +169,11 @@ const PassengerDetails = ({route}) => {
               marginBottom={moderateScale(20, 0.6)}
               isBold
               marginTop={moderateScale(10, 0.6)}
+              onPress={() =>
+                navigationService.navigate('RideRequest', {
+                  type: 'fromIdentity',
+                })
+              }
             />
           </View>
         ) : (
@@ -197,6 +211,7 @@ const PassengerDetails = ({route}) => {
                 </View>
               </View>
             </View>
+
             <View
               style={[styles.search_conatiner, {height: windowHeight * 0.1}]}>
               <CustomText isBold style={styles.heading}>
@@ -208,6 +223,37 @@ const PassengerDetails = ({route}) => {
                 style={{borderBottomWidth: 0.5}}
               />
             </View>
+            <View style={styles.expensesContainer}>
+              <View style={styles.amountView}>
+                <CustomText>Trip Fare Breakdown</CustomText>
+                <CustomText>$50.25</CustomText>
+              </View>
+              <View style={styles.amountView}>
+                <CustomText>Subtotal</CustomText>
+                <CustomText>$50.25</CustomText>
+              </View>
+              <View style={styles.amountView}>
+                <CustomText>Promo Code</CustomText>
+                <CustomText>$5.25</CustomText>
+              </View>
+              <View
+                style={[
+                  styles.amountView,
+                  {
+                    borderTopColor: 'grey',
+                    borderTopWidth: 0.2,
+                    marginTop: 15,
+                  },
+                ]}>
+                <CustomText isBold style={{fontSize: moderateScale(24, 0.4)}}>
+                  Total
+                </CustomText>
+                <CustomText isBold style={{fontSize: moderateScale(24, 0.4)}}>
+                  $105.75
+                </CustomText>{' '}
+                {/* Resolved Design's calculations issues */}
+              </View>
+            </View>
             <View
               style={{position: 'absolute', bottom: moderateScale(70, 0.6)}}>
               <CustomButton
@@ -217,14 +263,26 @@ const PassengerDetails = ({route}) => {
                 borderRadius={moderateScale(30, 0.3)}
                 textColor={Color.white}
                 textTransform={'none'}
-                text={'START NAVIGATION TO PICKUP'}
-                marginBottom={moderateScale(20, 0.6)}
+                text={
+                  type === 'fromDecline'
+                    ? 'DashBoard'
+                    : 'START NAVIGATION TO PICKUP'
+                }
+                marginBottom={moderateScale(40, 0.6)}
                 isBold
                 onPress={() => {
-                  if (isPaymentCom === true) {
-                    navigationService.navigate('MapScreen');
+                  if (user_type === 'Rider') {
+                    if (type === 'fromDecline') {
+                      navigationService.navigate('GoOnlineScreen');
+                    } else {
+                      navigationService.navigate('RideScreen');
+                    }
                   } else {
-                    setPaymentCom(true);
+                    if (isPaymentCom === true) {
+                      navigationService.navigate('MapScreen');
+                    } else {
+                      setPaymentCom(true);
+                    }
                   }
                 }}
               />
@@ -311,5 +369,25 @@ const styles = StyleSheet.create({
     width: moderateScale(50, 0.6),
     height: moderateScale(50, 0.6),
   },
-  text: {},
+  expensesContainer: {
+    width: windowWidth * 0.9,
+    // backgroundColor:'green',
+  },
+  amountView: {
+    paddingHorizontal: moderateScale(12, 0.2),
+    marginTop: moderateScale(12, 0.2),
+    width: '100%',
+    // paddingLeft: moderateScale(12,0.2),
+    justifyContent: 'space-between',
+    // gap:moderateScale(300,.2),
+    flexDirection: 'row',
+  },
+  statusImageView: {
+    // backgroundColor:'black',
+    alignItems: 'center',
+  },
+  logo: {
+    tintColor: 'red',
+    opacity: 1,
+  },
 });

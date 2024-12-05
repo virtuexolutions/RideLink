@@ -146,7 +146,8 @@ const TextInputWithTitle = props => {
                         paddingBottom: 10,
                         fontSize: props?.fontSize
                           ? props?.fontSize
-                          : moderateScale(12, 0.6),
+                          :
+                           moderateScale(12, 0.6),
                         fontWeight: '400',
                       },
                     ]
@@ -164,6 +165,7 @@ const TextInputWithTitle = props => {
               placeholderTextColor={
                 props.placeholderColor ? props.placeholderColor : Color.white
               }
+              
               keyboardType={props.keyboardType}
               autoCapitalize="none"
             />
@@ -187,7 +189,7 @@ const TextInputWithTitle = props => {
               <Icon
                 name={showPassword ? 'eye' : 'eye-slash'}
                 as={FontAwesome}
-                color={Color.white}
+                color={Color.black}
                 size={moderateScale(18, 0.3)}
               />
             </TouchableOpacity>

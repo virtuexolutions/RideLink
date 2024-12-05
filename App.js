@@ -21,6 +21,7 @@ import SplashScreen from './SRC/Screens/SplashScreen';
 import AppNavigator from './SRC/appNavigation';
 import { SafeAreaView, Text } from 'react-native';
 import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
+import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -71,6 +72,7 @@ const MainContainer = () => {
   if (isloading == true) {
     return <SplashScreen />;
   }
+  // return <ChooseDeclineReasonScreen/>;
   return <AppNavigator />;
 };
 

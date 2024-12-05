@@ -17,9 +17,18 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import navigationService from '../navigationService';
 import CustomButton from '../Components/CustomButton';
+import PaymentMethodCard from '../Components/PaymentMethodCard';
 
-const RideRequest = () => {
+const RideRequest = ({route}) => {
+  const {type} = route.params;
+  console.log('🚀 ~ RideRequest ~ type:', type);
   const [additionalTime, setAdditionalTime] = useState(false);
+  const [startNavigation, setStartnavigation] = useState(false);
+  const [dropoff, setDropOff] = useState(false);
+  const [done, setDone] = useState(false);
+  const [arrive, setArrive] = useState(false);
+  const [decline, setDecline] = useState(false);
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     navigationService.navigate('PaymentScreen');
@@ -28,7 +37,7 @@ const RideRequest = () => {
 
   return (
     <SafeAreaView style={styles.safe_are}>
-      <Header title={'Ride Request'} />
+      <Header title={decline ? "Cancel Ride" : 'Ride Request'} />
       <View style={styles.main_view}>
         <View style={[styles.map_view]}>
           <CustomImage
@@ -36,132 +45,317 @@ const RideRequest = () => {
             styles={styles.image}
           />
         </View>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 70,
-            alignItems: 'center',
-            justifyContent: 'center',
-            alignSelf: 'center',
-          }}>
-          <View style={styles.profile_view}>
-            <View style={styles.image_view}>
-              <CustomImage
-                style={styles.image}
-                source={require('../Assets/Images/user_image4.png')}
-              />
+        {type === 'fromIdentity' ? (
+          <>
+            {startNavigation ? (
+              <>
+                {dropoff ? (
+                  <>
+                    {arrive === true ? (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          bottom: 120,
+                          alignSelf: 'center',
+                        }}>
+                        <PaymentMethodCard
+                          isuserCard
+                          name={'Theodora J. Gardner'}
+                          image={require('../Assets/Images/user_image2.png')}
+                          pickuplocation={'Fannie Street San Angelo, Texas'}
+                          dropofflocation={'Neville Street Salem, Colorado'}
+                          isButton
+                          iscomplete
+                          style={{marginBottom: moderateScale(20, 0.6)}}
+                        />
+                        <CustomButton
+                          text={'End Trip'}
+                          fontSize={moderateScale(14, 0.3)}
+                          textColor={!done ? Color.black : Color.white}
+                          borderRadius={moderateScale(30, 0.3)}
+                          width={windowWidth * 0.9}
+                          height={windowHeight * 0.075}
+                          bgColor={!done ? Color.white : Color.darkBlue}
+                          textTransform={'capitalize'}
+                          elevation
+                          isBold
+                          borderWidth={1.5}
+                          borderColor={Color.darkBlue}
+                          marginBottom={moderateScale(10, 0.6)}
+                          onPress={() =>
+                            navigationService.navigate('RateScreen')
+                          }
+                        />
+                      </View>
+                    ) : (
+                      <>
+                        {!done && (
+                          <CustomButton
+                            text={'DONE'}
+                            fontSize={moderateScale(14, 0.3)}
+                            textColor={Color.white}
+                            borderRadius={moderateScale(30, 0.3)}
+                            width={windowWidth * 0.9}
+                            height={windowHeight * 0.075}
+                            bgColor={Color.darkBlue}
+                            textTransform={'capitalize'}
+                            elevation
+                            isBold
+                            onPress={() => setDone(true)}
+                            // onPress={() =>
+                            //   navigationService.navigate('PassengerDetails', {
+                            //     type: '',
+                            //   })
+                            // }
+                          />
+                        )}
+                        <CustomButton
+                          text={!done ? 'Start' : 'Arrive'}
+                          fontSize={moderateScale(14, 0.3)}
+                          textColor={!done ? Color.black : Color.white}
+                          borderRadius={moderateScale(30, 0.3)}
+                          width={windowWidth * 0.9}
+                          height={windowHeight * 0.075}
+                          bgColor={!done ? Color.white : Color.darkBlue}
+                          textTransform={'capitalize'}
+                          elevation
+                          isBold
+                          marginTop={
+                            !done
+                              ? moderateScale(10, 0.6)
+                              : moderateScale(40, 0.6)
+                          }
+                          onPress={() => {
+                            if (done === true) {
+                              setArrive(true);
+                            } else {
+                              setDropOff(true);
+                            }
+                          }}
+                          borderWidth={1.5}
+                          borderColor={Color.darkBlue}
+                          // onPress={() =>
+                          //   navigationService.navigate('PassengerDetails', {
+                          //     type: '',
+                          //   })
+                          // }
+                        />
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <CustomButton
+                    text={'DROP-OFF'}
+                    fontSize={moderateScale(14, 0.3)}
+                    textColor={Color.white}
+                    borderRadius={moderateScale(30, 0.3)}
+                    width={windowWidth * 0.9}
+                    height={windowHeight * 0.075}
+                    bgColor={Color.darkBlue}
+                    textTransform={'capitalize'}
+                    elevation
+                    isBold
+                    marginTop={moderateScale(50, 0.6)}
+                    onPress={() => setDropOff(true)}
+                    // onPress={() =>
+                    //   navigationService.navigate('PassengerDetails', {
+                    //     type: '',
+                    //   })
+                    // }
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                <CustomButton
+                  text={'START NAVIGATION'}
+                  fontSize={moderateScale(14, 0.3)}
+                  textColor={Color.white}
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.9}
+                  height={windowHeight * 0.075}
+                  bgColor={Color.darkBlue}
+                  textTransform={'capitalize'}
+                  elevation
+                  isBold
+                  onPress={() => setStartnavigation(true)}
+                  // onPress={() =>
+                  //   navigationService.navigate('PassengerDetails', {
+                  //     type: '',
+                  //   })
+                  // }
+                />
+                <CustomButton
+                  text={'Traffic Update'}
+                  fontSize={moderateScale(14, 0.3)}
+                  textColor={Color.black}
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.9}
+                  height={windowHeight * 0.075}
+                  bgColor={Color.white}
+                  textTransform={'capitalize'}
+                  elevation
+                  borderWidth={1.5}
+                  borderColor={Color.darkBlue}
+                  marginTop={moderateScale(10, 0.6)}
+                  isBold
+                  // onPress={() =>
+                  //   navigationService.navigate('PassengerDetails', {
+                  //     type: '',
+                  //   })
+                  // }
+                />
+              </>
+            )}
+          </>
+        ) : (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 70,
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+            }}>
+            <View style={styles.profile_view}>
+              <View style={styles.image_view}>
+                <CustomImage
+                  style={styles.image}
+                  source={require('../Assets/Images/user_image4.png')}
+                />
+              </View>
+              <View style={{width: '80%'}}>
+                <CustomText style={styles.name}>Timothy L. Brown</CustomText>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <CustomText style={styles.model} isBold>
+                    Taxi Model :
+                  </CustomText>
+                  <CustomText style={styles.model}>
+                    Toyata Vios (CO21DJ3684)
+                  </CustomText>
+                </View>
+                <CustomText style={styles.model}>(4.5)</CustomText>
+              </View>
             </View>
-            <View style={{width: '80%'}}>
-              <CustomText style={styles.name}>Timothy L. Brown</CustomText>
+            <View style={styles.waiting_card}>
+              <View style={styles.seatView}>
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingVertical: moderateScale(5, 0.6),
+                    }}>
+                    <Icon
+                      name="clock-o"
+                      as={FontAwesome}
+                      size={moderateScale(16, 0.6)}
+                      color={Color.darkBlue}
+                    />
+                    <View style={{alignItems: 'flex-start'}}>
+                      <CustomText style={[styles.text1]}>
+                        {'284 Long Street Gainesville'}
+                      </CustomText>
+                      <CustomText isBold style={styles.text1}>
+                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <CustomText
+                    isBold
+                    style={[
+                      styles.text1,
+                      {
+                        position: 'absolute',
+                        color: Color.veryLightGray,
+                        top: 30,
+                        marginLeft: moderateScale(-8, 0.6),
+                        transform: [{rotate: '-90deg'}],
+                      },
+                    ]}>
+                    ------
+                  </CustomText>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingVertical: moderateScale(10, 0.6),
+                    }}>
+                    <Icon
+                      name="map-marker"
+                      as={FontAwesome}
+                      size={moderateScale(16, 0.6)}
+                      color={Color.darkBlue}
+                    />
+                    <View style={{alignItems: 'flex-start'}}>
+                      <CustomText style={styles.text1}>
+                        {'PickUpLocation'}
+                      </CustomText>
+                      <CustomText isBold style={styles.text1}>
+                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                      </CustomText>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            {decline === true ? (
+              <CustomButton
+                text={'Decline'}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.9}
+                height={windowHeight * 0.075}
+                bgColor={Color.darkBlue}
+                textTransform={'capitalize'}
+                elevation
+                marginBottom={moderateScale(40, 0.6)}
+                onPress={() =>
+                  navigationService.navigate('ChooseDeclineReasonScreen')
+                }
+              />
+            ) : (
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'flex-start',
+                  justifyContent: 'space-between',
+                  marginBottom: moderateScale(20, 0.6),
                 }}>
-                <CustomText style={styles.model} isBold>
-                  Taxi Model :
-                </CustomText>
-                <CustomText style={styles.model}>
-                  Toyata Vios (CO21DJ3684)
-                </CustomText>
-              </View>
-              <CustomText style={styles.model}>(4.5)</CustomText>
-            </View>
-          </View>
-          <View style={styles.waiting_card}>
-            <View style={styles.seatView}>
-              <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: moderateScale(5, 0.6),
-                  }}>
+                <CustomButton
+                  text={'Accept'}
+                  fontSize={moderateScale(14, 0.3)}
+                  textColor={Color.white}
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.7}
+                  height={windowHeight * 0.075}
+                  bgColor={Color.darkBlue}
+                  textTransform={'capitalize'}
+                  elevation
+                  onPress={() =>
+                    navigationService.navigate('PassengerDetails', {
+                      type: '',
+                    })
+                  }
+                />
+                <TouchableOpacity
+                  onPress={() => setDecline(true)}
+                  style={styles.icon_view}>
                   <Icon
-                    name="clock-o"
-                    as={FontAwesome}
-                    size={moderateScale(16, 0.6)}
-                    color={Color.darkBlue}
+                    name="cross"
+                    as={Entypo}
+                    size={moderateScale(24, 0.6)}
+                    color={Color.white}
                   />
-                  <View style={{alignItems: 'flex-start'}}>
-                    <CustomText style={[styles.text1]}>
-                      {'284 Long Street Gainesville'}
-                    </CustomText>
-                    <CustomText isBold style={styles.text1}>
-                      {'B456B Hilton Road, N9 Bristol United Kingdom'}
-                    </CustomText>
-                  </View>
-                </View>
-                <CustomText
-                  isBold
-                  style={[
-                    styles.text1,
-                    {
-                      position: 'absolute',
-                      color: Color.veryLightGray,
-                      top: 30,
-                      marginLeft: moderateScale(-8, 0.6),
-                      transform: [{rotate: '-90deg'}],
-                    },
-                  ]}>
-                  ------
-                </CustomText>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: moderateScale(10, 0.6),
-                  }}>
-                  <Icon
-                    name="map-marker"
-                    as={FontAwesome}
-                    size={moderateScale(16, 0.6)}
-                    color={Color.darkBlue}
-                  />
-                  <View style={{alignItems: 'flex-start'}}>
-                    <CustomText style={styles.text1}>
-                      {'PickUpLocation'}
-                    </CustomText>
-                    <CustomText isBold style={styles.text1}>
-                      {'B456B Hilton Road, N9 Bristol United Kingdom'}
-                    </CustomText>
-                  </View>
-                </View>
+                </TouchableOpacity>
               </View>
-            </View>
+            )}
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: moderateScale(20, 0.6),
-            }}>
-            <CustomButton
-              text={'Accept'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={Color.white}
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.7}
-              height={windowHeight * 0.075}
-              bgColor={Color.darkBlue}
-              textTransform={'capitalize'}
-              elevation
-              onPress={() =>
-                navigationService.navigate('PassengerDetails', {
-                  type: 'passangerIdentity',
-                })
-              }
-            />
-            <TouchableOpacity style={styles.icon_view}>
-              <Icon
-                name="cross"
-                as={Entypo}
-                size={moderateScale(24, 0.6)}
-                color={Color.white}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
