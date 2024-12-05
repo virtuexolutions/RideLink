@@ -42,7 +42,12 @@ const AppNavigator = () => {
   const RootNavLogged = createNativeStackNavigator();
 
   const AppNavigatorContainer = () => {
-    const firstScreen = walkThrough == false ? 'WalkThroughScreen' : 'Start';
+    const firstScreen =
+      walkThrough == false
+        ? 'WalkThroughScreen'
+        : token == null
+        ? 'Start'
+        : 'MyDrawer';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
@@ -224,7 +229,7 @@ export const MyDrawer = () => {
         name="RecieptScreen"
         component={SendTripRecieptScreen}
       />
-      <DrawerNavigation.Screen name='Profile'  component={Profile} />
+      <DrawerNavigation.Screen name="Profile" component={Profile} />
       {/* <DrawerNavigation.Screen name="Profile" component={Profile} /> */}
 
       <DrawerNavigation.Screen

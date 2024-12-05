@@ -60,7 +60,6 @@ const LoginScreen = props => {
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLoading(false);
-    return console.log('🚀 ~ login ~ response:', response?.data);
     if (response != undefined) {
       dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setUserData(response?.data?.user_info));
@@ -221,7 +220,6 @@ const LoginScreen = props => {
               GoogleSignin.configure({
                 webClientId:
                   '256104968520-jh3nmrqlqf4df43156b7upehat6og4o7.apps.googleusercontent.com',
-
                 // webClientId : '308425731760-d3vg1qt7htafihdc77f2bgcvnp74old0.apps.googleusercontent.com'
                 // iosClientId: 'ADD_YOUR_iOS_CLIENT_ID_HERE',
               });

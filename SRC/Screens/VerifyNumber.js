@@ -38,13 +38,15 @@ const VerifyNumber = props => {
   const navigationN = useNavigation();
 
   //params
-  const fromForgot = props?.route?.params?.fromForgot;
+  const email = props?.route?.params?.email;
   const phoneNumber = props?.route?.params?.phoneNumber;
   const {user_type} = useSelector(state => state.authReducer);
 
   //states
   const [code, setCode] = useState('');
+  console.log("🚀 ~ VerifyNumber ~ code===============:", code)
   const [isLoading, setIsLoading] = useState(false);
+  console.log("🚀 ~ VerifyNumber ~ isLoading:", isLoading)
   const CELL_COUNT = 4;
   const ref = useBlurOnFulfill({code, cellCount: CELL_COUNT});
   const [abcd, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -85,12 +87,13 @@ const VerifyNumber = props => {
     console.log(code);
     const response = await Post(url, { code: code }, apiHeader());
     setIsLoading(false);
+    console.log("🚀 ~ VerifyOTP ~ response============================== :", response?.data)
     if (response != undefined) {
       Platform.OS == 'android'
         ? ToastAndroid.show(`otp verified`, ToastAndroid.SHORT)
         : alert(`otp verified`);
 
-      navigationService.navigate('ResetPassword', { email: email });
+        navigationN.navigate('ResetPassword',{email:email});
     }
   };
 
@@ -188,7 +191,7 @@ const VerifyNumber = props => {
           </TouchableOpacity>
         }
         <CustomButton
-          text={'Verify'}
+          text={ isLoading ? <ActivityIndicator size={'small'} color={Color.white}/> :'Verify'}
           isBold
           textColor={Color.white}
           width={windowWidth * 0.85}
@@ -196,9 +199,7 @@ const VerifyNumber = props => {
           borderRadius={30}
           marginTop={moderateScale(20, 0.3)}
           onPress={() => {
-            navigationService.navigate('ResetPassword', {
-              phone: phoneNumber,
-            });
+            VerifyOTP()
           }}
           bgColor={user_type === 'Rider' ? Color.darkBlue : Color.themeBlack}
         />

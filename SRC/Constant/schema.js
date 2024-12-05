@@ -41,3 +41,14 @@ export const forgotpasswordSchema = Yup.object({
     .email('Invalid email address')
     .required('Email is requried !'),
 });
+
+export const forgotpassword = Yup.object({
+
+  password: Yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(8, 'Password must be at least 8 characters')
+    .required('Password is required !'),
+    confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm Password is required'),
+});

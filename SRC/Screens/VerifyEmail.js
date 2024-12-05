@@ -7,6 +7,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -28,34 +29,24 @@ import {forgotpasswordSchema} from '../Constant/schema';
 const VerifyEmail = props => {
   const dispatch = useDispatch();
   const navigationN = useNavigation();
-  const [password, setPassword] = useState('');
-  const [ConfirmPass, setConfirmPass] = useState('');
   const {user_type} = useSelector(state => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendOTP = async () => {
+  const sendOTP = async values => {
     console.log('asdhkasdjagsdjags');
     const url = 'password/email';
-    if (['', null, undefined].includes(email)) {
-      return Platform.OS == 'android'
-        ? ToastAndroid.show('email number is required', ToastAndroid.SHORT)
-        : alert('email number is required');
-    }
+
     setIsLoading(true);
-    const response = await Post(url, {email: email}, apiHeader());
-    console.log(response, '=====>...... reposensye');
+    const response = await Post(url, {email: values.email}, apiHeader());
     setIsLoading(false);
+    console.log('response data =========================>', response?.data);
     if (response != undefined) {
-      console.log('response data =>', response?.data);
       Platform.OS == 'android'
-        ? ToastAndroid.show(`OTP sent to ${email}`, ToastAndroid.SHORT)
-        : alert(`OTP sent to ${email}`);
+        ? ToastAndroid.show(`OTP sent to ${values.email}`, ToastAndroid.SHORT)
+        : alert(`OTP sent to ${values.email}`);
       // fromForgot
       //   ?
-      navigationService.navigate('VerifyNumber', {
-        fromForgot: fromForgot,
-        email: `${email}`,
-      });
+      navigationN.navigate('VerifyNumber',{email : values.email});
       // : navigationService.navigate('VerifyNumber', {
       //     email: `${email}`,
       //   });
@@ -100,18 +91,20 @@ const VerifyEmail = props => {
               email: '',
             }}
             validationSchema={forgotpasswordSchema}
-            // onSubmit={}
-          >
-            {({values ,handleChange ,handleSubmit ,touched ,errors}) => {
+            onSubmit={sendOTP}>
+            {({values, handleChange, handleSubmit, touched, errors}) => {
+              console.log(
+                '🚀 ~ VerifyEmail ~ errors:',
+                errors.email,
+                '======================= uuuuuuu',
+              );
               return (
                 <View style={styles.text_input}>
                   <TextInputWithTitle
                     title={'Email  *'}
-                    titleText={'New Password'}
                     placeholder={'Email'}
-                    setText={handleChange}
+                    setText={handleChange('email')}
                     value={values.email}
-                    secureText={true}
                     viewHeight={0.06}
                     viewWidth={0.8}
                     inputWidth={0.75}
@@ -123,23 +116,21 @@ const VerifyEmail = props => {
                     color={Color.black}
                     placeholderColor={Color.veryLightGray}
                   />
-                   {touched.email && errors.email && (
-                    <CustomText
-                      textAlign={'left'}
-                      style={styles.schemaText}>
+                  {touched.email && errors.email && (
+                    <CustomText textAlign={'left'} style={styles.schemaText}>
                       {errors.email}
                     </CustomText>
                   )}
                   <CustomButton
-                    text={'submit'}
+                    text={isLoading ? <ActivityIndicator size={'small'} color={Color.white}/>:'submit'}
                     textColor={Color.white}
                     width={windowWidth * 0.8}
                     height={windowHeight * 0.06}
                     marginTop={moderateScale(20, 0.3)}
-                    onPress={() => {
+                    onPress={
                       handleSubmit
                       // navigationN.navigate('VerifyNumber');
-                    }}
+                    }
                     borderRadius={30}
                     bgColor={
                       user_type === 'Rider' ? Color.darkBlue : Color.themeBlack
@@ -193,6 +184,7 @@ const styles = ScaledSheet.create({
     height: windowHeight * 0.25,
     borderRadius: 20,
     paddingTop: windowHeight * 0.03,
+    paddingHorizontal: moderateScale(30, 0.6),
   },
   container: {
     paddingBottom: moderateScale(20, 0.3),
@@ -201,12 +193,12 @@ const styles = ScaledSheet.create({
     width: '100%',
     height: windowHeight,
   },
-  schemaText:{
+  schemaText: {
     fontSize: moderateScale(10, 0.6),
     color: Color.red,
-    backgroundColor : 'green',
+    // backgroundColor: 'green',
     alignSelf: 'flex-start',
-  }
+  },
 });
 
 export default VerifyEmail;

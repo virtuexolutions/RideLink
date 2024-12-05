@@ -7,6 +7,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -15,29 +16,33 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import CustomText from '../Components/CustomText'
+import CustomText from '../Components/CustomText';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 
 import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Formik} from 'formik';
+import {forgotpassword} from '../Constant/schema';
 
 const ResetPassword = props => {
   const dispatch = useDispatch();
+  const {user_type} = useSelector(state => state.authReducer);
+  const email = props?.route?.params?.email;
+  console.log('🚀 ~ ResetPassword ~ email===================:', email);
+
   const navigationN = useNavigation();
   const [password, setPassword] = useState('');
   const [ConfirmPass, setConfirmPass] = useState('');
-  const [isLoading ,setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-
-  
-  const resetPassword = async () => {
+  const resetPassword = async values => {
     const url = 'password/reset';
     const data = {
       email: email,
-      password: password,
-      confirm_password: ConfirmPass,
+      password: values.password,
+      confirm_password: values.confirmPassword,
     };
     setIsLoading(true);
     const response = await Post(url, data, apiHeader());
@@ -51,8 +56,6 @@ const ResetPassword = props => {
     }
   };
 
-
-
   return (
     <>
       <CustomStatusBar
@@ -60,9 +63,7 @@ const ResetPassword = props => {
         barStyle={'dark-content'}
       />
       <View style={styles.main_container}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.back}>
+        <TouchableOpacity activeOpacity={0.8} style={styles.back}>
           <Icon
             name={'arrowleft'}
             as={AntDesign}
@@ -83,57 +84,84 @@ const ResetPassword = props => {
             Forgot your password ? don't worry, jsut take a simple step and
             create your new password!
           </CustomText>
-
-          <View style={styles.text_input}>
-            <TextInputWithTitle
-              title={'new password *'}
-              titleText={'New Password'}
-              placeholder={'New Password'}
-              setText={setPassword}
-              value={password}
-              secureText={true}
-              viewHeight={0.06}
-              viewWidth={0.8}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={'#000'}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-            />
-            <TextInputWithTitle
-              title={'new password *'}
-              titleText={'New Password'}
-              placeholder={'New Password'}
-              setText={setConfirmPass}
-              value={ConfirmPass}
-              secureText={true}
-              viewHeight={0.06}
-              viewWidth={0.8}
-              inputWidth={0.7}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={'#000'}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-            />
-            <CustomButton
-              text={'Reset'}
-              textColor={Color.white}
-              width={windowWidth * 0.8}
-              height={windowHeight * 0.065}
-              marginTop={moderateScale(20, 0.3)}
-              onPress={() => {
-                navigationN.navigate('LoginScreen')
-              }}
-              borderRadius={30}
-              bgColor={Color.themeBlack}
-            />
-          </View>
+          <Formik
+            initialValues={{
+              password: '',
+              confirmPassword: '',
+            }}
+            validationSchema={forgotpassword}
+            onSubmit={resetPassword}>
+            {({values, handleChange, handleSubmit, touched, errors}) => {
+              return (
+                <View style={styles.text_input}>
+                  <TextInputWithTitle
+                    title={'new password *'}
+                    titleText={'New Password'}
+                    placeholder={'New Password'}
+                    setText={handleChange('password')}
+                    value={values.password}
+                    secureText={true}
+                    viewHeight={0.06}
+                    viewWidth={0.8}
+                    inputWidth={0.55}
+                    border={1}
+                    borderRadius={moderateScale(30, 0.3)}
+                    borderColor={'#000'}
+                    backgroundColor={Color.white}
+                    marginTop={moderateScale(10, 0.3)}
+                    color={Color.black}
+                    placeholderColor={Color.veryLightGray}
+                  />
+                  {touched.password && errors.password && (
+                    <CustomText style={styles.schemaText}>
+                      {errors.password}
+                    </CustomText>
+                  )}
+                  <TextInputWithTitle
+                    title={'new password *'}
+                    titleText={'New Password'}
+                    placeholder={'New Password'}
+                    setText={handleChange('confirmPassword')}
+                    value={values.confirmPassword}
+                    secureText={true}
+                    viewHeight={0.06}
+                    viewWidth={0.8}
+                    inputWidth={0.7}
+                    border={1}
+                    borderRadius={moderateScale(30, 0.3)}
+                    borderColor={'#000'}
+                    backgroundColor={Color.white}
+                    marginTop={moderateScale(10, 0.3)}
+                    color={Color.black}
+                    placeholderColor={Color.veryLightGray}
+                  />
+                  {touched.password && errors.password && (
+                    <CustomText style={styles.schemaText}>
+                      {errors.password}
+                    </CustomText>
+                  )}
+                  <CustomButton
+                    text={
+                      isLoading ? (
+                        <ActivityIndicator size={'small'} color={Color.white} />
+                      ) : (
+                        'Reset'
+                      )
+                    }
+                    textColor={Color.white}
+                    width={windowWidth * 0.8}
+                    height={windowHeight * 0.065}
+                    marginTop={moderateScale(20, 0.3)}
+                    onPress={handleSubmit}
+                    borderRadius={30}
+                    bgColor={
+                      user_type == 'Rider' ? Color.darkBlue : Color.themeBlack
+                    }
+                  />
+                </View>
+              );
+            }}
+          </Formik>
         </KeyboardAwareScrollView>
       </View>
     </>
@@ -158,7 +186,7 @@ const styles = ScaledSheet.create({
     marginVertical: moderateScale(10, 0.3),
     lineHeight: moderateScale(17, 0.3),
   },
-  back:{
+  back: {
     position: 'absolute',
     top: moderateScale(20, 0.3),
     left: moderateScale(20, 0.3),
@@ -175,17 +203,24 @@ const styles = ScaledSheet.create({
     borderWidth: 1,
     width: windowWidth * 0.9,
     borderColor: Color.mediumGray,
-    height: windowHeight * 0.36,
+    paddingVertical: moderateScale(10, 0.6),
+    // height: windowHeight * 0.36,
     borderRadius: 20,
     paddingTop: windowHeight * 0.03,
+    paddingHorizontal: moderateScale(30, 0.6),
   },
-  container:{
+  container: {
     paddingBottom: moderateScale(20, 0.3),
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
     height: windowHeight,
-  }
+  },
+  schemaText: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.red,
+    alignSelf: 'flex-start',
+  },
 });
 
 export default ResetPassword;
