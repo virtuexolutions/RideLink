@@ -43,12 +43,27 @@ export const forgotpasswordSchema = Yup.object({
 });
 
 export const forgotpassword = Yup.object({
-
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
     .max(8, 'Password must be at least 8 characters')
     .required('Password is required !'),
-    confirmPassword: Yup.string()
+  confirmPassword: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
+});
+export const changePasswordSchema = Yup.object({
+  currentPassword: Yup.string().required('Currrent Password is Requried'),
+  newPassword: Yup.string()
+    .required('New password is required')
+    .min(8, 'New password is must be 8 charcters long')
+    .max(8, 'New password is must be 8 charcters long'),
+  confirmNewPassword: Yup.string()
+    .required('Confirm password is requried')
+    .oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
+});
+
+export const editProfileSchema = Yup.object({
+  userName: Yup.string(),
+  email: Yup.string(),
+  phoneNumber: Yup.number(),
 });

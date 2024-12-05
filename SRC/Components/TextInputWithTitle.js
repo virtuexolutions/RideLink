@@ -31,7 +31,7 @@ const TextInputWithTitle = props => {
               fontSize: moderateScale(12, 0.3),
               // marginBottom: moderateScale(5, 0.3),
               width: windowWidth * props.viewWidth,
-              paddingHorizontal:moderateScale(20,.6),
+              paddingHorizontal: moderateScale(20, 0.6),
               marginTop: props.marginTop
                 ? props.marginTop
                 : moderateScale(10, 0.3),
@@ -112,7 +112,7 @@ const TextInputWithTitle = props => {
                   props.color && !props.disable
                     ? props.color
                     : Color.veryLightGray,
-                fontSize: moderateScale(18, 0.6),
+                fontSize: moderateScale(16, 0.6),
                 // paddingLeft: Dimensions.get("window").width * 0.0175,
               },
               props.numberOfLines > 1 && {
@@ -146,8 +146,7 @@ const TextInputWithTitle = props => {
                         paddingBottom: 10,
                         fontSize: props?.fontSize
                           ? props?.fontSize
-                          :
-                           moderateScale(12, 0.6),
+                          : moderateScale(12, 0.6),
                         fontWeight: '400',
                       },
                     ]
@@ -165,7 +164,6 @@ const TextInputWithTitle = props => {
               placeholderTextColor={
                 props.placeholderColor ? props.placeholderColor : Color.white
               }
-              
               keyboardType={props.keyboardType}
               autoCapitalize="none"
             />

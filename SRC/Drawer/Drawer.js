@@ -42,6 +42,12 @@ const Drawer = () => {
         navigation.navigate('Profile');
       },
     },
+    {
+      name: 'Change password ',
+      onPress: () => {
+        navigation.navigate('ChangePassword');
+      },
+    },
   ];
 
   return (
@@ -76,7 +82,7 @@ const Drawer = () => {
             }}
           />
           <CustomText isBold style={styles.heading_text}>
-            PAT H. JHONSON 
+            PAT H. JHONSON
           </CustomText>
           <CustomText style={styles.text}>Diver : Car Name</CustomText>
         </View>

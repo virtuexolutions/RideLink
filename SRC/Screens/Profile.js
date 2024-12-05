@@ -1,68 +1,70 @@
+import {useNavigation} from '@react-navigation/native';
+import {Formik} from 'formik';
+import {Icon} from 'native-base';
 import React, {useState} from 'react';
-import Color from '../Assets/Utilities/Color';
-import CustomImage from '../Components/CustomImage';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {
   ActivityIndicator,
   ScrollView,
-  View,
   TouchableOpacity,
-  Platform,
+  View,
 } from 'react-native';
-import CustomButton from '../Components/CustomButton';
-import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {ScaledSheet, moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import navigationService from '../navigationService';
-import {Icon} from 'native-base';
+import {useDispatch, useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import CustomButton from '../Components/CustomButton';
+import CustomImage from '../Components/CustomImage';
 import ImagePickerModal from '../Components/ImagePickerModal';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import {useNavigation} from '@react-navigation/native';
-import Header from '../Components/Header';
+import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {editProfileSchema} from '../Constant/schema';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import {setUserData} from '../Store/slices/common';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const {user_type} = useSelector(state => state.authReducer);
+  const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ Profile ~ token:', token);
+  const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ Profile ~ userData:', userData);
+  console.log('🚀 ~ Profile ~ user_type:', user_type);
+  const [username, setUserName] = useState(
+    userData?.name ? userData?.name : '',
+  );
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState(userData?.email ? userData?.email : '');
+  const [phone, setPhone] = useState(userData?.phone ? userData?.phone : '');
   const [isLoading, setIsLoading] = useState(false);
-  const [username, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [showNumberModal, setShowNumberModal] = useState(false);
-  const [countryCode, setCountryCode] = useState('US');
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
   console.log('🚀 ~ Profile ~ image:', image);
-  const [country, setCountry] = useState({
-    callingCode: ['1'],
-    cca2: 'US',
-    currency: ['USD'],
-    flag: 'flag-us',
-    name: 'United States',
-    region: 'Americas',
-    subregion: 'North America',
-  });
-  const [withCallingCode, setWithCallingCode] = useState(true);
-  const [withFilter, setFilter] = useState(true);
-  const [phone, setPhone] = useState('');
 
-  const onSelect = country => {
-    setCountryCode(country.cca2);
-    setCountry(country);
+  const profileUpdate = async () => {
+    const url = 'auth/profile';
+    const formData = new FormData();
+    formData.append('photo', image);
+    formData.append('name', username);
+    formData.append('phone', phone);
+    setIsLoading(true);
+    console.log(
+      '🚀 ~ profileUpdate ~ formData:',
+      JSON.stringify(formData, null, 2),
+    );
+    const response = await Post(url, formData, apiHeader(token));
+    console.log('🚀 ~ profileUpdate ~ response:', response?.data);
+    if (response?.data != undefined) {
+      setIsLoading(false);
+      dispatch(setUserData(response?.data));
+      navigation.navigate('Home');
+    }
   };
-
-  // const profileUpdate = async() =>{
-  //   const body ={}
-  //   const url =''
-  //   setIsLoading(true)
-  //   const response =await Post(url ,body , apiHeader(token))
-  //   if(response != undefined){
-  //     Platform.OS == 'android'
-
-  //   }
-  // }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      {/* <TouchableOpacity
+      <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
           navigation.goBack();
@@ -78,15 +80,25 @@ const Profile = () => {
             navigation.goBack();
           }}
         />
-      </TouchableOpacity> */}
-      <Header title={'accounts'} />
+      </TouchableOpacity>
       <View style={styles.main}>
+        {/* <Formik
+          validationSchema={editProfileSchema}
+          initialValues={{
+            email: userData?.email ? userData?.email : '',
+            phone: userData?.phone ? userData?.phone : '',
+            username: userData?.name ? userData?.name : '',
+          }}
+          // onSubmit={profileUpdate}
+        >
+          {({handleChange, handleSubmit, values, errors, touched}) => {
+            return ( */}
         <View style={styles.fields_box}>
           <View style={styles.image}>
             <CustomImage
               resizeMode="cover"
               source={
-                image
+                image?.uri
                   ? {uri: image?.uri}
                   : require('../Assets/Images/riderphoto.png')
               }
@@ -96,7 +108,6 @@ const Profile = () => {
                 borderRadius: moderateScale((windowHeight * 0.13) / 2),
               }}
             />
-
             <TouchableOpacity
               activeOpacity={0.6}
               style={styles.edit}
@@ -133,9 +144,7 @@ const Profile = () => {
             marginTop={moderateScale(15, 0.3)}
             color={Color.black}
             placeholderColor={Color.veryLightGray}
-            // elevation
           />
-
           <TextInputWithTitle
             iconName={'email'}
             iconType={Fontisto}
@@ -154,57 +163,10 @@ const Profile = () => {
             marginTop={moderateScale(15, 0.3)}
             color={Color.black}
             placeholderColor={Color.veryLightGray}
+            disable
             // elevation
           />
-          {/* <TouchableOpacity
-              onPress={() => {
-                setShowNumberModal(true);
-                console.log('first');
-              }}
-              activeOpacity={0.9}
-              style={[
-                styles.birthday,
-                {
-                  justifyContent: 'flex-start',
-                  // backgroundColor: 'red',
-                  borderRadius: moderateScale(25, 0.6),
-                },
-              ]}>
-              <CountryPicker
-                {...{
-                  countryCode,
-                  withCallingCode,
-                  onSelect,
-                  withFilter,
-                }}
-                visible={showNumberModal}
-                onClose={() => {
-                  setShowNumberModal(false);
-                }}
-              />
 
-              {country && (
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(15, 0.6),
-                    color: '#5E5E5E',
-                  }}>{`${countryCode}(+${country?.callingCode})`}</CustomText>
-              )}
-
-              <Icon
-                name={'angle-down'}
-                as={FontAwesome}
-                size={moderateScale(20, 0.6)}
-                color={Color.themeDarkGray}
-                onPress={() => {
-                  setShowNumberModal(true);
-                }}
-                style={{
-                  position: 'absolute',
-                  right: moderateScale(5, 0.3),
-                }}
-              />
-            </TouchableOpacity> */}
           <TextInputWithTitle
             iconName={'phone'}
             iconType={FontAwesome}
@@ -227,7 +189,9 @@ const Profile = () => {
           />
 
           <CustomButton
-            onPress={() => navigationService.navigate('LoginScreen')}
+            onPress={() => {
+              profileUpdate();
+            }}
             text={
               isLoading ? (
                 <ActivityIndicator color={Color.white} size={'small'} />
@@ -241,11 +205,14 @@ const Profile = () => {
             width={windowWidth * 0.75}
             height={windowHeight * 0.06}
             marginTop={moderateScale(25, 0.3)}
-            bgColor={Color.darkBlue}
+            bgColor={user_type == 'Rider' ? Color.darkBlue : Color.themeBlack}
             isBold
             // isGradient
           />
         </View>
+        {/* );
+          }} */}
+        {/* </Formik> */}
       </View>
       <ImagePickerModal
         show={imagePicker}
@@ -262,7 +229,7 @@ const styles = ScaledSheet.create({
     width: windowWidth,
     minHeight: windowHeight,
     paddingBottom: moderateScale(40, 0.6),
-    paddingTop: windowHeight * 0.1,
+    paddingTop: windowHeight * 0.2,
     // justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Color.white,
@@ -314,6 +281,7 @@ const styles = ScaledSheet.create({
     zIndex: 1,
     margin: 5,
     alignItems: 'center',
+    backgroundColor: Color.themeBlack,
     justifyContent: 'center',
   },
   fields_box: {

@@ -225,11 +225,11 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="RideRequest" component={RideRequest} />
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
+      <DrawerNavigation.Screen name="Profile" component={Profile} />
       <DrawerNavigation.Screen
         name="RecieptScreen"
         component={SendTripRecieptScreen}
       />
-      <DrawerNavigation.Screen name="Profile" component={Profile} />
       {/* <DrawerNavigation.Screen name="Profile" component={Profile} /> */}
 
       <DrawerNavigation.Screen
