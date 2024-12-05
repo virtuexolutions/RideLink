@@ -47,7 +47,7 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          initialRouteName={'Profile'}
           // initialRouteName={'Walletscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
@@ -224,7 +224,7 @@ export const MyDrawer = () => {
         name="RecieptScreen"
         component={SendTripRecieptScreen}
       />
-      <DrawerNavigation.Screen name='Profile'  component={Profile} />
+      <DrawerNavigation.Screen name="Profile" component={Profile} />
       {/* <DrawerNavigation.Screen name="Profile" component={Profile} /> */}
 
       <DrawerNavigation.Screen

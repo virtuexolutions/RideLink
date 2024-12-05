@@ -20,6 +20,8 @@ import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import {useNavigation} from '@react-navigation/native';
 import Header from '../Components/Header';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Formik} from 'formik';
+import {editProfileSchema} from '../Constant/schema';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -81,82 +83,89 @@ const Profile = () => {
       </TouchableOpacity> */}
       <Header title={'accounts'} />
       <View style={styles.main}>
-        <View style={styles.fields_box}>
-          <View style={styles.image}>
-            <CustomImage
-              resizeMode="cover"
-              source={
-                image
-                  ? {uri: image?.uri}
-                  : require('../Assets/Images/riderphoto.png')
-              }
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: moderateScale((windowHeight * 0.13) / 2),
-              }}
-            />
-
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={styles.edit}
-              onPress={() => {
-                setImagePicker(true);
-              }}>
-              <Icon
-                name="pencil"
-                as={FontAwesome}
-                style={styles.icon2}
+        <Formik
+          validationSchema={editProfileSchema}
+          initialValues={{
+            email: '',
+            phone: '',
+            username: '',
+          }}
+          // onSubmit={}
+        >
+          {({handleChange, handleSubmit, values, errors, touched}) => {
+            <View style={styles.fields_box}>
+              <View style={styles.image}>
+                <CustomImage
+                  resizeMode="cover"
+                  source={
+                    image
+                      ? {uri: image?.uri}
+                      : require('../Assets/Images/riderphoto.png')
+                  }
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: moderateScale((windowHeight * 0.13) / 2),
+                  }}
+                />
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  style={styles.edit}
+                  onPress={() => {
+                    setImagePicker(true);
+                  }}>
+                  <Icon
+                    name="pencil"
+                    as={FontAwesome}
+                    style={styles.icon2}
+                    color={Color.black}
+                    size={moderateScale(13, 0.3)}
+                    onPress={() => {
+                      setImagePicker(true);
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <TextInputWithTitle
+                iconName={'user-circle-o'}
+                iconType={FontAwesome}
+                LeftIcon={true}
+                titleText={'Username'}
+                placeholder={'Username'}
+                setText={handleChange('username')}
+                value={values.username}
+                viewHeight={0.06}
+                viewWidth={0.75}
+                inputWidth={0.55}
+                border={1}
+                borderRadius={moderateScale(30, 0.3)}
+                backgroundColor={Color.white}
+                borderColor={Color.lightGrey}
+                marginTop={moderateScale(15, 0.3)}
                 color={Color.black}
-                size={moderateScale(13, 0.3)}
-                onPress={() => {
-                  setImagePicker(true);
-                }}
+                placeholderColor={Color.veryLightGray}
               />
-            </TouchableOpacity>
-          </View>
-          <TextInputWithTitle
-            iconName={'user-circle-o'}
-            iconType={FontAwesome}
-            LeftIcon={true}
-            titleText={'Username'}
-            placeholder={'Username'}
-            setText={setUserName}
-            value={username}
-            viewHeight={0.06}
-            viewWidth={0.75}
-            inputWidth={0.55}
-            border={1}
-            borderRadius={moderateScale(30, 0.3)}
-            backgroundColor={Color.white}
-            borderColor={Color.lightGrey}
-            marginTop={moderateScale(15, 0.3)}
-            color={Color.black}
-            placeholderColor={Color.veryLightGray}
-            // elevation
-          />
-
-          <TextInputWithTitle
-            iconName={'email'}
-            iconType={Fontisto}
-            LeftIcon={true}
-            titleText={'Email'}
-            placeholder={'Email'}
-            setText={setEmail}
-            value={email}
-            viewHeight={0.06}
-            viewWidth={0.75}
-            inputWidth={0.55}
-            border={1}
-            borderRadius={moderateScale(30, 0.3)}
-            borderColor={Color.lightGrey}
-            backgroundColor={Color.white}
-            marginTop={moderateScale(15, 0.3)}
-            color={Color.black}
-            placeholderColor={Color.veryLightGray}
-            // elevation
-          />
-          {/* <TouchableOpacity
+              <TextInputWithTitle
+                iconName={'email'}
+                iconType={Fontisto}
+                LeftIcon={true}
+                titleText={'Email'}
+                placeholder={'Email'}
+                setText={handleChange('email')}
+                value={values.email}
+                viewHeight={0.06}
+                viewWidth={0.75}
+                inputWidth={0.55}
+                border={1}
+                borderRadius={moderateScale(30, 0.3)}
+                borderColor={Color.lightGrey}
+                backgroundColor={Color.white}
+                marginTop={moderateScale(15, 0.3)}
+                color={Color.black}
+                placeholderColor={Color.veryLightGray}
+                // elevation
+              />
+              {/* <TouchableOpacity
               onPress={() => {
                 setShowNumberModal(true);
                 console.log('first');
@@ -205,47 +214,49 @@ const Profile = () => {
                 }}
               />
             </TouchableOpacity> */}
-          <TextInputWithTitle
-            iconName={'phone'}
-            iconType={FontAwesome}
-            LeftIcon={true}
-            titleText={'Phone'}
-            placeholder={'Phone'}
-            setText={setPhone}
-            value={phone}
-            viewHeight={0.06}
-            viewWidth={0.75}
-            inputWidth={0.55}
-            border={1}
-            borderRadius={moderateScale(30, 0.3)}
-            borderColor={Color.lightGrey}
-            backgroundColor={Color.white}
-            marginTop={moderateScale(15, 0.3)}
-            color={Color.black}
-            placeholderColor={Color.veryLightGray}
-            // elevation
-          />
+              <TextInputWithTitle
+                iconName={'phone'}
+                iconType={FontAwesome}
+                LeftIcon={true}
+                titleText={'Phone'}
+                placeholder={'Phone'}
+                setText={handleChange('phone')}
+                value={values.phone}
+                viewHeight={0.06}
+                viewWidth={0.75}
+                inputWidth={0.55}
+                border={1}
+                borderRadius={moderateScale(30, 0.3)}
+                borderColor={Color.lightGrey}
+                backgroundColor={Color.white}
+                marginTop={moderateScale(15, 0.3)}
+                color={Color.black}
+                placeholderColor={Color.veryLightGray}
+                // elevation
+              />
 
-          <CustomButton
-            onPress={() => navigationService.navigate('LoginScreen')}
-            text={
-              isLoading ? (
-                <ActivityIndicator color={Color.white} size={'small'} />
-              ) : (
-                'SUBMIT'
-              )
-            }
-            fontSize={moderateScale(12, 0.3)}
-            textColor={Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.75}
-            height={windowHeight * 0.06}
-            marginTop={moderateScale(25, 0.3)}
-            bgColor={Color.darkBlue}
-            isBold
-            // isGradient
-          />
-        </View>
+              <CustomButton
+                onPress={handleSubmit}
+                text={
+                  isLoading ? (
+                    <ActivityIndicator color={Color.white} size={'small'} />
+                  ) : (
+                    'SUBMIT'
+                  )
+                }
+                fontSize={moderateScale(12, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.75}
+                height={windowHeight * 0.06}
+                marginTop={moderateScale(25, 0.3)}
+                bgColor={Color.darkBlue}
+                isBold
+                // isGradient
+              />
+            </View>;
+          }}
+        </Formik>
       </View>
       <ImagePickerModal
         show={imagePicker}

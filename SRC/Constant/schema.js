@@ -41,3 +41,20 @@ export const forgotpasswordSchema = Yup.object({
     .email('Invalid email address')
     .required('Email is requried !'),
 });
+
+export const changePasswordSchema = Yup.object({
+  currentPassword: Yup.string().required('Currrent Password is Requried'),
+  newPassword: Yup.string()
+    .required('Current password is required')
+    .min(8, 'New password is must be 8 charcters long')
+    .max(8, 'New password is must be 8 charcters long'),
+  confirmNewPassword: Yup.string()
+    .required('Confirm password is requried')
+    .oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
+});
+
+export const editProfileSchema = Yup.object({
+  userName: Yup.string(),
+  email: Yup.string(),
+  phoneNumber: Yup.number(),
+});
