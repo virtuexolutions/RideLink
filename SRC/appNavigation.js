@@ -30,7 +30,9 @@ import Earningsscreen from './Screens/Earningsscreen';
 import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
 import Profile from './Screens/Profile';
 import EditProfile from './Screens/EditProfile';
+import {enableScreens} from 'react-native-screens';
 
+enableScreens();
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);

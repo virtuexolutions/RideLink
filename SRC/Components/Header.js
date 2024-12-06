@@ -129,6 +129,10 @@ const Header = props => {
                   onPress={() => {
                     console.log('hello mg ');
                     navigationN.toggleDrawer();
+
+                      // dispatch(setUserLogOut())
+                      // dispatch(SetUserRole(''));
+                   
                     // navigation.openDrawer()
                     // navigationN.dispatch(DrawerActions.toggleDrawer());
                   }}
@@ -212,6 +216,9 @@ const Header = props => {
             height: windowHeight * 0.055,
           }}>
           <CustomImage
+          onPress={() =>{
+            dispatch(setUserLogoutAuth())
+          }}
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
           />

@@ -13,7 +13,7 @@ const initialState = {
   sellerProducts: [],
   sellerService: [],
   selectedRole: '',
-  category:[]
+  category: [],
 };
 
 const CommonSlice = createSlice({
@@ -30,7 +30,7 @@ const CommonSlice = createSlice({
     },
     setUserLogOut(state, action) {
       state.userData = {};
-      // console.log("🚀 ~ setUserLogOut ~ userData:", userData)
+      console.log('🚀 ~ setUserLogOut ~ userData:', state.userData);
     },
     setServiceCategories(state, action) {
       state.categories = action?.payload;
@@ -47,7 +47,7 @@ const CommonSlice = createSlice({
 
     AddToCart(state, action) {
       const itemId = action.payload.id;
-      console.log("🚀 ~ AddToCart ~ action.payload:", action.payload)
+      console.log('🚀 ~ AddToCart ~ action.payload:', action.payload);
 
       state.cart.push({date: moment(), ...action.payload});
     },
@@ -153,7 +153,6 @@ const CommonSlice = createSlice({
     },
 
     deleteProducts(state, action) {
-
       console.log(
         '🚀 ~ file: common.js:147 ~ deleteProducts ~ action:',
         action.payload,
@@ -230,7 +229,6 @@ export const {
   deleteService,
   deleteProducts,
   Order,
-
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

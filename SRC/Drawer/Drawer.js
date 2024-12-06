@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
@@ -8,41 +8,52 @@ import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import navigationService from '../navigationService';
+import {useDispatch} from 'react-redux';
+import {setUserLogOut} from '../Store/slices/common';
+import {setUserLogoutAuth, SetUserRole} from '../Store/slices/auth-slice';
+import {setUserToken} from '../Store/slices/auth';
 
-const Drawer = () => {
+const Drawer = React.memo(() => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const adminData = [
     {
+      id: 1,
       name: 'Inbox',
       onPress: () => {
         navigation.navigate('HomeScreen');
       },
     },
     {
+      id: 2,
       name: 'Refer Friends',
       onPress: () => {
         navigation.navigate('PaymentHistory');
       },
     },
     {
+      id: 3,
       name: 'Oppurtunities',
       onPress: () => {
         navigation.navigate('MyJourneys');
       },
     },
     {
+      id: 4,
       name: 'Earnings',
       onPress: () => {
         navigation.navigate('Earningsscreen');
       },
     },
     {
+      id: 5,
       name: 'Accounts ',
       onPress: () => {
         navigation.navigate('Profile');
       },
     },
     {
+      id: 6,
       name: 'Change password ',
       onPress: () => {
         navigation.navigate('ChangePassword');
@@ -93,6 +104,7 @@ const Drawer = () => {
           {adminData.map((item, index) => (
             <>
               <TouchableOpacity
+                key={item.id}
                 onPress={item.onPress}
                 style={{
                   width: windowWidth * 0.7,
@@ -149,6 +161,14 @@ const Drawer = () => {
             </CustomText>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              console.log('Loerrerasjksaf ');
+              // navigation.navigate('LoginScreen')
+              dispatch(setUserToken(''));
+              dispatch(SetUserRole(''));
+              dispatch(setUserLogOut());
+              // navigation.goBack()
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
@@ -169,7 +189,7 @@ const Drawer = () => {
       </View>
     </ScreenBoiler>
   );
-};
+});
 
 export default Drawer;
 

@@ -25,19 +25,19 @@ export const AuthSlice = createSlice({
       state.fcmToken = action?.payload?.fcmToken;
     },
     SetUserRole(state, action) {
-      console.log('in reduxxxxxxxxx', action.payload);
       state.role = action?.payload;
     },
     setUserLogin(state, action) {
       state.token = action?.payload;
     },
     setUserLogoutAuth(state, action) {
+    //  return console.log("🚀 ~ setUserLogoutAuth ~ state:", state)
       state.token = null;
       state.fcmToken = null;
     },
     setWalkThrough(state, action) {
       state.userWalkThrough = action.payload;
-      console.log("🚀 ~ setWalkThrough ~ action.payload:", action.payload)
+      console.log('🚀 ~ setWalkThrough ~ action.payload:', action.payload);
     },
   },
 });

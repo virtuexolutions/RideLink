@@ -82,7 +82,7 @@ const ChangePassword = () => {
             return (
               <View style={styles.text_input}>
                 <TextInputWithTitle
-                  title={'current text *'}
+                  title={'current Password *'}
                   placeholder={'Current Password'}
                   setText={handleChange('currentPassword')}
                   value={values.currentPassword}

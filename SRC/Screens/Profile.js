@@ -4,7 +4,9 @@ import {Icon} from 'native-base';
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -42,24 +44,47 @@ const Profile = () => {
   const [image, setImage] = useState({});
   console.log('🚀 ~ Profile ~ image:', image);
 
+  // const profileUpdate = async () => {
+  //   const url = 'auth/profile';
+  //   const formData = new FormData();
+  //   // formData.append('photo', image);
+  //   // formData.append('name', username);
+  //   // formData.append('phone', phone);
+  //   setIsLoading(true);
+  //  return console.log(
+  //     '🚀 ~ profileUpdate ~ formData:',
+  //     JSON.stringify(formData, null, 2),
+  //   );
+  //   const response = await Post(url, formData, apiHeader(token));
+  //   setIsLoading(false);
+  //   if (response?.data != undefined) {
+  //     dispatch(setUserData(response?.data));
+  //     navigation.navigate('Home');
+  //   }
+  // };
   const profileUpdate = async () => {
-    const url = 'auth/profile';
     const formData = new FormData();
-    formData.append('photo', image);
-    formData.append('name', username);
-    formData.append('phone', phone);
-    setIsLoading(true);
-    console.log(
-      '🚀 ~ profileUpdate ~ formData:',
-      JSON.stringify(formData, null, 2),
-    );
-    const response = await Post(url, formData, apiHeader(token));
-    console.log('🚀 ~ profileUpdate ~ response:', response?.data);
-    if (response?.data != undefined) {
-      setIsLoading(false);
-      dispatch(setUserData(response?.data));
-      navigation.navigate('Home');
+    const body = {
+      name: username,
+      phone: phone,
+    };
+
+    for (let key in body) {
+      formData?.append(key, body[key]);
     }
+    if (Object.keys(image).length > 0) formData.append('photo', image);
+    const url = 'auth/profile';
+    setIsLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('profile updated Successfully', ToastAndroid.SHORT)
+        : alert('profile updated Successfully');
+      console.log('🚀 ~ profileUpdate ~ response:', response?.data?.user_info);
+      navigation.navigate('HomeScreen');
+    }
+    dispatch(setUserData(response?.data?.user_info));
   };
 
   return (
