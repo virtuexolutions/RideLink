@@ -162,12 +162,9 @@ const Drawer = React.memo(() => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              console.log('Loerrerasjksaf ');
-              // navigation.navigate('LoginScreen')
               dispatch(setUserToken(''));
               dispatch(SetUserRole(''));
               dispatch(setUserLogOut());
-              // navigation.goBack()
             }}
             style={{
               width: windowWidth * 0.7,

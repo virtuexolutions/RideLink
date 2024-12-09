@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "679685403786",
+    "project_id": "ridelynk-67277",
+    "storage_bucket": "ridelynk-67277.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679685403786:android:e05634874308e9ec7ee973",
+        "android_client_info": {
+          "package_name": "com.ridelink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIdaPOm3ulK7gVswXosTQ5WV3n5fEgEfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

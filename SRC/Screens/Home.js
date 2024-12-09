@@ -134,9 +134,10 @@ const Home = () => {
             imageStyle={{
               height: '100%',
               width: '100%',
-              borderRadius: moderateScale(17, 0.6),
+              // borderRadius: moderateScale(17, 0.6),
             }}
-            source={require('../Assets/Images/bgcimage.png')}>
+            source={require('../Assets/Images/bgcimage.png')}
+            >
             <View
               style={{
                 flexDirection: 'row',
@@ -145,7 +146,7 @@ const Home = () => {
               }}>
               <View
                 style={{
-                  marginTop: moderateScale(100, 0.6),
+                  marginTop: windowHeight*0.12                     ,
                   paddingLeft: moderateScale(10, 0.6),
                 }}>
                 <CustomText
@@ -324,17 +325,21 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     paddingHorizontal: moderateScale(20, 0.6),
     paddingVertical: moderateScale(10, 0.6),
+    // backgroundColor : 'red' ,
   },
   ridelink_Box: {
     width: windowWidth * 0.88,
     height: windowHeight * 0.255,
     alignSelf: 'center',
     borderRadius: moderateScale(17, 0.6),
+    borderWidth : 1,
     borderColor: Color.boxgrey,
-  },    
+    marginVertical: moderateScale(10, 0.6),
+  },
   link_Image: {
     width: windowWidth * 0.88,
-    borderRadius: moderateScale(17, 0.6),
+    height : '100%' ,
+    // borderRadius: moderateScale(17, 0.6),
     alignSelf: 'center',
   },
   second_Image: {
@@ -344,11 +349,7 @@ const styles = StyleSheet.create({
     top: moderateScale(15, 0.6),
   },
   container_Style: {
-    // marginTop:moderateScale(10,0.6),
     paddingVertical: moderateScale(40, 0.6),
-    // marginLeft:moderateScale(10,0.6),
-    // backgroundColor:'green',
-    // height:windowHeight *0.15
   },
   button_Box: {
     width: windowWidth * 0.88,

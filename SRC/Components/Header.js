@@ -80,8 +80,10 @@ const Header = props => {
 
   return (
     <View
-      style={[styles.header2, {backgroundColor: headerColor ? headerColor : Color.white}]}
-      >
+      style={[
+        styles.header2,
+        {backgroundColor: headerColor ? headerColor : Color.white},
+      ]}>
       <View
         style={{
           height: moderateScale(30, 0.3),
@@ -105,7 +107,7 @@ const Header = props => {
           <>
             {isFilledButton ? (
               <TouchableOpacity style={styles.filledButton}>
-               <Icon
+                <Icon
                   // style={styles.menu}
                   name={'menu'}
                   as={Feather}
@@ -120,23 +122,23 @@ const Header = props => {
                 />
               </TouchableOpacity>
             ) : (
-                <Icon
-                  style={styles.menu}
-                  name={'menu'}
-                  as={Feather}
-                  size={moderateScale(28, 0.3)}
-                  color={Color.black}
-                  onPress={() => {
-                    console.log('hello mg ');
-                    navigationN.toggleDrawer();
+              <Icon
+                style={styles.menu}
+                name={'menu'}
+                as={Feather}
+                size={moderateScale(28, 0.3)}
+                color={Color.black}
+                onPress={() => {
+                  console.log('hello mg ');
+                  navigationN.toggleDrawer();
 
-                      // dispatch(setUserLogOut())
-                      // dispatch(SetUserRole(''));
-                   
-                    // navigation.openDrawer()
-                    // navigationN.dispatch(DrawerActions.toggleDrawer());
-                  }}
-                />
+                  // dispatch(setUserLogOut())
+                  // dispatch(SetUserRole(''));
+
+                  // navigation.openDrawer()
+                  // navigationN.dispatch(DrawerActions.toggleDrawer());
+                }}
+              />
             )}
             ,
           </>
@@ -216,9 +218,9 @@ const Header = props => {
             height: windowHeight * 0.055,
           }}>
           <CustomImage
-          onPress={() =>{
-            dispatch(setUserLogoutAuth())
-          }}
+            onPress={() => {
+              dispatch(setUserLogoutAuth());
+            }}
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
           />
@@ -311,12 +313,13 @@ const styles = ScaledSheet.create({
     backgroundColor: Color.green,
     right: moderateScale(5, 0.3),
   },
-  filledButton:{
-    width:windowWidth *0.1,
-    height:windowWidth *0.1,
-    borderRadius:windowWidth *0.1/2,
-    backgroundColor:Color.darkBlue,
-    alignItems:'center',justifyContent:'center'
-  }
+  filledButton: {
+    width: windowWidth * 0.1,
+    height: windowWidth * 0.1,
+    borderRadius: (windowWidth * 0.1) / 2,
+    backgroundColor: Color.darkBlue,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 export default Header;
