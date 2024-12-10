@@ -1,14 +1,15 @@
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import Header from '../Components/Header';
 import {Icon} from 'native-base';
 // import { Header } from 'react-native/Libraries/NewAppScreen'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustomText from '../Components/CustomText';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {moderateScale} from 'react-native-size-matters';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 const ChooseDeclineReasonScreen = () => {
   const array = [
     {id: 1, reason: 'Price too High', checked: true},
@@ -21,6 +22,18 @@ const ChooseDeclineReasonScreen = () => {
     {id: 8, reason: 'Unfamiliarity with the Service', checked: true},
     {id: 9, reason: 'Route Concerns', checked: true},
   ];
+  const [isLoading, setIsLoading] = useState(false);
+
+  const DeclineReason = async () => {
+    const url = '';
+    const body = {};
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+    }
+  };
+
   return (
     <SafeAreaView>
       <Header headerColor={'transparent'} title={'Chooose Decline Reason'} />

@@ -19,7 +19,13 @@ import navigationService from '../navigationService';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import Header from '../Components/Header';
 
-const FareScreen = () => {
+const FareScreen = (props) => {
+  // console.log("🚀 ~ FareScreen ~ props:", props)s
+  const pickupLocation =  props?.route?.params?.pickup
+  console.log("🚀 ~ FareScreen ~ pickupLocation:", pickupLocation)
+  const dropoffLocation =  props?.route?.params?.dropoff
+  console.log("🚀 ~ FareScreen ~ dropoffLocation:", dropoffLocation)
+
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -56,6 +62,7 @@ const FareScreen = () => {
                 SearchStyle={{
                   width: windowWidth * 0.85,
                   height: windowHeight * 0.05,
+                  borderWidth  : 0.7,
                 }}
                 placeholderName={null}
                 isLeftIcon={true}
@@ -113,7 +120,7 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(20, 0.6),
     borderRadius: moderateScale(15, 0.6),
     borderWidth: 0.2,
-    borderColor: Color.blue,
+    borderColor: Color.themeBlack,
     paddingVertical: moderateScale(15, 0.6),
     paddingHorizontal: moderateScale(15, 0.6),
   },

@@ -238,6 +238,10 @@ export const MyDrawer = () => {
         name="PassengerDetails"
         component={PassengerDetails}
       />
+      <DrawerNavigation.Screen
+        name="GoOnlineScreen"
+        component={GoOnlineScreen}
+      />
     </DrawerNavigation.Navigator>
   );
 };

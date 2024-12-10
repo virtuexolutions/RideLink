@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import {moderateScale} from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
@@ -15,6 +15,7 @@ import CustomImage from '../Components/CustomImage';
 import CustomButton from '../Components/CustomButton';
 import AskLocation from '../Components/AskLocation';
 import navigationService from '../navigationService';
+import {getDistance} from 'geolib';
 
 const RequestScreen = () => {
   const cablist = [
@@ -39,8 +40,138 @@ const RequestScreen = () => {
       price: '$ 30.00',
     },
   ];
-
+  const [pickupLocation, setPickupLocation] = useState({});
+  console.log('🚀 ~ RequestScreen ~ pickupLocation:', pickupLocation);
+  const [dropLocation, setDropLocation] = useState({});
+  console.log('🚀 ~ RequestScreen ~ dropLocation:', dropLocation);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [locationType, setLocationType] = useState('pickup');
   const [completePayment, setCompletePayment] = useState(false);
+  const [fare ,setFare] = useState(0)
+  console.log("🚀 ~ RequestScreen ~ fare:", fare)
+  const [time ,setTime] =useState(0)
+
+  const fareStructure = {
+    1: {baseFare: 10, additionalFarePerMile: 1},
+    2: {
+      baseFare: 10,
+      additionalFarePerMile: 2,
+      minDistance: 10,
+      maxDistance: 75,
+    },
+    3: {
+      baseFare: 10,
+      additionalFarePerMile: 1.75,
+      minDistance: 76,
+      maxDistance: 150,
+    },
+    4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
+  };
+
+  const calculateFare = distance => {
+    let fare = 0;
+    let fareType;
+    let calfare;
+
+    Object.keys(fareStructure).forEach(key => {
+      const fareTypeObj = fareStructure[key];
+      if (
+        (!fareTypeObj.minDistance || distance >= fareTypeObj.minDistance) &&
+        (!fareTypeObj.maxDistance || distance <= fareTypeObj.maxDistance)
+      ) {
+        fareType = fareTypeObj;
+      }
+    });
+
+    if (fareType) {
+      fare =
+        fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
+      calfare = fare.toFixed(0);
+    }
+    return calfare;
+  };
+
+  useEffect(() => {
+    if (dropLocation && pickupLocation != null) {
+      const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
+      let km = Math.round(checkDistanceBetween / 1000);
+
+      const distanceInMiles = km / 1.60934;
+      console.log('==================> distance ', distanceInMiles);
+      const calculatedFare = calculateFare(distanceInMiles);
+      console.log("🚀 ~ useEffect ~ calculatedFare:", calculatedFare)
+      setFare(calculatedFare);
+      // setDistance(km);
+      const getTravelTime = async () => {
+        // const apikey ='AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        try {
+          console.log('============= > frrom try');
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
+          const response = await fetch(url);
+          console.log('🚀 ~ getTravelTime ~ response:', response?.data);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          if (data.status === 'OK') {
+            const distanceMatrix = data.rows[0].elements[0];
+            const travelTime = distanceMatrix.duration.text;
+            console.log(travelTime, 'travelTime');
+            return setTime(travelTime);
+          } else {
+            console.error('Error fetching travel time:', data.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      getTravelTime();
+    }
+  }, [dropLocation]);
+
+  // useEffect(() => {
+  //   if (dropLocation && pickupLocation) {
+  //     const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
+  //     const km = Math.round(checkDistanceBetween / 1000);
+  //     const distanceInMiles = km / 1.60934;
+  //     console.log('Distance (miles):', distanceInMiles);
+
+  //     const getTravelTime = async () => {
+  //       const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+  //       try {
+  //         const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.latitude},${pickupLocation.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+  //         const response = await fetch(url);
+  //         if (!response.ok) {
+  //           throw new Error('Network response was not ok');
+  //         }
+  //         const data = await response.json();
+  //         console.log('API Response:', JSON.stringify(data, null, 2));
+
+  //         if (
+  //           data.status === 'OK' &&
+  //           data.rows[0]?.elements[0]?.status === 'OK'
+  //         ) {
+  //           const distanceMatrix = data.rows[0].elements[0];
+  //           const travelTime = distanceMatrix.duration?.text || 'Unavailable';
+  //           console.log('Travel Time:', travelTime);
+  //           // Optionally set the state
+  //           // setTime(travelTime);
+  //         } else {
+  //           console.error(
+  //             'Error fetching travel time:',
+  //             data.status || 'Unknown error',
+  //           );
+  //         }
+  //       } catch (error) {
+  //         console.error('Error:', error.message);
+  //       }
+  //     };
+
+  //     getTravelTime();
+  //   }
+  // }, [dropLocation]);
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -88,7 +219,19 @@ const RequestScreen = () => {
               );
             }}
           />
-          <AskLocation heading={'Where are you Going?'} isIcon islocation />
+          <AskLocation
+            isModalVisible={isModalVisible}
+            setDropLocation={setDropLocation}
+            dropLocation={dropLocation}
+            pickupLocation={pickupLocation}
+            setPickupLocation={setPickupLocation}
+            setIsModalVisible={setIsModalVisible}
+            heading={'Where are you Going?'}
+            locationType={locationType}
+            setLocationType={setLocationType}
+            isIcon
+            islocation
+          />
           {/* <View style={styles.location_View}>
             <View style={styles.location_subview}>
               <CustomText style={styles.location_head}>
@@ -188,7 +331,12 @@ const RequestScreen = () => {
             textTransform={'none'}
             text={'CONFIRM NOW'}
             marginBottom={moderateScale(10, 0.6)}
-          onPress={() => navigationService.navigate('FareScreen')}
+            onPress={() =>
+              navigationService.navigate('FareScreen', {
+                pickup: pickupLocation,
+                dropoff: dropLocation,
+              })
+            }
           />
         </View>
       </ImageBackground>

@@ -25,10 +25,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Icon, ScrollView} from 'native-base';
 import navigationService from '../navigationService';
 import {useSelector} from 'react-redux';
+import {Get} from '../Axios/AxiosInterceptorFunction';
 
 const Home = () => {
+  const token = useSelector(state => state.authReducer.token);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
+  const [isLoading ,setIsLoading] = useState(false)
+  const [ requestList ,setRequestList] =useState([])
   const deliveryList = [
     {
       id: 1,
@@ -112,6 +116,15 @@ const Home = () => {
     },
   ];
 
+  const rideRequestList = async () => {
+    const url = '';
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={user_type === 'Rider' ? 'Driver Online' : ''} />
@@ -136,8 +149,7 @@ const Home = () => {
               width: '100%',
               // borderRadius: moderateScale(17, 0.6),
             }}
-            source={require('../Assets/Images/bgcimage.png')}
-            >
+            source={require('../Assets/Images/bgcimage.png')}>
             <View
               style={{
                 flexDirection: 'row',
@@ -146,7 +158,7 @@ const Home = () => {
               }}>
               <View
                 style={{
-                  marginTop: windowHeight*0.12                     ,
+                  marginTop: windowHeight * 0.12,
                   paddingLeft: moderateScale(10, 0.6),
                 }}>
                 <CustomText
@@ -299,7 +311,7 @@ const Home = () => {
                 return (
                   <Userbox
                     data={item}
-                    onPress={() => navigationService.navigate('RequestScreen')}
+                    // onPress={}
                   />
                 );
               }}
@@ -332,13 +344,13 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.255,
     alignSelf: 'center',
     borderRadius: moderateScale(17, 0.6),
-    borderWidth : 1,
+    borderWidth: 1,
     borderColor: Color.boxgrey,
     marginVertical: moderateScale(10, 0.6),
   },
   link_Image: {
     width: windowWidth * 0.88,
-    height : '100%' ,
+    height: '100%',
     // borderRadius: moderateScale(17, 0.6),
     alignSelf: 'center',
   },

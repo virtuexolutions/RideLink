@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import Header from '../Components/Header';
 import Color from '../Assets/Utilities/Color';
 import {moderateScale} from 'react-native-size-matters';
@@ -18,33 +18,81 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import navigationService from '../navigationService';
 import CustomButton from '../Components/CustomButton';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
+import MapViewDirections from 'react-native-maps-directions';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
 
 const RideRequest = ({route}) => {
   const {type} = route.params;
   console.log('🚀 ~ RideRequest ~ type:', type);
+  const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
   const [dropoff, setDropOff] = useState(false);
   const [done, setDone] = useState(false);
   const [arrive, setArrive] = useState(false);
   const [decline, setDecline] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const origin = {latitude: 37.3285792, longitude: -122.0356209};
+  const destination = {latitude: 37.3320305, longitude: -122.0355326};
   // useEffect(() => {
   //   setTimeout(() => {
   //     navigationService.navigate('PaymentScreen');
   //   }, 3000);
   // }, []);
 
+  const rideAcceptApi = async () => {
+    const url = '';
+    const body = {};
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+    }
+  };
+
+  const rideCancelApi = async () => {
+    const url = '';
+    const body = {};
+    setLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setLoading(false);
+    if (response != undefined) {
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe_are}>
-      <Header title={decline ? "Cancel Ride" : 'Ride Request'} />
+      <Header title={decline ? 'Cancel Ride' : 'Ride Request'} />
       <View style={styles.main_view}>
-        <View style={[styles.map_view]}>
+        {/* <View style={[styles.map_view]}>
           <CustomImage
             source={require('../Assets/Images/map3.png')}
             styles={styles.image}
           />
-        </View>
+        </View> */}
+        {/* <MapView
+          provider={PROVIDER_GOOGLE} 
+          style={styles.map}
+          region={{
+            latitude: 37.3318456,
+            longitude: -122.0296002,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          }}>
+          <Marker coordinate={origin} style={{width: 15, height: 10}} />
+          <MapViewDirections
+            origin={origin}
+            destination={destination}
+            strokeColor="blue"
+            strokeWidth={10}
+            apikey="AIzaSyCHuiMaFjSnFTQfRmAfTp9nZ9VpTICgNrc"
+          />
+          <Marker coordinate={destination} />
+        </MapView> */}
         {type === 'fromIdentity' ? (
           <>
             {startNavigation ? (
@@ -471,6 +519,10 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.15,
     width: windowWidth * 0.15,
     borderRadius: windowHeight,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Color.grey,
   },
   image: {
     width: '100%',
