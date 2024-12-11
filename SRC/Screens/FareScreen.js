@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import {moderateScale} from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
@@ -18,14 +18,15 @@ import {Icon} from 'native-base';
 import navigationService from '../navigationService';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import Header from '../Components/Header';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
 
-const FareScreen = (props) => {
-  // console.log("🚀 ~ FareScreen ~ props:", props)s
-  const pickupLocation =  props?.route?.params?.pickup
-  console.log("🚀 ~ FareScreen ~ pickupLocation:", pickupLocation)
-  const dropoffLocation =  props?.route?.params?.dropoff
-  console.log("🚀 ~ FareScreen ~ dropoffLocation:", dropoffLocation)
-
+const FareScreen = props => {
+  const fare = props?.route?.params?.fare;
+  const pickupLocation = props?.route?.params?.pickup;
+  const dropoffLocation = props?.route?.params?.dropoff;
+  const distance = props?.route?.params?.distance
+  console.log("🚀 ~ FareScreen ~ distance:", distance)
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -37,7 +38,13 @@ const FareScreen = (props) => {
       <View style={styles.main_view}>
         {isPaymentCom === true ? (
           <>
-            <AskLocation heading={'Where are you Going?'} isIcon islocation />
+            <AskLocation
+              pickupLocation={pickupLocation}
+              dropLocation={dropoffLocation}
+              heading={'Where are you Going?'}
+              isIcon
+              islocation
+            />
             <TouchableOpacity style={styles.map_view}>
               <View style={styles.map_icon_view}>
                 <Icon
@@ -53,7 +60,13 @@ const FareScreen = (props) => {
           </>
         ) : (
           <>
-            <PaymentMethodCard />
+            <PaymentMethodCard
+              fare={fare}
+              setIsEnabled={setIsEnabled}
+              isEnabled={isEnabled}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+            />
             <View style={styles.search_conatiner}>
               <CustomText style={[styles.des, {marginTop: 0}]}>
                 Searching For You On The Map
@@ -62,7 +75,7 @@ const FareScreen = (props) => {
                 SearchStyle={{
                   width: windowWidth * 0.85,
                   height: windowHeight * 0.05,
-                  borderWidth  : 0.7,
+                  borderWidth: 0.7,
                 }}
                 placeholderName={null}
                 isLeftIcon={true}
@@ -86,7 +99,14 @@ const FareScreen = (props) => {
             isBold
             onPress={() => {
               if (isPaymentCom === true) {
-                navigationService.navigate('MapScreen');
+                navigationService.navigate('MapScreen', {
+                  pickupLocation: pickupLocation,
+                  dropoffLocation: dropoffLocation,
+                  fare: fare,
+                  paymentMethod: paymentMethod,
+                  isEnabled: isEnabled,
+                  distance: distance,
+                });
               } else {
                 setPaymentCom(true);
               }

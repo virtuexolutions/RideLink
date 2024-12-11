@@ -19,10 +19,14 @@ const PaymentMethodCard = ({
   style,
   iscomplete,
   btn_text,
+  fare,
+  setPaymentMethod,
+  paymentMethod,
+  setIsEnabled,
+  isEnabled,
 }) => {
   const [isPaymentCom, setPaymentCom] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [isEnabled, setIsEnabled] = useState(false);
+  // const [paymentMethod, setPaymentMethod] = useState('Card');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
@@ -123,7 +127,7 @@ const PaymentMethodCard = ({
         </View>
       ) : (
         <>
-          <CustomText style={styles.price}>$50</CustomText>
+          <CustomText style={styles.price}>{`$${fare}`}</CustomText>
           <CustomText style={styles.text}>Payment Method</CustomText>
           <View style={styles.payment_view}>
             <View style={styles.payment_subview}>

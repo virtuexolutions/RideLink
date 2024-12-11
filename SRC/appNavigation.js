@@ -242,6 +242,7 @@ export const MyDrawer = () => {
         name="GoOnlineScreen"
         component={GoOnlineScreen}
       />
+      <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />
     </DrawerNavigation.Navigator>
   );
 };

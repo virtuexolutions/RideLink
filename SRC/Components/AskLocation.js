@@ -23,6 +23,7 @@ const AskLocation = ({
   locationType,
   dropLocation,
   pickupLocation,
+  fromfareScreen,
 }) => {
   return (
     <View style={[styles.location_View, main_view_style]}>

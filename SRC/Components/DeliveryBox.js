@@ -17,7 +17,7 @@ const DeliveryBox = ({data}) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        data?.name == 'Ride'
+        data?.name == 'Ride';
         navigationService.navigate('RequestScreen');
       }}
       style={[
@@ -38,6 +38,10 @@ const DeliveryBox = ({data}) => {
           },
         ]}>
         <CustomImage
+          onPress={() => {
+            data?.name == 'Ride';
+            navigationService.navigate('RequestScreen');
+          }}
           style={{height: '100%', width: '100%', resizeMode: 'contain'}}
           source={data.image}
         />

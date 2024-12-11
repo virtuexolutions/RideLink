@@ -1,8 +1,11 @@
 import {
+  Alert,
   FlatList,
   ImageBackground,
+  Platform,
   SafeAreaView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -47,9 +50,11 @@ const RequestScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
   const [completePayment, setCompletePayment] = useState(false);
-  const [fare ,setFare] = useState(0)
-  console.log("🚀 ~ RequestScreen ~ fare:", fare)
-  const [time ,setTime] =useState(0)
+  const [fare, setFare] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ fare:', fare);
+  const [time, setTime] = useState(0);
+  const [distance, setDistance] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ distance:', parseInt(distance));
 
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
@@ -99,9 +104,9 @@ const RequestScreen = () => {
       const distanceInMiles = km / 1.60934;
       console.log('==================> distance ', distanceInMiles);
       const calculatedFare = calculateFare(distanceInMiles);
-      console.log("🚀 ~ useEffect ~ calculatedFare:", calculatedFare)
+      console.log('🚀 ~ useEffect ~ calculatedFare:', calculatedFare);
       setFare(calculatedFare);
-      // setDistance(km);
+      setDistance(km);
       const getTravelTime = async () => {
         // const apikey ='AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'
         const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
@@ -332,10 +337,19 @@ const RequestScreen = () => {
             text={'CONFIRM NOW'}
             marginBottom={moderateScale(10, 0.6)}
             onPress={() =>
-              navigationService.navigate('FareScreen', {
-                pickup: pickupLocation,
-                dropoff: dropLocation,
-              })
+              pickupLocation && dropLocation == {}
+                ? Platform.OS == 'android'
+                  ? ToastAndroid.show(
+                      ' empty feilds is required',
+                      ToastAndroid.SHORT,
+                    )
+                  : Alert.alert('empty feilds is required')
+                : navigationService.navigate('FareScreen', {
+                    distance: parseInt(distance),
+                    fare: Number(fare),
+                    pickup: pickupLocation,
+                    dropoff: dropLocation,
+                  })
             }
           />
         </View>

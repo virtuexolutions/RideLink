@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
@@ -6,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import React, {useEffect, useState} from 'react';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {moderateScale} from 'react-native-size-matters';
 import Pulse from 'react-native-pulse';
 import Color from '../Assets/Utilities/Color';
@@ -20,12 +21,68 @@ import RequestModal from '../Components/RequestModal';
 import DeclineModal from '../Components/DeclineModal';
 import navigationService from '../navigationService';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 
-const MapScreen = () => {
+const MapScreen = props => {
+  const pickupLocation = props?.route?.params?.pickupLocation;
+  console.log('🚀 ~ MapScreen ~ pickupLocation:', pickupLocation);
+  const dropoffLocation = props?.route?.params?.dropoffLocation;
+  console.log('🚀 ~ MapScreen ~ dropoffLocation:', dropoffLocation);
+  const Nearestcab = props?.route?.params?.isEnabled;
+  const paymentMethod = props?.route?.params?.paymentMethod;
+  const fare = props?.route?.params?.fare;
+  const distance = props?.route?.params?.distance;
+  console.log('🚀 ~ MapScreen ~ distance:', fare);
+
+  const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ MapScreen ~ token:', token);
   const navigation = useNavigation();
-  const [price, setPrice] = useState(50);
+  const [price, setPrice] = useState(fare);
   const [modalVisible, setModalVisible] = useState(false);
   const [declineModal, setDeclineModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rideId, setRideID] = useState('');
+
+  const requestforRide = async () => {
+    const url = 'auth/bookride';
+    const body = {
+      location_from: pickupLocation?.name,
+      location_to: dropoffLocation?.name,
+      dropoff_location_lat: dropoffLocation?.lat,
+      dropoff_location_lng: dropoffLocation?.lng,
+      pickup_location_lat: pickupLocation?.lat,
+      pickup_location_lng: pickupLocation?.lng,
+      distance: distance,
+      amount: fare,
+      payment_method: paymentMethod,
+      nearest_cab: Nearestcab,
+    };
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
+
+    if (response != undefined) {
+      setRideID(response?.data.data?.id);
+      // response?.data?.data?.status == 'accept' &&setModalVisible(true)
+    }
+  };
+
+  const rideUpdate = async () => {
+    const url = `auth/ride/${rideId}`;
+
+    const response = await Get(url, token);
+    if (response != undefined) {
+    }
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      rideId != '' && rideUpdate();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <ImageBackground
@@ -93,9 +150,18 @@ const MapScreen = () => {
             borderRadius={moderateScale(30, 0.3)}
             textColor={Color.white}
             textTransform={'none'}
-            text={'RAISE FARE'}
+            text={
+              isLoading ? (
+                <ActivityIndicator size={'small'} color={Color.white} />
+              ) : (
+                'RAISE FARE'
+              )
+            }
             isBold
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              requestforRide();
+              // setModalVisible(true)
+            }}
           />
         </View>
         <RequestModal
