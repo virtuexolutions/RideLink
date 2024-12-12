@@ -10,12 +10,19 @@ import CustomText from '../Components/CustomText';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 
-const PaymentScreen = () => {
+const PaymentScreen = props => {
+  const nearestcab = props?.route?.param?.Nearestcab;
+  const fare = props?.route?.params?.fare;
+  const payment_method = props?.route?.params?.paymentMethod;
+  
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={'Offer Your Fare'} />
       <View style={styles.main_view}>
-        <PaymentMethodCard />
+        <PaymentMethodCard
+          paymentMethod={payment_method}
+          isEnabled={nearestcab}
+        />
         <CreditCardComponent />
         <CustomText isBold style={styles.heading}>
           Details
@@ -23,22 +30,22 @@ const PaymentScreen = () => {
         <View style={styles.card}>
           <View style={[styles.text_view, {marginTop: 0}]}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>$ 50.00</CustomText>
+            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
           </View>
           <View style={styles.text_view}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>$ 50.00</CustomText>
+            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
           </View>
           <View style={styles.text_view}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>$ 50.00</CustomText>
+            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
           </View>
         </View>
         <View style={styles.text_view}>
           <CustomText isBold style={[styles.heading, {marginTop: 0}]}>
             Total
           </CustomText>
-          <CustomText style={styles.text}>$ 54.00</CustomText>
+          <CustomText style={styles.text}>{`$${fare}`}</CustomText>
         </View>
         <CustomButton
           width={windowWidth * 0.9}

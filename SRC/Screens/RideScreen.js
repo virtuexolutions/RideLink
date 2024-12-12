@@ -9,19 +9,40 @@ import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 
-const RideScreen = () => {
+const RideScreen = props => {
+  const rideStatus = props?.route?.params?.rideStatus;
+  const rideId = props?.route?.params?.rideId;
+  const pickupLocation = props?.route?.params?.pickupLocation;
+  const dropoffLocation = props?.route?.params?.dropoffLocation;
+  const Nearestcab = props?.route?.params?.Nearestcab;
+  const paymentMethod = props?.route?.params?.paymentMethod;
+  const fare = props?.route?.params?.fare;
+
+  const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const {user_type} = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   // useEffect(() => {
   //   setTimeout(() => {
   //     navigationService.navigate('PaymentScreen');
   //   }, 3000);
   // }, []);
+
+  const rideRquestCancel = async () => {
+    const url = `auth/customer/ride_update/${rideId}`;
+    setIsLoading(true);
+    const response = await Post(url, {status: rideStatus}, apiHeader(token));
+    return console.log('🚀 ~ rideRquestCancel ~ response:', response?.data);
+    setIsLoading(false);
+    if (response != undefined) {
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe_are}>
@@ -121,7 +142,7 @@ const RideScreen = () => {
                       style={{left: 5}}
                     />
                     <CustomText style={styles.text}>
-                      Fannie Street San Angelo, Texas
+                      {pickupLocation?.name}
                     </CustomText>
                   </View>
                   <View
@@ -137,7 +158,7 @@ const RideScreen = () => {
                       style={{left: 5}}
                     />
                     <CustomText style={styles.text}>
-                      Neville Street Salem, Colorado
+                      {dropoffLocation?.name}
                     </CustomText>
                   </View>
                   <View
@@ -158,7 +179,13 @@ const RideScreen = () => {
                         ADD ADDITIONAL TIME
                       </CustomText>
                     </TouchableOpacity>
-                    <CustomText style={styles.text2}>CANCEL RIDE</CustomText>
+                    <CustomText
+                      onPress={() => {
+                        rideRquestCancel();
+                      }}
+                      style={styles.text2}>
+                      CANCEL RIDE
+                    </CustomText>
                   </View>
                   <CustomButton
                     text={'PAY Now'}
@@ -171,7 +198,13 @@ const RideScreen = () => {
                     bgColor={Color.darkBlue}
                     textTransform={'capitalize'}
                     isBold
-                    onPress={() => navigationService.navigate('PaymentScreen')}
+                    onPress={() =>
+                      navigationService.navigate('PaymentScreen', {
+                        Nearestcab: Nearestcab,
+                        paymentMethod: paymentMethod,
+                        fare: fare,
+                      })
+                    }
                   />
                   {user_type === 'Rider' && (
                     <CustomButton

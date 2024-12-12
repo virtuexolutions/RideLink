@@ -20,29 +20,27 @@ import CustomButton from '../Components/CustomButton';
 import RequestModal from '../Components/RequestModal';
 import DeclineModal from '../Components/DeclineModal';
 import navigationService from '../navigationService';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 
 const MapScreen = props => {
   const pickupLocation = props?.route?.params?.pickupLocation;
-  console.log('🚀 ~ MapScreen ~ pickupLocation:', pickupLocation);
   const dropoffLocation = props?.route?.params?.dropoffLocation;
-  console.log('🚀 ~ MapScreen ~ dropoffLocation:', dropoffLocation);
   const Nearestcab = props?.route?.params?.isEnabled;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const fare = props?.route?.params?.fare;
   const distance = props?.route?.params?.distance;
-  console.log('🚀 ~ MapScreen ~ distance:', fare);
 
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ MapScreen ~ token:', token);
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [price, setPrice] = useState(fare);
   const [modalVisible, setModalVisible] = useState(false);
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
+  const [rideStatus, setRideStatus] = useState('');
 
   const requestforRide = async () => {
     const url = 'auth/bookride';
@@ -65,15 +63,19 @@ const MapScreen = props => {
 
     if (response != undefined) {
       setRideID(response?.data.data?.id);
-      // response?.data?.data?.status == 'accept' &&setModalVisible(true)
     }
   };
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
-
     const response = await Get(url, token);
+    console.log(
+      '🚀 ~ rideUpdate ~ response =====================:',
+      response?.data,
+    );
     if (response != undefined) {
+      response?.data?.ride_info?.status == 'pending' && setModalVisible(true);
+      setRideStatus(response?.data?.ride_info?.status);
     }
   };
   useEffect(() => {
@@ -81,7 +83,7 @@ const MapScreen = props => {
       rideId != '' && rideUpdate();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safe_are}>
@@ -159,6 +161,7 @@ const MapScreen = props => {
             }
             isBold
             onPress={() => {
+              // rideUpdate()
               requestforRide();
               // setModalVisible(true)
             }}
@@ -171,7 +174,17 @@ const MapScreen = props => {
             setModalVisible(false);
             setDeclineModal(true);
           }}
-          onPressAccept={() => navigationService.navigate('RideScreen')}
+          onPressAccept={() =>
+            navigationService.navigate('RideScreen', {
+              rideStatus: rideStatus,
+              rideId: rideId,
+              pickupLocation: pickupLocation,
+              dropoffLocation: dropoffLocation,
+              Nearestcab: Nearestcab,
+              paymentMethod: paymentMethod,
+              fare :fare ,
+            })
+          }
         />
         <DeclineModal
           isVisible={declineModal}
