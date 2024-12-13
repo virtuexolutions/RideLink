@@ -31,6 +31,12 @@ import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
 import Profile from './Screens/Profile';
 import EditProfile from './Screens/EditProfile';
 import {enableScreens} from 'react-native-screens';
+import MyWallet from './Screens/MyWallet';
+import PrivacyPolicy from './Screens/PrivacyPolicy';
+import TermsAndConditions from './Screens/TermsAndConditions';
+import HelpAndSupport from './Screens/HelpAndSupport';
+import ReferFriendScreen from './Screens/ReferFriendScreen';
+import LearningCenter from './Screens/LearningCenter';
 
 enableScreens();
 const AppNavigator = () => {
@@ -77,7 +83,20 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
-          <RootNav.Screen name="RideRequest" component={RideRequest} />
+          <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+          <RootNav.Screen
+            name="TermsAndConditions"
+            component={TermsAndConditions}
+          />
+          <RootNav.Screen name="HelpAndSupport" component={HelpAndSupport} />
+          <RootNav.Screen
+            name="ReferFriendScreen"
+            component={ReferFriendScreen}
+          />
+
+          {/* <RootNav.Screen name="RideRequest" component={RideRequest} /> */}
+          <RootNav.Screen name="MyWallet" component={MyWallet} />
+
           <RootNav.Screen
             name="PassengerDetails"
             component={PassengerDetails}
@@ -91,6 +110,7 @@ const AppNavigator = () => {
             name="ChooseDeclineReasonScreen"
             component={ChooseDeclineReasonScreen}
           />
+          <RootNav.Screen name="LearningCenter" component={LearningCenter} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -227,13 +247,11 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="RideRequest" component={RideRequest} />
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
-      <DrawerNavigation.Screen name="Profile" component={Profile} />
+
       <DrawerNavigation.Screen
         name="RecieptScreen"
         component={SendTripRecieptScreen}
       />
-      {/* <DrawerNavigation.Screen name="Profile" component={Profile} /> */}
-
       <DrawerNavigation.Screen
         name="PassengerDetails"
         component={PassengerDetails}

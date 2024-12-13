@@ -219,7 +219,8 @@ const Header = props => {
           }}>
           <CustomImage
             onPress={() => {
-              dispatch(setUserLogoutAuth());
+              // navigation.navigate('Profile')
+              // dispatch(setUserLogoutAuth());
             }}
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}

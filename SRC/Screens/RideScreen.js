@@ -13,6 +13,8 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {TimePicker, ValueMap} from 'react-native-simple-time-picker';
 
 const RideScreen = props => {
   const rideStatus = props?.route?.params?.rideStatus;
@@ -28,11 +30,8 @@ const RideScreen = props => {
   const {user_type} = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigationService.navigate('PaymentScreen');
-  //   }, 3000);
-  // }, []);
+  const [timePicker, setTimepicker] = useState(false);
+  const [selectedTime, setSelectedTime] = useState('');
 
   const rideRquestCancel = async () => {
     const url = `auth/customer/ride_update/${rideId}`;
@@ -42,6 +41,20 @@ const RideScreen = props => {
     setIsLoading(false);
     if (response != undefined) {
     }
+  };
+  const handleConfirm = time => {
+    // Format the time here if needed
+    setSelectedTime(time.toLocaleTimeString());
+    // hideTimePicker();
+  };
+
+  const [value, setValue] = useState({
+    hours: 1,
+    minutes: 0,
+    seconds: 0,
+  });
+  const handleChange = newValue => {
+    setValue(newValue);
   };
 
   return (
@@ -141,7 +154,7 @@ const RideScreen = props => {
                       color={Color.veryLightGray}
                       style={{left: 5}}
                     />
-                    <CustomText style={styles.text}>
+                    <CustomText numberOfLines={1} style={styles.text}>
                       {pickupLocation?.name}
                     </CustomText>
                   </View>
@@ -157,7 +170,7 @@ const RideScreen = props => {
                       color={Color.veryLightGray}
                       style={{left: 5}}
                     />
-                    <CustomText style={styles.text}>
+                    <CustomText numberOfLines={1} style={styles.text}>
                       {dropoffLocation?.name}
                     </CustomText>
                   </View>
@@ -175,7 +188,11 @@ const RideScreen = props => {
                         color={Color.grey}
                         size={moderateScale(10, 0.6)}
                       />
-                      <CustomText style={styles.text2}>
+                      <CustomText
+                        onPress={() => {
+                          setTimepicker(true);
+                        }}
+                        style={styles.text2}>
                         ADD ADDITIONAL TIME
                       </CustomText>
                     </TouchableOpacity>
@@ -242,6 +259,29 @@ const RideScreen = props => {
             )}
           </>
         )}
+        {/* <TimePicker value={value} onChange={handleChange} />; */}
+        {/* <View style={styles.container}>
+          <DateTimePickerModal
+            isDarkModeEnabled={true}
+
+            // pickerComponentStyleIOS={{}}
+            // timePickerModeAndroid="false"
+            isVisible={timePicker}
+            mode="time" // Use 'time' mode for time picking
+            onConfirm={handleConfirm}
+            // onCancel={hidePicker}
+            customHeaderIOS={{
+              backgroundColor : 'red'
+            }}
+            pickerComponentStyleIOS={{
+              datePickerIOS: styles.pickerComponentStyleIOS, // Custom styles for iOS picker
+              datePicker: styles.datePickerCommon, // Common styles for both platforms
+              dateInput: styles.dateInput, // Optional input styling
+            }}
+            // onCancel={hideTimePicker}
+          />
+          {selectedTime && <Text>Selected Time: {selectedTime}</Text>}
+        </View> */}
       </View>
     </SafeAreaView>
   );
@@ -321,5 +361,20 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(35, 0.6),
     color: Color.black,
     textAlign: 'center',
+  },
+  pickerComponentStyleIOS: {
+    backgroundColor: '#f0f0f0', // Light background
+    borderRadius: 10, // Rounded edges
+  },
+  datePickerCommon: {
+    backgroundColor: 'red',
+    width: '80%', // Common picker width
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: '#fff',
   },
 });

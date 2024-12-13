@@ -19,6 +19,8 @@ import CustomButton from '../Components/CustomButton';
 import AskLocation from '../Components/AskLocation';
 import navigationService from '../navigationService';
 import {getDistance} from 'geolib';
+import MapViewDirections from 'react-native-maps-directions';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
 const RequestScreen = () => {
   const cablist = [
@@ -43,9 +45,9 @@ const RequestScreen = () => {
       price: '$ 30.00',
     },
   ];
-  const [pickupLocation, setPickupLocation] = useState({});
+  const [pickupLocation, setPickupLocation] = useState(null);
   console.log('🚀 ~ RequestScreen ~ pickupLocation:', pickupLocation);
-  const [dropLocation, setDropLocation] = useState({});
+  const [dropLocation, setDropLocation] = useState(null);
   console.log('🚀 ~ RequestScreen ~ dropLocation:', dropLocation);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
@@ -56,6 +58,7 @@ const RequestScreen = () => {
   const [distance, setDistance] = useState(0);
   console.log('🚀 ~ RequestScreen ~ distance:', parseInt(distance));
 
+  const origin = {latitude: 37.3285792, longitude: -122.0356209};
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
     2: {
@@ -180,6 +183,52 @@ const RequestScreen = () => {
 
   return (
     <SafeAreaView style={styles.safearea_view}>
+      {/* <MapView
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        region={{
+          latitude: 37.3318456,
+          longitude: -122.0296002,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}>
+        {Object.keys(pickupLocation).length > 0 &&
+        Object.keys(dropLocation).length > 0 ? (
+          <>
+            <Marker
+              coordinate={{
+                longitude: pickupLocation?.lat,
+                latitude: pickupLocation?.lng,
+              }}
+              style={{width: 15, height: 10}}
+            />
+            <MapViewDirections
+              origin={pickupLocation}
+              destination={dropLocation}
+              strokeColor="blue"
+              strokeWidth={10}
+              apikey="AIzaSyCHuiMaFjSnFTQfRmAfTp9nZ9VpTICgNrc"
+              onStart={params => {
+                console.log(
+                  `Started routing between "${params.origin}" and "${params.destination}"`,
+                );
+              }}
+              tappable={true}
+            />
+          </>
+        ) : null}
+        {Object.keys(dropLocation).length > 0 &&
+          isValidCoordinate(dropLocation) && (
+            <Marker
+              coordinate={{
+                latitude: dropLocation?.lat,
+                longitude: dropLocation?.lng,
+              }}
+              title="Drop-off Location"
+              pinColor="green"
+            />
+          )}
+      </MapView> */}
       <ImageBackground
         style={styles.background_view}
         source={require('../Assets/Images/Map.png')}>
@@ -237,96 +286,6 @@ const RequestScreen = () => {
             isIcon
             islocation
           />
-          {/* <View style={styles.location_View}>
-            <View style={styles.location_subview}>
-              <CustomText style={styles.location_head}>
-                Where are you Going
-              </CustomText>
-              <View style={styles.icon_view}>
-                <Icon
-                  name="keyboard-arrow-down"
-                  as={MaterialIcons}
-                  size={moderateScale(12, 0.6)}
-                  color={Color.black}
-                />
-              </View>
-            </View>
-            <View style={styles.seatView}>
-              <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: moderateScale(5, 0.6),
-                  }}>
-                  <Icon
-                    name="map-marker"
-                    as={FontAwesome}
-                    size={moderateScale(16, 0.6)}
-                    color={Color.yellow}
-                  />
-                  <CustomText
-                    style={[
-                      styles.text1,
-                      {
-                        paddingBottom: moderateScale(10, 0.6),
-                      },
-                    ]}>
-                    {'284 Long Street Gainesville'}
-                  </CustomText>
-                </View>
-                <CustomText
-                  isBold
-                  style={[
-                    styles.text1,
-                    {
-                      position: 'absolute',
-                      color: 'black',
-                      top: 25,
-                      marginLeft: moderateScale(-5, 0.6),
-                      transform: [{rotate: '-90deg'}],
-                    },
-                  ]}>
-                  -----
-                </CustomText>
-                <View
-                  style={{
-                    width: windowWidth * 0.75,
-                    height: moderateScale(0.5, 0.5),
-                    backgroundColor: Color.grey,
-                    marginLeft: moderateScale(14, 0.6),
-                  }}
-                />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: moderateScale(10, 0.6),
-                  }}>
-                  <Icon
-                    name="map-marker"
-                    as={FontAwesome}
-                    size={moderateScale(16, 0.6)}
-                    color={Color.red}
-                  />
-                  <CustomText style={styles.text1}>
-                    {'I’m going to ....'}
-                  </CustomText>
-                  <TouchableOpacity
-                    style={{
-                      position: 'absolute',
-                      right: -10,
-                      marginTop: moderateScale(10, 0.6),
-                    }}>
-                    <Icon
-                      name="plus"
-                      as={FontAwesome}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.black}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View> */}
           <CustomButton
             width={windowWidth * 0.9}
             height={windowHeight * 0.075}
@@ -337,19 +296,19 @@ const RequestScreen = () => {
             text={'CONFIRM NOW'}
             marginBottom={moderateScale(10, 0.6)}
             onPress={() =>
-              pickupLocation && dropLocation == {}
-                ? Platform.OS == 'android'
-                  ? ToastAndroid.show(
-                      ' empty feilds is required',
-                      ToastAndroid.SHORT,
-                    )
-                  : Alert.alert('empty feilds is required')
-                : navigationService.navigate('FareScreen', {
+              pickupLocation || dropLocation != null
+                ? navigationService.navigate('FareScreen', {
                     distance: parseInt(distance),
                     fare: Number(fare),
                     pickup: pickupLocation,
                     dropoff: dropLocation,
                   })
+                : Platform.OS == 'android'
+                ? ToastAndroid.show(
+                    ' empty feilds is required',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('empty feilds is required')
             }
           />
         </View>

@@ -24,6 +24,7 @@ import {editProfileSchema} from '../Constant/schema';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {setUserData} from '../Store/slices/common';
+import CustomText from '../Components/CustomText';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -89,23 +90,42 @@ const Profile = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={styles.back}>
-        <Icon
-          name="arrowleft"
-          as={AntDesign}
-          style={styles.icon2}
-          color={Color.white}
-          size={moderateScale(20, 0.3)}
+      <View
+        style={{
+          flexDirection: 'row',
+          width: windowWidth,
+          backgroundColor: 'white',
+          paddingHorizontal: moderateScale(10, 0.6),
+          paddingTop: moderateScale(5, 0.6),
+        }}>
+        <TouchableOpacity
+          activeOpacity={0.8}
           onPress={() => {
             navigation.goBack();
           }}
-        />
-      </TouchableOpacity>
+          style={styles.back}>
+          <Icon
+            name="arrowleft"
+            as={AntDesign}
+            style={styles.icon2}
+            color={Color.white}
+            size={moderateScale(20, 0.3)}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </TouchableOpacity>
+        <CustomText
+          style={{
+            fontSize: moderateScale(18, 0.6),
+            color: Color.black,
+            width: windowWidth * 0.8,
+            textAlign: 'center',
+            paddingTop: moderateScale(8, 0.6),
+          }}>
+          account
+        </CustomText>
+      </View>
       <View style={styles.main}>
         {/* <Formik
           validationSchema={editProfileSchema}
@@ -300,9 +320,9 @@ const styles = ScaledSheet.create({
     borderRadius: moderateScale(5, 0.6),
     borderWidth: 0.5,
     borderColor: '#FFFFFF',
-    position: 'absolute',
-    left: moderateScale(10, 0.6),
-    top: moderateScale(10, 0.6),
+    // position: 'absolute',
+    // left: moderateScale(10, 0.6),
+    // top: moderateScale(10, 0.6),
     zIndex: 1,
     margin: 5,
     alignItems: 'center',

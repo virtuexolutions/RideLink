@@ -69,7 +69,7 @@ const MapScreen = props => {
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
     const response = await Get(url, token);
-    console.log(
+     console.log(
       '🚀 ~ rideUpdate ~ response =====================:',
       response?.data,
     );
@@ -182,7 +182,7 @@ const MapScreen = props => {
               dropoffLocation: dropoffLocation,
               Nearestcab: Nearestcab,
               paymentMethod: paymentMethod,
-              fare :fare ,
+              fare: fare,
             })
           }
         />

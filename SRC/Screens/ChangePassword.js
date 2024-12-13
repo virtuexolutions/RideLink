@@ -51,25 +51,28 @@ const ChangePassword = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={styles.back}>
-        <Icon
-          name="arrowleft"
-          as={AntDesign}
-          style={styles.icon2}
-          color={Color.white}
-          size={moderateScale(20, 0.3)}
+      <View style={styles.header}>
+        <TouchableOpacity
+          activeOpacity={0.8}
           onPress={() => {
             navigation.goBack();
           }}
-        />
-      </TouchableOpacity>
+          style={styles.back}>
+          <Icon
+            name="arrowleft"
+            as={AntDesign}
+            style={styles.icon2}
+            color={Color.white}
+            size={moderateScale(20, 0.3)}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </TouchableOpacity>
+        <CustomText style={styles.headert}>change password</CustomText>
+      </View>
       <View style={styles.main_container}>
-        <CustomText style={styles.txt5}>Change Password</CustomText>
+        {/* <CustomText style={styles.txt5}>Change Password</CustomText> */}
         <Formik
           validationSchema={changePasswordSchema}
           initialValues={{
@@ -212,9 +215,9 @@ const styles = ScaledSheet.create({
     borderRadius: moderateScale(5, 0.6),
     borderWidth: 0.5,
     borderColor: '#FFFFFF',
-    position: 'absolute',
-    left: moderateScale(10, 0.6),
-    top: moderateScale(10, 0.6),
+    // position: 'absolute',
+    // left: moderateScale(10, 0.6),
+    // top: moderateScale(10, 0.6),
     zIndex: 1,
     margin: 5,
     alignItems: 'center',
@@ -226,5 +229,19 @@ const styles = ScaledSheet.create({
     color: 'red',
     alignSelf: 'flex-start',
     // backgroundColor: 'red',
+  },
+  header: {
+    flexDirection: 'row',
+    width: windowWidth,
+    backgroundColor: 'white',
+    paddingHorizontal: moderateScale(10, 0.6),
+    paddingTop: moderateScale(5, 0.3),
+  },
+  headert: {
+    fontSize: moderateScale(18, 0.6),
+    color: Color.black,
+    width: windowWidth * 0.8,
+    textAlign: 'center',
+    marginTop: moderateScale(8, 0.6),
   },
 });

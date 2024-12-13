@@ -68,12 +68,12 @@ const RideRequest = ({route}) => {
     <SafeAreaView style={styles.safe_are}>
       <Header title={decline ? 'Cancel Ride' : 'Ride Request'} />
       <View style={styles.main_view}>
-        {/* <View style={[styles.map_view]}>
+        <View style={[styles.map_view]}>
           <CustomImage
             source={require('../Assets/Images/map3.png')}
             styles={styles.image}
           />
-        </View> */}
+        </View>
         {/* <MapView
           provider={PROVIDER_GOOGLE} 
           style={styles.map}

@@ -1,5 +1,5 @@
 import {DrawerActions, useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
@@ -8,13 +8,17 @@ import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import navigationService from '../navigationService';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setUserLogOut} from '../Store/slices/common';
 import {setUserLogoutAuth, SetUserRole} from '../Store/slices/auth-slice';
 import {setUserToken} from '../Store/slices/auth';
+// import ReferFriendModal from '../Screens/ReferFriendScreen'
 
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
+  const {user_type} = useSelector(state => state.authReducer);
+  console.log('🚀 ~ Drawer ~ user_type:', user_type);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
   const adminData = [
     {
@@ -28,7 +32,8 @@ const Drawer = React.memo(() => {
       id: 2,
       name: 'Refer Friends',
       onPress: () => {
-        navigation.navigate('PaymentHistory');
+        // setIsModalVisible(true);
+        navigation.navigate('ReferFriendScreen');
       },
     },
     {
@@ -38,13 +43,21 @@ const Drawer = React.memo(() => {
         navigation.navigate('MyJourneys');
       },
     },
-    {
-      id: 4,
-      name: 'Earnings',
-      onPress: () => {
-        navigation.navigate('Earningsscreen');
-      },
-    },
+    user_type == 'Customer'
+      ? {
+          id: 4,
+          name: 'wallet',
+          onPress: () => {
+            navigation.navigate('MyWallet');
+          },
+        }
+      : {
+          id: 4,
+          name: 'Earnings',
+          onPress: () => {
+            navigation.navigate('Earningsscreen');
+          },
+        },
     {
       id: 5,
       name: 'Accounts ',
@@ -57,6 +70,20 @@ const Drawer = React.memo(() => {
       name: 'Change password ',
       onPress: () => {
         navigation.navigate('ChangePassword');
+      },
+    },
+    {
+      id: 6,
+      name: 'privacy policy ',
+      onPress: () => {
+        navigation.navigate('PrivacyPolicy');
+      },
+    },
+    {
+      id: 6,
+      name: 'terms & conditions',
+      onPress: () => {
+        navigation.navigate('TermsAndConditions');
       },
     },
   ];
@@ -109,7 +136,7 @@ const Drawer = React.memo(() => {
                 style={{
                   width: windowWidth * 0.7,
                   borderColor: Color.black,
-                  margin: moderateScale(13, 0.3),
+                  margin: moderateScale(10, 0.3),
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -127,6 +154,9 @@ const Drawer = React.memo(() => {
         </View>
         <View style={styles.end_view}>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('HelpAndSupport');
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
@@ -144,6 +174,9 @@ const Drawer = React.memo(() => {
             </CustomText>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('LearningCenter');
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,

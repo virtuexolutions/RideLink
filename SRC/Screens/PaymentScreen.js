@@ -15,6 +15,7 @@ const PaymentScreen = props => {
   const fare = props?.route?.params?.fare;
   const payment_method = props?.route?.params?.paymentMethod;
   
+  
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={'Offer Your Fare'} />
@@ -30,7 +31,7 @@ const PaymentScreen = props => {
         <View style={styles.card}>
           <View style={[styles.text_view, {marginTop: 0}]}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
+            <CustomText style={styles.text}>{`$${fare}`}</CustomText>          
           </View>
           <View style={styles.text_view}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
