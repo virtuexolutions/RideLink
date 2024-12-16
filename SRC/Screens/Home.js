@@ -8,8 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import React, {useEffect, useState} from 'react';
+import {
+  requestLocationPermission,
+  windowHeight,
+  windowWidth,
+} from '../Utillity/utils';
 import {moderateScale, s} from 'react-native-size-matters';
 import Header from '../Components/Header';
 import Color from '../Assets/Utilities/Color';
@@ -26,13 +30,15 @@ import {Icon, ScrollView} from 'native-base';
 import navigationService from '../navigationService';
 import {useSelector} from 'react-redux';
 import {Get} from '../Axios/AxiosInterceptorFunction';
+import {useIsFocused} from '@react-navigation/native';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
+  const isFocused = useIsFocused()
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
-  const [isLoading ,setIsLoading] = useState(false)
-  const [ requestList ,setRequestList] =useState([])
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestList, setRequestList] = useState([]);
   const deliveryList = [
     {
       id: 1,
@@ -124,6 +130,7 @@ const Home = () => {
     if (response != undefined) {
     }
   };
+
 
   return (
     <SafeAreaView style={styles.safe_area}>

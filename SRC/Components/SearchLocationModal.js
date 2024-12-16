@@ -1,25 +1,41 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {requestLocationPermission, windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import Modal from 'react-native-modal';
 import CustomText from './CustomText';
 import {moderateScale} from 'react-native-size-matters';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import 'react-native-get-random-values';
+
+import Geolocation from 'react-native-geolocation-service';
 // import { v4 as uuidv4 } from 'uuid';
 
 const SearchLocationModal = ({
   isModalVisible,
   setIsModalVisible,
-  setLocation,
+  setAddress,
   locationType,
   setPickupLocation,
   setdropOffLocation,
   onPressCurrentLocation,
   isyourLocation = false,
+  setcurrentPossition,
+  onPress,
 }) => {
   console.log('🚀 ~ isModalVisible:', isModalVisible);
+  // const getCurrentLoaction =async () =>{
+  // try{
+  //   console.log('from get current location ====== try ')
+  // }
+  // catch{
+  //   console.log('from get current location ====== catch  ')
+
+  // }
+  // }
+
+
+
   return (
     <Modal
       hasBackdrop={true}
@@ -43,6 +59,7 @@ const SearchLocationModal = ({
         </CustomText>
         {locationType == 'pickup' && (
           <TouchableOpacity
+      
             onPress={onPressCurrentLocation}
             style={{
               width: windowWidth * 0.8,

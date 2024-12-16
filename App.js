@@ -19,9 +19,10 @@ import {
 } from './SRC/Utillity/utils';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import AppNavigator from './SRC/appNavigation';
-import { SafeAreaView, Text } from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
 import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
+import { useIsFocused } from '@react-navigation/native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -47,8 +48,8 @@ const App = () => {
             </Text>
           </SafeAreaView> */}
           <MainContainer />
-          
-           {/* <SendTripRecieptScreen/> */}
+
+          {/* <SendTripRecieptScreen/> */}
         </NativeBaseProvider>
       </PersistGate>
     </Provider>
@@ -57,16 +58,17 @@ const App = () => {
 };
 
 const MainContainer = () => {
-  const dispatch = useDispatch();
+  // const isFocused = useIsFocused()
+  // const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   async function GetPermission() {
-  //     await requestCameraPermission();
-  //     await requestWritePermission();
-  //     await requestLocationPermission();
-  //   }
-  //   GetPermission();
-  // }, []);
+  useEffect(() => {
+    async function GetPermission() {
+      await requestCameraPermission();
+      await requestWritePermission();
+      await requestLocationPermission();
+    }
+    GetPermission();
+  }, []);
 
   const [isloading] = useloader(true);
   if (isloading == true) {

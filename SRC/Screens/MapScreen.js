@@ -41,6 +41,7 @@ const MapScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
   const [rideStatus, setRideStatus] = useState('');
+  
 
   const requestforRide = async () => {
     const url = 'auth/bookride';

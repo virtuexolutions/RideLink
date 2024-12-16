@@ -1,10 +1,13 @@
 import React from 'react';
 import {Dimensions, PermissionsAndroid} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {setLoaction} from '../Store/slices/common';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const requestLocationPermission = async () => {
+  const dispatch = useDispatch();
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -14,6 +17,8 @@ const requestLocationPermission = async () => {
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      // console.log("🚀 ~ requestLocationPermission ~ granted:", granted)
+      dispatch(setLoaction(granted));
       console.log('You can use the Location');
     } else {
       console.log('Location permission denied');

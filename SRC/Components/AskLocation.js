@@ -10,6 +10,10 @@ import {moderateScale} from 'react-native-size-matters';
 import SearchLocationModal from './SearchLocationModal';
 
 const AskLocation = ({
+  setCurrentPosition,
+  currentPosition,
+  address,
+  setAddress,
   islocation,
   isIcon,
   main_view_style,
@@ -23,6 +27,8 @@ const AskLocation = ({
   locationType,
   dropLocation,
   pickupLocation,
+  onPress,
+  onPressCurrentLocation,
   fromfareScreen,
 }) => {
   return (
@@ -155,6 +161,11 @@ const AskLocation = ({
         </View>
       )}
       <SearchLocationModal
+        onPressonPressCurrentLocation={onPressCurrentLocation}
+        setcurrentPossition={setCurrentPosition}
+        currentPosition={currentPosition}
+        setAddress={setAddress}
+        address={address}
         locationType={locationType}
         setLocationType={setLocationType}
         isModalVisible={isModalVisible}
