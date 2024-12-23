@@ -25,15 +25,16 @@ import navigationService from '../navigationService';
 import {getDistance, isValidCoordinate} from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-
+import haversine from 'haversine';
 import Geolocation from 'react-native-geolocation-service';
 import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
+import {Get} from '../Axios/AxiosInterceptorFunction';
 
 const RequestScreen = () => {
   const isFocused = useIsFocused();
+  const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
-  console.log('🚀 ~ RequestScreen ~ mapRef:', mapRef);
   const cablist = [
     {
       id: 1,
@@ -58,8 +59,8 @@ const RequestScreen = () => {
   ];
   const locationPermission = useSelector(state => state.commonReducer.location);
   const [pickupLocation, setPickupLocation] = useState({});
+  console.log('🚀 ~ RequestScreen ~ pickupLocation:', pickupLocation);
   const [dropLocation, setDropLocation] = useState({});
-  console.log('🚀 ~ RequestScreen ~ dropLocation:', dropLocation);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
   const [completePayment, setCompletePayment] = useState(false);
@@ -69,8 +70,6 @@ const RequestScreen = () => {
   const [address, setAddress] = useState('');
   const [currentPosition, setCurrentPosition] = useState('');
   const [nearestRider, setNearestRider] = useState([]);
-  console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
-
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
@@ -79,6 +78,7 @@ const RequestScreen = () => {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
+  console.log("🚀 ~ RequestScreen ~ destination:", destination)
 
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
@@ -128,7 +128,6 @@ const RequestScreen = () => {
       const distanceInMiles = km / 1.60934;
       console.log('==================> distance ', distanceInMiles);
       const calculatedFare = calculateFare(distanceInMiles);
-      console.log('🚀 ~ useEffect ~ calculatedFare:', calculatedFare);
       setFare(calculatedFare);
       setDistance(km);
       const getTravelTime = async () => {
@@ -138,7 +137,6 @@ const RequestScreen = () => {
           console.log('============= > frrom try');
           const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
           const response = await fetch(url);
-          console.log('🚀 ~ getTravelTime ~ response:', response?.data);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -227,57 +225,108 @@ const RequestScreen = () => {
     }
   };
 
-  const nearestcab = [
-    {
-      id: 1,
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      name: 'Rider 1',
-    },
-    {
-      id: 2,
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      name: 'Rider 2',
-    },
-    {
-      id: 3,
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      name: 'Rider 3',
-    },
-    {
-      id: 4,
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      name: 'Rider 4',
-    },
-  ];
+  const nearestRide = async () => {
+    const url = 'auth/customer/near_riders_list';
+    const response = await Get(url, token);
+    if (response != undefined) {
+      setNearestRider(response?.data?.data);
+    }
+  };
 
-  // const calculateNearestRiders = () => {
-  //   const sortedRiders = nearestcab
-  //     console.log("🚀 ~ calculateNearestRiders ~ sortedRiders:", sortedRiders)
-  //     .map(rider => ({
-  //       ...rider,
-  //       distance: haversine(userLocation, {
-  //         latitude: rider.latitude,
-  //         longitude: rider.longitude,
-  //       }),
-  //     }))
-  //     .sort((a, b) => a.distance - b.distance);
 
-  //   setNearestRider(sortedRiders)
-  // };
 
-  // // Simulate component mount
-  // useEffect(() => {
-  //   calculateNearestRiders(); // Sort and set nearest riders
-  // }, []);
 
+
+
+
+
+  // componentDidMount() {
+  //   this.watchId = navigator.geolocation.watchPosition(
+  //     (position) => {
+  
+  //       var region = regionFrom(
+  //         position.coords.latitude, 
+  //         position.coords.longitude, 
+  //         position.coords.accuracy
+  //       );
+  //       // update the UI
+  //       this.setState({
+  //         region: region,
+  //         accuracy: position.coords.accuracy
+  //       });
+  
+  //       if(this.state.has_passenger && this.state.passenger){
+  //         // next: add code for sending driver's current location to passenger
+  //       }
+  //     },
+  //     (error) => this.setState({ error: error.message }),
+  //     { 
+  //       enableHighAccuracy: true, // allows you to get the most accurate location
+  //       timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
+  //       maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable 
+  //       distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
+  //     },
+  //   );
+  // }
+
+
+
+  useEffect(() => {
+    // const riderPosition = nearestRider.watchPosition
+    // this.watchId = navigator.Wa
+    this.watchId = navigator.geolocation.watchPosition(
+          (position) => {
+          console.log("🚀 ~ useEffect ~ position:", position)
+      
+            const region = regionFrom(
+              position.coords.latitude, 
+              position.coords.longitude, 
+              position.coords.accuracy
+            );
+            // update the UI
+            this.setState({
+              region: region,
+              accuracy: position.coords.accuracy
+            });
+      
+            if(this.state.has_passenger && this.state.passenger){
+              // next: add code for sending driver's current location to passenger
+            }
+          },
+          (error) => this.setState({ error: error.message }),
+          { 
+            enableHighAccuracy: true, // allows you to get the most accurate location
+            timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
+            maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable 
+            distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
+          },
+        );
+  }, [])
+  
+
+
+
+
+
+
+  useEffect(() => {
+    nearestRide();
+  }, [isFocused]);
+  const sortedRiders = nearestRider
+    ?.map(rider => ({
+      ...rider,
+      distance: haversine(currentPosition, {
+        latitude: nearestRider.lat,
+        longitude: nearestRider.lng,
+      }),
+    }))
+    ?.sort((a, b) => a.distance - b.distance);
+  console.log('🚀 ~ sortedRiders ~ sortedRiders:', sortedRiders);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+  console.log('======================= ', origin);
   return (
     <SafeAreaView style={styles.safearea_view}>
-      {/* <MapView
+      <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -314,22 +363,49 @@ const RequestScreen = () => {
           strokeWidth={6}
           apikey={apikey}
           onStart={params => {
-            console.log('🚀 ~ RequestScreen ~ params:', params);
             console.log(
               `Started routing between "${params?.origin}" and "${params?.destination}"`,
             );
           }}
           tappable={true}
           onReady={result => {
-            mapRef.current.fitToCoordinates(result.coordinates, {
-              edgePadding: {
-                right: 50,
-                left: 50,
-                top: 700,
+            mapRef.current.fitToCoordinates(
+              result.coordinates,
+              // console.log('===================' , result)
+              {
+                edgePadding: {
+                  right: 50,
+                  left: 50,
+                  top: 300, // Adjust this positive value based on your card's height
+                  bottom: 100,
+                },
               },
-            });
+            );
           }}
         />
+
+        {sortedRiders?.map((item, index) => (
+          <Marker
+            coordinate={{
+              latitude: parseFloat(item?.lat),
+              longitude: parseFloat(item?.lng),
+            }}
+            title="Your Are Here Now">
+            <View
+              style={{
+                width: windowWidth * 0.07,
+                height: windowHeight * 0.02,
+              }}>
+              <CustomImage
+                style={{
+                  height: '100%',
+                  width: '100%',
+                }}
+                source={require('../Assets/Images/car.png')}
+              />
+            </View>
+          </Marker>
+        ))}
         {dropLocation != null &&
           Object.keys(dropLocation)?.length > 0 &&
           isValidCoordinate(dropLocation) && (
@@ -339,98 +415,95 @@ const RequestScreen = () => {
               pinColor="black"
             />
           )}
-      </MapView> */}
-      <ImageBackground
+      </MapView>
+      {/* <ImageBackground
         style={styles.background_view}
-        source={require('../Assets/Images/Map.png')}>
-        <View style={{position: 'absolute', bottom: 20, alignItems: 'center'}}>
-          <FlatList
-            horizontal
-            data={cablist}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => {
-              return (
-                <View style={styles.cab_view}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: moderateScale(10, 0.6),
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <View>
-                      <CustomText style={styles.text}>{item?.name}</CustomText>
-                      <CustomText style={styles.price}>
-                        {item?.price}
-                      </CustomText>
-                      <TouchableOpacity style={styles.btn}>
-                        <CustomText style={styles.btn_text}>
-                          Book Ride
-                        </CustomText>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.image_view}>
-                      <CustomImage
-                        resizeMode="contain"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                        }}
-                        source={require('../Assets/Images/carimage.png')}
-                      />
-                    </View>
+        source={require('../Assets/Images/Map.png')}> */}
+      <View style={{position: 'absolute', bottom: 20, alignItems: 'center'}}>
+        <FlatList
+          horizontal
+          data={cablist}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item}) => {
+            return (
+              <View style={styles.cab_view}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: moderateScale(10, 0.6),
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <View>
+                    <CustomText style={styles.text}>{item?.name}</CustomText>
+                    <CustomText style={styles.price}>{item?.price}</CustomText>
+                    <TouchableOpacity style={styles.btn}>
+                      <CustomText style={styles.btn_text}>Book Ride</CustomText>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.image_view}>
+                    <CustomImage
+                      resizeMode="contain"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      source={require('../Assets/Images/carimage.png')}
+                    />
                   </View>
                 </View>
-              );
-            }}
-          />
-          <AskLocation
-            onPressCurrentLocation={() => {
-              getCurrentLocation();
-            }}
-            setAddress={setAddress}
-            address={address}
-            currentPosition={currentPosition}
-            setCurrentPosition={setCurrentPosition}
-            isModalVisible={isModalVisible}
-            setDropLocation={setDropLocation}
-            dropLocation={dropLocation}
-            pickupLocation={pickupLocation}
-            setPickupLocation={setPickupLocation}
-            setIsModalVisible={setIsModalVisible}
-            heading={'Where are you Going?'}
-            locationType={locationType}
-            setLocationType={setLocationType}
-            isIcon
-            islocation
-          />
-          <CustomButton
-            width={windowWidth * 0.9}
-            height={windowHeight * 0.075}
-            bgColor={Color.themeBlack}
-            borderRadius={moderateScale(30, 0.3)}
-            textColor={Color.white}
-            textTransform={'none'}
-            text={'CONFIRM NOW'}
-            marginBottom={moderateScale(10, 0.6)}
-            onPress={() =>
-              pickupLocation || dropLocation != null
-                ? navigationService.navigate('FareScreen', {
-                    distance: parseInt(distance),
-                    fare: Number(fare),
-                    pickup: pickupLocation,
-                    dropoff: dropLocation,
-                  })
-                : Platform.OS == 'android'
-                ? ToastAndroid.show(
-                    ' empty feilds is required',
-                    ToastAndroid.SHORT,
-                  )
-                : Alert.alert('empty feilds is required')
-            }
-          />
-        </View>
-      </ImageBackground>
+              </View>
+            );
+          }}
+        />
+        <AskLocation
+          onPressCurrentLocation={() => {
+            getCurrentLocation();
+          }}
+          setAddress={setAddress}
+          address={address}
+          currentPosition={currentPosition}
+          setCurrentPosition={setCurrentPosition}
+          isModalVisible={isModalVisible}
+          setDropLocation={setDropLocation}
+          dropLocation={dropLocation}
+          pickupLocation={pickupLocation}
+          setPickupLocation={setPickupLocation}
+          setIsModalVisible={setIsModalVisible}
+          heading={'Where are you Going?'}
+          locationType={locationType}
+          setLocationType={setLocationType}
+          isIcon
+          islocation
+        />
+        <CustomButton
+          width={windowWidth * 0.9}
+          height={windowHeight * 0.075}
+          bgColor={Color.themeBlack}
+          borderRadius={moderateScale(30, 0.3)}
+          textColor={Color.white}
+          textTransform={'none'}
+          text={'CONFIRM NOW'}
+          marginBottom={moderateScale(10, 0.6)}
+          onPress={() =>
+            pickupLocation || dropLocation != null
+              ? navigationService.navigate('FareScreen', {
+                  distance: parseInt(distance),
+                  fare: Number(fare),
+                  pickup: origin,
+                  dropoff: destination,
+                  currentPosition: currentPosition,
+                })
+              : Platform.OS == 'android'
+              ? ToastAndroid.show(
+                  ' empty feilds is required',
+                  ToastAndroid.SHORT,
+                )
+              : Alert.alert('empty feilds is required')
+          }
+        />
+      </View>
+      {/* </ImageBackground> */}
     </SafeAreaView>
   );
 };

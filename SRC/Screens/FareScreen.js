@@ -22,11 +22,16 @@ import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 
 const FareScreen = props => {
+  console.log("🚀 ~ FareScreen ~ props:", props?.route?.params)
+  console.log("🚀 ~ FareScreen ~ props:", props)
   const fare = props?.route?.params?.fare;
   const pickupLocation = props?.route?.params?.pickup;
+  console.log("🚀 ~ FareScreen ~ pickupLocation:", pickupLocation)
   const dropoffLocation = props?.route?.params?.dropoff;
-  const distance = props?.route?.params?.distance
-  console.log("🚀 ~ FareScreen ~ distance:", distance)
+  console.log("🚀 ~ FareScreen ~ dropoffLocation:", dropoffLocation)
+  const distance = props?.route?.params?.distance;
+  const currentPosition = props?.route?.params?.currentPosition;
+  console.log('🚀 ~ FareScreen ~ distance:', distance, currentPosition);
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -106,6 +111,7 @@ const FareScreen = props => {
                   paymentMethod: paymentMethod,
                   isEnabled: isEnabled,
                   distance: distance,
+                  currentPosition: currentPosition,
                 });
               } else {
                 setPaymentCom(true);
