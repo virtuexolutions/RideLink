@@ -14,7 +14,9 @@ const initialState = {
   sellerService: [],
   selectedRole: '',
   category: [],
-  location :'',
+  location: '',
+  pickupLocatin: {},
+  dropoffLocation: {},
 };
 
 const CommonSlice = createSlice({
@@ -24,6 +26,12 @@ const CommonSlice = createSlice({
     setCategoryProperties(state, action) {
       state.categoryProperties = action?.payload;
       // console.log("reduxxxx", state.categoryProperties);
+    },
+    setPickupLocation(state, action) {
+      state.pickupLocatin = action.payload;
+    },
+    setDropoffLocation(state, action) {
+      state.dropoffLocation = action.payload;
     },
     setUserData(state, action) {
       state.userData = action?.payload;
@@ -204,10 +212,10 @@ const CommonSlice = createSlice({
         item => item.serviceOwner.id != action.payload.serviceOwner.id,
       );
     },
-    setLoaction(state, action){
-      state.location = action.payload
-      console.log("🚀 ~ setLoaction ~ ==============location:", action.payload)
-    }
+    setLoaction(state, action) {
+      state.location = action.payload;
+      console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
+    },
   },
 });
 
@@ -235,6 +243,8 @@ export const {
   deleteProducts,
   Order,
   setLoaction,
+  setPickupLocation,
+  setDropoffLocation,
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

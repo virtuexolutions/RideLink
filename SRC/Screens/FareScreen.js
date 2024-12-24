@@ -22,13 +22,14 @@ import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 
 const FareScreen = props => {
-  console.log("🚀 ~ FareScreen ~ props:", props?.route?.params)
-  console.log("🚀 ~ FareScreen ~ props:", props)
+  console.log('🚀 ~ FareScreen ~ props:', props?.route?.params);
+  const data = props?.route?.params;
+  console.log('🚀 ~ FareScreen ~ props:', props);
   const fare = props?.route?.params?.fare;
-  const pickupLocation = props?.route?.params?.pickup;
-  console.log("🚀 ~ FareScreen ~ pickupLocation:", pickupLocation)
-  const dropoffLocation = props?.route?.params?.dropoff;
-  console.log("🚀 ~ FareScreen ~ dropoffLocation:", dropoffLocation)
+  const pickupLocation = props?.route?.params?.pickupLocation;
+  console.log('🚀 ~ FareScreen ~ pickupLocation:', pickupLocation);
+  const dropoffLocation = props?.route?.params?.dropoffLocation;
+  console.log('🚀 ~ FareScreen ~ dropoffLocation:', dropoffLocation);
   const distance = props?.route?.params?.distance;
   const currentPosition = props?.route?.params?.currentPosition;
   console.log('🚀 ~ FareScreen ~ distance:', distance, currentPosition);
@@ -36,6 +37,12 @@ const FareScreen = props => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  // const pickupLocatin = useSelector(
+  //   state => state.commonReducer.pickupLocatinName,
+  // );
+  // const dropoffLocation = useSelector(
+  //   state => state.commonReducer.dropoffLocationName,
+  // );
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -46,6 +53,8 @@ const FareScreen = props => {
             <AskLocation
               pickupLocation={pickupLocation}
               dropLocation={dropoffLocation}
+              pickupLocationName={data?.dropoffLocation?.name}
+              dropLocationName={data?.pickupLocation?.name}
               heading={'Where are you Going?'}
               isIcon
               islocation

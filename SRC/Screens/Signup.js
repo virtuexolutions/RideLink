@@ -38,14 +38,10 @@ const Signup = () => {
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
   const [term, setTerm] = useState(false);
-  const [isLoading ,setIsLoading ] = useState(false)
-  console.log("🚀 ~ Signup ~ isLoading:", isLoading)
+  const [isLoading, setIsLoading] = useState(false);
+  console.log('🚀 ~ Signup ~ isLoading:', isLoading);
   const {user_type} = useSelector(state => state.authReducer);
   console.log(user_type, 'userrtypeeeeee');
-
-  
-
-
 
   const register = async values => {
     const body = {
@@ -54,13 +50,13 @@ const Signup = () => {
       password: values.password,
       phone: values.contact,
       agree_terms_condition: values.termsAccepted,
-      confirm_password :values.confirmPassword,
+      confirm_password: values.confirmPassword,
       role: user_type,
     };
     const url = 'register';
-    setIsLoading(true)
+    setIsLoading(true);
     const response = await Post(url, body, apiHeader());
-    setIsLoading(false)
+    setIsLoading(false);
     if (response != undefined) {
       dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setUserData(response?.data?.user_info));
@@ -225,7 +221,7 @@ const Signup = () => {
                     {errors.password}
                   </CustomText>
                 )}
-                   <TextInputWithTitle
+                <TextInputWithTitle
                   showPassword
                   title={'confirm Password *'}
                   placeholder={'Confirm Password'}
@@ -287,7 +283,13 @@ const Signup = () => {
                 )}
                 <CustomButton
                   onPress={handleSubmit}
-                  text={isLoading ? <ActivityIndicator color={Color.white} size={'small'}/> :'sign in '}
+                  text={
+                    isLoading ? (
+                      <ActivityIndicator color={Color.white} size={'small'} />
+                    ) : (
+                      'sign in '
+                    )
+                  }
                   fontSize={moderateScale(14, 0.3)}
                   textColor={Color.white}
                   borderWidth={1.5}
@@ -366,7 +368,7 @@ const styles = ScaledSheet.create({
     borderWidth: 1,
     borderColor: Color.mediumGray,
     borderRadius: 20,
-    paddingVertical: moderateScale(10,.6) ,
+    paddingVertical: moderateScale(10, 0.6),
     // height: windowHeight * 0.65,
     width: windowWidth * 0.9,
     alignItems: 'center',

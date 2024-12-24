@@ -1,7 +1,10 @@
+import {useIsFocused} from '@react-navigation/native';
+import {getDistance, isValidCoordinate} from 'geolib';
+import haversine from 'haversine';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   FlatList,
-  ImageBackground,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -9,27 +12,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import Geolocation from 'react-native-geolocation-service';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+import {moderateScale} from 'react-native-size-matters';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {Get} from '../Axios/AxiosInterceptorFunction';
+import AskLocation from '../Components/AskLocation';
+import CustomButton from '../Components/CustomButton';
+import CustomImage from '../Components/CustomImage';
+import CustomText from '../Components/CustomText';
+import navigationService from '../navigationService';
 import {
   requestLocationPermission,
   windowHeight,
   windowWidth,
 } from '../Utillity/utils';
-import {moderateScale} from 'react-native-size-matters';
-import CustomText from '../Components/CustomText';
-import Color from '../Assets/Utilities/Color';
-import CustomImage from '../Components/CustomImage';
-import CustomButton from '../Components/CustomButton';
-import AskLocation from '../Components/AskLocation';
-import navigationService from '../navigationService';
-import {getDistance, isValidCoordinate} from 'geolib';
-import MapViewDirections from 'react-native-maps-directions';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import haversine from 'haversine';
-import Geolocation from 'react-native-geolocation-service';
-import {useIsFocused} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {Get} from '../Axios/AxiosInterceptorFunction';
 
 const RequestScreen = () => {
   const isFocused = useIsFocused();
@@ -68,7 +67,11 @@ const RequestScreen = () => {
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
   const [address, setAddress] = useState('');
-  const [currentPosition, setCurrentPosition] = useState('');
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+  console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
   const [nearestRider, setNearestRider] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
@@ -78,7 +81,7 @@ const RequestScreen = () => {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
-  console.log("🚀 ~ RequestScreen ~ destination:", destination)
+  console.log('🚀 ~ RequestScreen ~ destination:', destination);
 
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
@@ -96,6 +99,24 @@ const RequestScreen = () => {
     },
     4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
   };
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (currentPosition) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: currentPosition.latitude,
+          longitude: currentPosition.longitude,
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
+        },
+        1000,
+      );
+    }
+  }, [currentPosition]);
 
   const calculateFare = distance => {
     let fare = 0;
@@ -159,12 +180,6 @@ const RequestScreen = () => {
   }, [dropLocation]);
 
   useEffect(() => {
-    getCurrentLocation();
-    return () => {
-      Geolocation.clearWatch();
-    };
-  }, [isFocused]);
-  useEffect(() => {
     const reigion = {
       latitude: origin?.latitude,
       longitude: origin?.longitude,
@@ -174,10 +189,45 @@ const RequestScreen = () => {
     mapRef.current?.animateToRegion(reigion, 1000);
   }, [origin]);
 
+  // const getCurrentLocation = async () => {
+  //   try {
+  //     const position = await new Promise((resolve, reject) => {
+  //       console.log('hyyyyyyyyyyyyyeeeeeeeeeeeeeeee');
+  //       Geolocation.getCurrentPosition(
+  //         position => {
+  //           const coords = {
+  //             latitude: position.coords.latitude,
+  //             longitude: position.coords.longitude,
+  //           };
+  //           resolve(coords);
+  //           getAddressFromCoordinates(
+  //             position.coords.latitude,
+  //             position.coords.longitude,
+  //           );
+  //         },
+  //         error => {
+  //           reject(new Error(error.message));
+  //         },
+  //         {
+  //           enableHighAccuracy: true,
+  //           timeout: 15000,
+  //           maximumAge: 10000,
+  //         },
+  //       );
+  //     });
+  //     requestLocationPermission();
+  //     setCurrentPosition(position);
+  //     setIsModalVisible(false);
+  //     console.log('🚀 ~ getCurrentLocation ~ position:', position);
+  //   } catch (error) {
+  //     console.error('Error getting location:', error);
+  //     throw error;
+  //   }
+  // };
+
   const getCurrentLocation = async () => {
     try {
       const position = await new Promise((resolve, reject) => {
-        console.log('hyyyyyyyyyyyyyeeeeeeeeeeeeeeee');
         Geolocation.getCurrentPosition(
           position => {
             const coords = {
@@ -200,9 +250,7 @@ const RequestScreen = () => {
           },
         );
       });
-      requestLocationPermission();
       setCurrentPosition(position);
-      setIsModalVisible(false);
     } catch (error) {
       console.error('Error getting location:', error);
       throw error;
@@ -228,25 +276,19 @@ const RequestScreen = () => {
   const nearestRide = async () => {
     const url = 'auth/customer/near_riders_list';
     const response = await Get(url, token);
+    console.log('🚀 ~ nearestRide ~ response:', response?.data?.data);
     if (response != undefined) {
       setNearestRider(response?.data?.data);
     }
   };
 
-
-
-
-
-
-
-
   // componentDidMount() {
   //   this.watchId = navigator.geolocation.watchPosition(
   //     (position) => {
-  
+
   //       var region = regionFrom(
-  //         position.coords.latitude, 
-  //         position.coords.longitude, 
+  //         position.coords.latitude,
+  //         position.coords.longitude,
   //         position.coords.accuracy
   //       );
   //       // update the UI
@@ -254,64 +296,57 @@ const RequestScreen = () => {
   //         region: region,
   //         accuracy: position.coords.accuracy
   //       });
-  
+
   //       if(this.state.has_passenger && this.state.passenger){
   //         // next: add code for sending driver's current location to passenger
   //       }
   //     },
   //     (error) => this.setState({ error: error.message }),
-  //     { 
+  //     {
   //       enableHighAccuracy: true, // allows you to get the most accurate location
   //       timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  //       maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable 
+  //       maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
   //       distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
   //     },
   //   );
   // }
 
+  // useEffect(() => {
+  //   // const riderPosition = nearestRider.watchPosition
+  //   // this.watchId = navigator.Wa
+  //   this.watchId = navigator.geolocation.watchPosition(
+  //         (position) => {
+  //         console.log("🚀 ~ useEffect ~ position:", position)
 
+  //           const region = regionFrom(
+  //             position.coords.latitude,
+  //             position.coords.longitude,
+  //             position.coords.accuracy
+  //           );
+  //           // update the UI
+  //           this.setState({
+  //             region: region,
+  //             accuracy: position.coords.accuracy
+  //           });
 
-  useEffect(() => {
-    // const riderPosition = nearestRider.watchPosition
-    // this.watchId = navigator.Wa
-    this.watchId = navigator.geolocation.watchPosition(
-          (position) => {
-          console.log("🚀 ~ useEffect ~ position:", position)
-      
-            const region = regionFrom(
-              position.coords.latitude, 
-              position.coords.longitude, 
-              position.coords.accuracy
-            );
-            // update the UI
-            this.setState({
-              region: region,
-              accuracy: position.coords.accuracy
-            });
-      
-            if(this.state.has_passenger && this.state.passenger){
-              // next: add code for sending driver's current location to passenger
-            }
-          },
-          (error) => this.setState({ error: error.message }),
-          { 
-            enableHighAccuracy: true, // allows you to get the most accurate location
-            timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-            maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable 
-            distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-          },
-        );
-  }, [])
-  
-
-
-
-
-
+  //           if(this.state.has_passenger && this.state.passenger){
+  //             // next: add code for sending driver's current location to passenger
+  //           }
+  //         },
+  //         (error) => this.setState({ error: error.message }),
+  //         {
+  //           enableHighAccuracy: true, // allows you to get the most accurate location
+  //           timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
+  //           maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
+  //           distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
+  //         },
+  //       );
+  // }, [])
 
   useEffect(() => {
     nearestRide();
   }, [isFocused]);
+
   const sortedRiders = nearestRider
     ?.map(rider => ({
       ...rider,
@@ -323,28 +358,17 @@ const RequestScreen = () => {
     ?.sort((a, b) => a.distance - b.distance);
   console.log('🚀 ~ sortedRiders ~ sortedRiders:', sortedRiders);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
-  console.log('======================= ', origin);
   return (
     <SafeAreaView style={styles.safearea_view}>
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialCamera={{
-          center: {
-            latitude: currentPosition?.latitude || 0,
-            longitude: currentPosition?.longitude || 0,
-          },
-          pitch: 0,
-          zoom: 18,
-          heading: 0,
-          altitude: 1000,
-        }}
-        region={{
-          latitude: currentPosition?.latitude || 0,
-          longitude: currentPosition?.longitude || 0,
-          latitudeDelta: 0.067,
-          longitudeDelta: 0.067,
+        initialRegion={{
+          latitude: currentPosition.latitude,
+          longitude: currentPosition.longitude,
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
         }}>
         {Object.keys(pickupLocation)?.length > 0 && (
           <>
@@ -383,25 +407,23 @@ const RequestScreen = () => {
             );
           }}
         />
-
         {sortedRiders?.map((item, index) => (
           <Marker
             coordinate={{
               latitude: parseFloat(item?.lat),
               longitude: parseFloat(item?.lng),
-            }}
-            title="Your Are Here Now">
+            }}>
             <View
               style={{
-                width: windowWidth * 0.07,
-                height: windowHeight * 0.02,
+                width: windowWidth * 0.09,
+                height: windowHeight * 0.035,
               }}>
               <CustomImage
                 style={{
                   height: '100%',
                   width: '100%',
                 }}
-                source={require('../Assets/Images/car.png')}
+                source={require('../Assets/Images/car_icon.png')}
               />
             </View>
           </Marker>
@@ -416,9 +438,6 @@ const RequestScreen = () => {
             />
           )}
       </MapView>
-      {/* <ImageBackground
-        style={styles.background_view}
-        source={require('../Assets/Images/Map.png')}> */}
       <View style={{position: 'absolute', bottom: 20, alignItems: 'center'}}>
         <FlatList
           horizontal
@@ -459,6 +478,7 @@ const RequestScreen = () => {
         <AskLocation
           onPressCurrentLocation={() => {
             getCurrentLocation();
+            setIsModalVisible(false);
           }}
           setAddress={setAddress}
           address={address}
@@ -493,6 +513,8 @@ const RequestScreen = () => {
                   pickup: origin,
                   dropoff: destination,
                   currentPosition: currentPosition,
+                  pickupLocation: pickupLocation,
+                  dropoffLocation: dropLocation,
                 })
               : Platform.OS == 'android'
               ? ToastAndroid.show(
@@ -618,6 +640,5 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Color.grey,
   },
 });

@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
@@ -26,17 +27,17 @@ import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {isValidCoordinate} from 'geolib';
+import Geolocation from 'react-native-geolocation-service';
 
 const MapScreen = props => {
   const mapRef = useRef();
   const pickupLocation = props?.route?.params?.pickupLocation;
-  console.log("🚀 ~ MapScreen ~ pickupLocation:", pickupLocation)
+  console.log('🚀 ~ MapScreen ~ pickupLocation:', pickupLocation);
   const dropoffLocation = props?.route?.params?.dropoffLocation;
   const Nearestcab = props?.route?.params?.isEnabled;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const fare = props?.route?.params?.fare;
   const distance = props?.route?.params?.distance;
-  const currentPosition = props?.route?.params?.currentPosition;
   const token = useSelector(state => state.authReducer.token);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -46,6 +47,70 @@ const MapScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
   const [rideStatus, setRideStatus] = useState('');
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (currentPosition) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: currentPosition.latitude,
+          longitude: currentPosition.longitude,
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
+        },
+        1000,
+      );
+    }
+  }, [currentPosition]);
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
+  const origin = {
+    latitude: parseFloat(pickupLocation?.lat),
+    longitude: parseFloat(pickupLocation?.lng),
+  };
+
+  const destination = {
+    latitude: parseFloat(dropoffLocation?.lng),
+    longitude: parseFloat(dropoffLocation?.lng),
+  };
 
   const requestforRide = async () => {
     const url = 'auth/bookride';
@@ -61,29 +126,31 @@ const MapScreen = props => {
       payment_method: paymentMethod,
       nearest_cab: Nearestcab,
     };
-  return     console.log("🚀 ~ requestforRide ~ body:", body)
+    console.log('🚀 ~ requestforRide ~ body:', body);
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
-
     if (response != undefined) {
       setRideID(response?.data.data?.id);
+      Alert.alert(
+        'Waiting',
+        'Please wait here for rider to find your Request. If there is no reponse then add your Fare',
+      );
     }
   };
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
     const response = await Get(url, token);
-    return console.log(
+    console.log(
       '🚀 ~ rideUpdate ~ response =====================:',
       response?.data,
     );
     if (response != undefined) {
-      response?.data?.ride_info?.status == 'pending' && setModalVisible(true);
-      setRideStatus(response?.data?.ride_info?.status);
     }
   };
+
   useEffect(() => {
     const interval = setInterval(() => {
       rideId != '' && rideUpdate();
@@ -94,30 +161,33 @@ const MapScreen = props => {
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
   return (
     <SafeAreaView style={[styles.safe_are, styles.background_view]}>
-      {/* <ImageBackground
-        style={styles.background_view}
-        source={require('../Assets/Images/map2.png')}> */}
-
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialCamera={{
-          center: {
-            latitude: currentPosition?.latitude || 0,
-            longitude: currentPosition?.longitude || 0,
-          },
-          pitch: 0,
-          zoom: 18,
-          heading: 0,
-          altitude: 1000,
+        initialRegion={{
+          latitude: currentPosition.latitude || 0,
+          longitude: currentPosition.longitude || 0,
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
         }}
-        region={{
-          latitude: currentPosition?.latitude || 0,
-          longitude: currentPosition?.longitude || 0,
-          latitudeDelta: 0.067,
-          longitudeDelta: 0.067,
-        }}>
+        // initialCamera={{
+        //   center: {
+        //     latitude: currentPosition?.latitude || 0,
+        //     longitude: currentPosition?.longitude || 0,
+        //   },
+        //   pitch: 0,
+        //   zoom: 18,
+        //   heading: 0,
+        //   altitude: 1000,
+        // }}
+        // region={{
+        //   latitude: currentPosition?.latitude || 0,
+        //   longitude: currentPosition?.longitude || 0,
+        //   latitudeDelta: 0.067,
+        //   longitudeDelta: 0.067,
+        // }}
+      >
         {Object.keys(pickupLocation)?.length > 0 && (
           <>
             <Marker
@@ -129,8 +199,8 @@ const MapScreen = props => {
           </>
         )}
         <MapViewDirections
-          origin={pickupLocation}
-          destination={dropoffLocation}
+          origin={origin}
+          destination={destination}
           strokeColor={Color.darkBlue}
           strokeWidth={6}
           apikey={apikey}

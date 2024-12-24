@@ -13,11 +13,12 @@ import CustomText from './CustomText';
 import navigationService from '../navigationService';
 
 const DeliveryBox = ({data}) => {
+  console.log('🚀 ~ DeliveryBox ~ data:', data);
   const [focused, setFocused] = useState('');
   return (
     <TouchableOpacity
+      disabled={data?.title == 'Ride' ? false : true}
       onPress={() => {
-        data?.name == 'Ride';
         navigationService.navigate('RequestScreen');
       }}
       style={[

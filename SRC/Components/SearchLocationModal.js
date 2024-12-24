@@ -1,6 +1,10 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
-import {requestLocationPermission, windowHeight, windowWidth} from '../Utillity/utils';
+import {
+  requestLocationPermission,
+  windowHeight,
+  windowWidth,
+} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import Modal from 'react-native-modal';
 import CustomText from './CustomText';
@@ -8,7 +12,8 @@ import {moderateScale} from 'react-native-size-matters';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import 'react-native-get-random-values';
 
-import Geolocation from 'react-native-geolocation-service';
+import {useDispatch} from 'react-redux';
+import {setDropoffLocation} from '../Store/slices/common';
 // import { v4 as uuidv4 } from 'uuid';
 
 const SearchLocationModal = ({
@@ -24,17 +29,7 @@ const SearchLocationModal = ({
   onPress,
 }) => {
   console.log('🚀 ~ isModalVisible:', isModalVisible);
-  // const getCurrentLoaction =async () =>{
-  // try{
-  //   console.log('from get current location ====== try ')
-  // }
-  // catch{
-  //   console.log('from get current location ====== catch  ')
-
-  // }
-  // }
-
-
+  const dispatch = useDispatch();
 
   return (
     <Modal
@@ -59,7 +54,6 @@ const SearchLocationModal = ({
         </CustomText>
         {locationType == 'pickup' && (
           <TouchableOpacity
-      
             onPress={onPressCurrentLocation}
             style={{
               width: windowWidth * 0.8,
@@ -87,7 +81,22 @@ const SearchLocationModal = ({
               lat: details?.geometry?.location?.lat,
               lng: details?.geometry?.location?.lng,
             });
-            // setInputValue(data?.description)
+            setIsModalVisible(false);
+            locationType == 'pickup'
+              ? dispatch(
+                  setPickupLocation({
+                    name: data?.description,
+                    lat: details?.geometry?.location?.lat,
+                    lng: details?.geometry?.location?.lng,
+                  }),
+                )
+              : dispatch(
+                  setDropoffLocation({
+                    name: data?.description,
+                    lat: details?.geometry?.location?.lat,
+                    lng: details?.geometry?.location?.lng,
+                  }),
+                );
             locationType == 'pickup'
               ? setPickupLocation({
                   name: data?.description,
@@ -99,7 +108,6 @@ const SearchLocationModal = ({
                   lat: details?.geometry?.location?.lat,
                   lng: details?.geometry?.location?.lng,
                 });
-            setIsModalVisible(false);
           }}
           query={{
             key: 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM',

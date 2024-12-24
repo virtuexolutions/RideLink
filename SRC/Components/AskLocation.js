@@ -30,6 +30,8 @@ const AskLocation = ({
   onPress,
   onPressCurrentLocation,
   fromfareScreen,
+  pickupLocationName,
+  dropLocationName,
 }) => {
   return (
     <View style={[styles.location_View, main_view_style]}>
@@ -72,9 +74,9 @@ const AskLocation = ({
                     textAlign: 'left',
                   },
                 ]}>
-                {pickupLocation?.name
-                  ? pickupLocation?.name
-                  : '284 Long Street Gainesville'}
+                {pickupLocationName
+                  ? pickupLocationName
+                  : pickupLocation?.name ||  'I’m going from ....'}
               </CustomText>
               <TouchableOpacity
                 style={{
@@ -84,7 +86,7 @@ const AskLocation = ({
                 }}>
                 <Icon
                   onPress={() => {
-                    setLocationType('pickup');
+                    setLocationType('pickup');    
                     setIsModalVisible(true);
                   }}
                   name="plus"
@@ -137,7 +139,9 @@ const AskLocation = ({
                     textAlign: 'left',
                   },
                 ]}>
-                {dropLocation?.name ? dropLocation?.name : 'I’m going to ....'}
+                {dropLocationName
+                  ? dropLocationName
+                  : dropLocation?.name || 'I’m going to ....'}
               </CustomText>
               <TouchableOpacity
                 style={{

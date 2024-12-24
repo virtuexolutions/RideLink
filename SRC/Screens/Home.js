@@ -34,7 +34,7 @@ import {useIsFocused} from '@react-navigation/native';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,7 +130,6 @@ const Home = () => {
     if (response != undefined) {
     }
   };
-
 
   return (
     <SafeAreaView style={styles.safe_area}>
