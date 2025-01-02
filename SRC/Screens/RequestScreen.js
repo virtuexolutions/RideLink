@@ -38,22 +38,22 @@ const RequestScreen = () => {
     {
       id: 1,
       name: 'X Regular',
-      price: '$ 30.00',
+      price: '$ 10.00',
     },
     {
       id: 2,
-      name: 'X Regular',
-      price: '$ 30.00',
+      name: 'Mini',
+      price: '$ 20.00',
     },
     {
       id: 3,
-      name: 'X Regular',
+      name: 'Standered Ac',
       price: '$ 30.00',
     },
     {
       id: 4,
-      name: 'X Regular',
-      price: '$ 30.00',
+      name: 'Luxury Ac',
+      price: '$ 40.00',
     },
   ];
   const locationPermission = useSelector(state => state.commonReducer.location);
@@ -71,6 +71,7 @@ const RequestScreen = () => {
     latitude: 0,
     longitude: 0,
   });
+  console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
   console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
   const [nearestRider, setNearestRider] = useState([]);
   const origin = {
@@ -116,7 +117,7 @@ const RequestScreen = () => {
         1000,
       );
     }
-  }, [currentPosition]);
+  }, []);
 
   const calculateFare = distance => {
     let fare = 0;
@@ -365,8 +366,8 @@ const RequestScreen = () => {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
-          latitude: currentPosition.latitude,
-          longitude: currentPosition.longitude,
+          latitude: parseFloat(currentPosition.latitude),
+          longitude: parseFloat(currentPosition.longitude),
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}>
@@ -407,7 +408,7 @@ const RequestScreen = () => {
             );
           }}
         />
-        {sortedRiders?.map((item, index) => (
+        {/* {sortedRiders?.map((item, index) => (
           <Marker
             coordinate={{
               latitude: parseFloat(item?.lat),
@@ -427,7 +428,7 @@ const RequestScreen = () => {
               />
             </View>
           </Marker>
-        ))}
+        ))} */}
         {dropLocation != null &&
           Object.keys(dropLocation)?.length > 0 &&
           isValidCoordinate(dropLocation) && (

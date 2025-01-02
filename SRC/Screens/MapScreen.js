@@ -102,6 +102,22 @@ const MapScreen = props => {
     }
   };
 
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
@@ -256,7 +272,7 @@ const MapScreen = props => {
           style={{left: 5}}
         />
       </View>
-      <View style={{position: 'absolute', bottom: 20}}>
+      {/* <View style={{position: 'absolute', bottom: 20}}>
         <AskLocation
           main_view_style={{height: windowHeight * 0.17}}
           heading={'Waiting For Replies'}
@@ -312,7 +328,7 @@ const MapScreen = props => {
             // setModalVisible(true)
           }}
         />
-      </View>
+      </View> */}
       <RequestModal
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}
