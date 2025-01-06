@@ -142,7 +142,7 @@ const CustomButton = props => {
           <CustomText
             style={[
               styles.text,
-              textStyle && textStyle,
+              // textStyle && textStyle,
               {
                 color: textColor,
                 fontSize: fontSize ? fontSize : moderateScale(13, 0.3),

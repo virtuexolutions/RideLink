@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import CustomText from './CustomText';
@@ -8,6 +8,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {moderateScale} from 'react-native-size-matters';
 import SearchLocationModal from './SearchLocationModal';
+import {position} from 'native-base/lib/typescript/theme/styled-system';
+import AskLocationComponent from './AskLocationComponent';
 
 const AskLocation = ({
   setCurrentPosition,
@@ -32,7 +34,13 @@ const AskLocation = ({
   fromfareScreen,
   pickupLocationName,
   dropLocationName,
+  setMultipleLocation,
+  multipleLocation,
+  onUpdateLocation,
+  additionalLocation,
+  setAdditionalLocation,
 }) => {
+  const [addLocation, setAddLocation] = useState(false);
   return (
     <View style={[styles.location_View, main_view_style]}>
       <View style={styles.location_subview}>
@@ -48,6 +56,18 @@ const AskLocation = ({
           </View>
         )}
       </View>
+      <CustomText
+        onPress={() => {
+          setAddLocation(true);
+        }}
+        isBold
+        style={{
+          fontSize: moderateScale(10, 0.6),
+          top: 10,
+          left: 235,
+        }}>
+        add multiple location
+      </CustomText>
       {renderView}
       {islocation && (
         <View style={styles.seatView}>
@@ -76,7 +96,7 @@ const AskLocation = ({
                 ]}>
                 {pickupLocationName
                   ? pickupLocationName
-                  : pickupLocation?.name ||  'I’m going from ....'}
+                  : pickupLocation?.name || 'I’m going from ....'}
               </CustomText>
               <TouchableOpacity
                 style={{
@@ -86,7 +106,7 @@ const AskLocation = ({
                 }}>
                 <Icon
                   onPress={() => {
-                    setLocationType('pickup');    
+                    setLocationType('pickup');
                     setIsModalVisible(true);
                   }}
                   name="plus"
@@ -176,6 +196,16 @@ const AskLocation = ({
         setIsModalVisible={setIsModalVisible}
         setPickupLocation={setPickupLocation}
         setdropOffLocation={setDropLocation}
+        setAdditionalLocation={setAdditionalLocation}
+        additionalLocation={additionalLocation}
+        addLocation={addLocation}
+      />
+      <AskLocationComponent
+        visible={addLocation}
+        setIsVisible={setAddLocation}
+        onUpdateLocation={onUpdateLocation}
+        multipleLocation={multipleLocation}
+        setMultipleLocation={setMultipleLocation}
       />
     </View>
   );
