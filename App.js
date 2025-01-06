@@ -22,7 +22,7 @@ import AppNavigator from './SRC/appNavigation';
 import {SafeAreaView, Text} from 'react-native';
 import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
 import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');

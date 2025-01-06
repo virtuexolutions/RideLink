@@ -1,11 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
-import {Icon} from 'native-base';
+import {Icon, Toast} from 'native-base';
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Platform,
   ScrollView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -42,25 +45,30 @@ const AddYourCar = props => {
   const carType = ['Mini', 'Standered Ac', 'Luxury Ac'];
 
   const onSubmit = async values => {
+    const formData = new FormData();
+
     const body = {
       name: values.carName,
       number: values.carNumber,
       seats: values.carSeats,
       category: cartype,
-      image: image?.uri,
       model: values.carModel,
-      active: 'active',
+      status: 'active',
     };
+    formData.append('image', image);
     console.log('🚀 ~ register ~ body:', body);
     const url = 'auth/rider/car_update';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     console.log('🚀 ~ onSubmit ~ response:', response?.data);
     setIsLoading(false);
-    // if (response != undefined) {
-    //   dispatch(setUserToken({token: response?.data?.token}));
-    //   dispatch(setUserData(response?.data?.user_info));
-    // }
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Your car is Updated', ToastAndroid.SHORT)
+        : Alert.alert('Your car is Updated');
+      dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserToken({token: response?.data?.token}));
+    }
   };
 
   return (
@@ -70,15 +78,12 @@ const AddYourCar = props => {
         barStyle={'dark-content'}
       />
       <ScrollView
-        scrollEnabled={false}
         style={{
           height: windowHeight,
           width: windowWidth,
-          backgroundColor: 'white',
         }}
         contentContainerStyle={{
           alignItems: 'center',
-          paddingBottom: moderateScale(90, 0.6),
           justifyContent: 'center',
         }}
         showsVerticalScrollIndicator={false}>
@@ -155,7 +160,7 @@ const AddYourCar = props => {
                     </CustomText>
                   )}
                   <TextInputWithTitle
-                    title={' car number'}
+                    title={'car number'}
                     placeholder={'enter your car number'}
                     setText={handleChange('carNumber')}
                     value={values.carNumber}
@@ -191,12 +196,12 @@ const AddYourCar = props => {
                     viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
                     inputWidth={0.8}
                     border={1}
-                    fontSize={moderateScale(10, 0.6)}
+                    fontSize={moderateScale(9, 0.6)}
                     borderRadius={30}
                     backgroundColor={'transparent'}
                     borderColor={Color.lightGrey}
                     marginTop={moderateScale(10, 0.3)}
-                    placeholderColor={Color.darkGray}
+                    placeholderColor={Color.veryLightGray}
                     titleStlye={{right: 10}}
                   />
                   {touched.carSeats && errors.carSeats && (
@@ -279,6 +284,27 @@ const AddYourCar = props => {
                       />
                     )}
                   </TouchableOpacity>
+                  <View
+                    style={{
+                      marginVertical: moderateScale(10, 0.6),
+                    }}>
+                    <CustomText
+                      style={{
+                        fontSize: moderateScale(12, 0.6),
+                        color: Color.red,
+                        fontWeight: '500',
+                      }}>
+                      Instructions :
+                    </CustomText>
+                    <CustomText
+                      style={{
+                        fontSize: moderateScale(11, 0.6),
+                        color: Color.grey,
+                      }}>
+                      Please add valid Imformation about your Car and add front
+                      and clear image.
+                    </CustomText>
+                  </View>
                   <CustomButton
                     text={
                       isLoading ? (
@@ -343,7 +369,6 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.9,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: moderateScale(10, 0.6),
     backgroundColor: Color.white,
     shadowColor: '#000',
     shadowOffset: {
@@ -354,7 +379,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 22,
     paddingHorizontal: moderateScale(20, 0.6),
-    paddingVertical: moderateScale(20, 0.6),
+    paddingVertical: moderateScale(10, 0.6),
+    marginBottom: moderateScale(10, 0.6),
   },
   forgotpassword: {
     fontSize: moderateScale(10, 0.6),
@@ -410,7 +436,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderRadius: moderateScale(15, 0.6),
     backgroundColor: Color.lightGrey,
-    marginBottom: moderateScale(20, 0.6),
+    marginBottom: moderateScale(10, 0.6),
     justifyContent: 'center',
     alignItems: 'center',
   },

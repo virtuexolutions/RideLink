@@ -1,32 +1,30 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   ScrollView,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {moderateScale, ScaledSheet} from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {Icon} from 'native-base';
+import { Formik } from 'formik';
+import { Icon } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {Formik} from 'formik';
-import {boolean} from 'yup';
-import {SignupSchema} from '../Constant/schema';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import {setUserToken} from '../Store/slices/auth';
-import {setUserData} from '../Store/slices/common';
+import { SignupSchema } from '../Constant/schema';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -58,8 +56,11 @@ const Signup = () => {
     const response = await Post(url, body, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
-      dispatch(setUserToken({token: response?.data?.token}));
-      dispatch(setUserData(response?.data?.user_info));
+      navigation.navigate('AddYourCar');
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
+        : Alert.alert('Sign up successfully');
+      // dispatch(setUserData(response?.data?.user_info));
     }
   };
 
