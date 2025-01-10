@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   ImageBackground,
+  Platform,
   SafeAreaView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -34,12 +37,10 @@ const Home = () => {
   const {user_type} = useSelector(state => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
-  console.log('🚀 ~ Home ~ requestList:', requestList);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
-  console.log('🚀 ~ Home ~ currentPosition:', currentPosition);
 
   const deliveryList = [
     {
@@ -125,7 +126,9 @@ const Home = () => {
   ];
 
   useEffect(() => {
-    getCurrentLocation();
+    if (user_type === 'Rider') {
+      getCurrentLocation();
+    }
   }, []);
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
@@ -180,12 +183,22 @@ const Home = () => {
     const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
+    console.log('🚀 ~ rideRequestList ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       setRequestList(response?.data?.ride_info);
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      console.log('helllllllllllllllo');
+      rideRequestList();
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     updateLocation();
@@ -200,6 +213,9 @@ const Home = () => {
     };
     const response = await Post(url, body, apiHeader(token));
     if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('You are online now', ToastAndroid.SHORT)
+        : Alert.alert('You are online now');
     }
   };
 

@@ -59,6 +59,13 @@ const Drawer = React.memo(() => {
           },
         },
     {
+      id: 4,
+      name: 'Update vehicle',
+      onPress: () => {
+        navigation.navigate('AddYourCar');
+      },
+    },
+    {
       id: 5,
       name: 'Accounts ',
       onPress: () => {

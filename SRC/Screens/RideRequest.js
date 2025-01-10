@@ -74,23 +74,20 @@ const RideRequest = ({route}) => {
   //   getCurrentLocation(),
   // );
 
-  const rideAcceptApi = async () => {
-    const url = '';
-    const body = {};
+  const onPressSendRequest = async status => {
+    const url = `auth/rider/ride_update/${3}`;
+    const body = {
+      status: 'accept',
+    };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
+    console.log('🚀 ~ onPressSendRequest ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
-    }
-  };
-
-  const rideCancelApi = async () => {
-    const url = '';
-    const body = {};
-    setLoading(true);
-    const response = await Post(url, body, apiHeader(token));
-    setLoading(false);
-    if (response != undefined) {
+      navigationService.navigate('PassengerDetails', {
+        type: '',
+        data: response?.data?.ride_info,
+      });
     }
   };
 
@@ -107,7 +104,7 @@ const RideRequest = ({route}) => {
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
-          region={{
+          initialRegion={{
             latitude: 37.3318456,
             longitude: -122.0296002,
             latitudeDelta: 0.015,
@@ -398,6 +395,7 @@ const RideRequest = ({route}) => {
                 bgColor={Color.darkBlue}
                 textTransform={'capitalize'}
                 elevation
+                loader={loading}
                 marginBottom={moderateScale(40, 0.6)}
                 onPress={() =>
                   navigationService.navigate('ChooseDeclineReasonScreen')
@@ -412,7 +410,7 @@ const RideRequest = ({route}) => {
                   marginBottom: moderateScale(20, 0.6),
                 }}>
                 <CustomButton
-                  text={'Accept'}
+                  text={'Send Request'}
                   fontSize={moderateScale(14, 0.3)}
                   textColor={Color.white}
                   borderRadius={moderateScale(30, 0.3)}
@@ -421,14 +419,13 @@ const RideRequest = ({route}) => {
                   bgColor={Color.darkBlue}
                   textTransform={'capitalize'}
                   elevation
-                  onPress={() =>
-                    navigationService.navigate('PassengerDetails', {
-                      type: '',
-                    })
-                  }
+                  onPress={() => onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
-                  onPress={() => setDecline(true)}
+                  onPress={() => {
+                    onPressSendRequest('reject');
+                    setDecline(true);
+                  }}
                   style={styles.icon_view}>
                   <Icon
                     name="cross"

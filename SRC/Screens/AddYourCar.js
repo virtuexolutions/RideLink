@@ -27,10 +27,12 @@ import {addYourCarSchema, loginSchema} from '../Constant/schema';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DropDownSingleSelect from './DropDownSingleSelect';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import Header from '../Components/Header';
 
 const AddYourCar = props => {
   const dispatch = useDispatch();
   const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ token:=====>', token);
   const [username, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -81,16 +83,21 @@ const AddYourCar = props => {
         style={{
           height: windowHeight,
           width: windowWidth,
+          backgroundColor: Color.white,
         }}
         contentContainerStyle={{
           alignItems: 'center',
-          justifyContent: 'center',
         }}
         showsVerticalScrollIndicator={false}>
-        <CustomText isBold style={styles.text}>
-          Update Your Car Info
-        </CustomText>
-        <View style={[styles.feild_container]}>
+        {token && <Header title={'Add Your vehicle'} showBack hideUser />}
+        {token ? (
+          <></>
+        ) : (
+          <CustomText isBold style={styles.text}>
+            Update Your Vehicle
+          </CustomText>
+        )}
+        <View style={token ? styles.container_field : styles.feild_container}>
           <Formik
             initialValues={{
               carModel: '',
@@ -361,6 +368,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: moderateScale(15, 0.6),
     paddingHorizontal: moderateScale(10, 0.6),
+  },
+  container_field: {
+    width: windowWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Color.white,
+    paddingHorizontal: moderateScale(20, 0.6),
+    paddingVertical: moderateScale(10, 0.6),
+    marginBottom: moderateScale(10, 0.6),
   },
   feild_container: {
     borderWidth: 0.5,

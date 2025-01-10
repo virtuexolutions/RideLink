@@ -1,31 +1,24 @@
+import messaging from '@react-native-firebase/messaging';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import {Formik} from 'formik';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, ScrollView, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
+import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
-import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import CustomStatusBar from '../Components/CustomStatusBar';
-import VerifyEmail from './VerifyEmail';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import SmsRetrieverModule from 'react-native-sms-retriever';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import {setUserToken} from '../Store/slices/auth-slice';
-import {Formik} from 'formik';
-import {setUserData} from '../Store/slices/common';
 import {loginSchema} from '../Constant/schema';
-import {mode} from 'native-base/lib/typescript/theme/tools';
-import {background} from 'native-base/lib/typescript/theme/styled-system';
+import {SetFCMToken, setUserToken} from '../Store/slices/auth-slice';
+import {setUserData} from '../Store/slices/common';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const LoginScreen = props => {
   const dispatch = useDispatch();
@@ -39,21 +32,26 @@ const LoginScreen = props => {
   const navigation = useNavigation();
   const [loginMethod, setLoginMethod] = useState('');
   const {user_type} = useSelector(state => state.authReducer);
+  const [device_token, setDeviceToken] = useState(null);
 
   const loginWithGoogle = async response1 => {
     // return console.log('🚀 ~ loginWithGoogle ~ body:', response1);
     const body = {...response1?.data};
     const url = 'google-login';
     const response = await Post(url, body, apiHeader(token));
-    console.log("🚀 ~ loginWithGoogle ~ response:", response?.data?.token)
+    console.log('🚀 ~ loginWithGoogle ~ response:', response?.data?.token);
     if (response != undefined) {
-      dispatch(setUserToken({token:  response?.data?.token}));
+      dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setUserData(response?.user_info));
     }
   };
 
   const login = async values => {
-    const body = {email: values.email, password: values.password};
+    const body = {
+      email: values.email,
+      password: values.password,
+      device_token: device_token,
+    };
     const url = 'login';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -63,6 +61,17 @@ const LoginScreen = props => {
       dispatch(setUserData(response?.data?.user_info));
     }
   };
+
+  useEffect(() => {
+    messaging()
+      .getToken()
+      .then(_token => {
+        console.log('🚀 Srrrrrrrrrrrrrrrrrr:', _token);
+        setDeviceToken(_token);
+        dispatch(SetFCMToken({fcmToken: _token}));
+      })
+      .catch(e => console.log('token error', e));
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1}}>

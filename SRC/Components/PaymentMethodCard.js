@@ -81,7 +81,7 @@ const PaymentMethodCard = ({
                   <CustomText isBold style={[styles.text1]}>
                     PickUp
                   </CustomText>
-                  <CustomText style={[styles.text1]}>
+                  <CustomText numberOfLines={1} style={[styles.text1]}>
                     {pickuplocation}
                   </CustomText>
                 </View>
@@ -117,7 +117,7 @@ const PaymentMethodCard = ({
                   <CustomText isBold style={[styles.text1]}>
                     DropOff
                   </CustomText>
-                  <CustomText style={[styles.text1]}>
+                  <CustomText numberOfLines={1} style={[styles.text1]}>
                     {dropofflocation}
                   </CustomText>
                 </View>

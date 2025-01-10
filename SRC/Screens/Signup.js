@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,22 +9,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Formik } from 'formik';
-import { Icon } from 'native-base';
+import {Formik} from 'formik';
+import {Icon} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import { SignupSchema } from '../Constant/schema';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import {SignupSchema} from '../Constant/schema';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,8 @@ const Signup = () => {
   const {user_type} = useSelector(state => state.authReducer);
   console.log(user_type, 'userrtypeeeeee');
 
-  const register = async values => {
+  const onPressregister = async values => {
+    console.log(values, 'valuyessssssssss');
     const body = {
       name: values.name,
       email: values.email,
@@ -51,15 +52,18 @@ const Signup = () => {
       confirm_password: values.confirmPassword,
       role: user_type,
     };
+    console.log('🚀 ~ Signup ~ body:', body);
     const url = 'register';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader());
+    console.log('🚀 ~ Signup ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       navigation.navigate('AddYourCar');
       Platform.OS == 'android'
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
+      navigation.navigate('AddYourCar');
       // dispatch(setUserData(response?.data?.user_info));
     }
   };
@@ -106,7 +110,7 @@ const Signup = () => {
             termsAccepted: false,
           }}
           validationSchema={SignupSchema}
-          onSubmit={register}>
+          onSubmit={() => console.log('chl rha ha btn')}>
           {({
             values,
             handleChange,
