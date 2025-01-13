@@ -57,6 +57,8 @@ const RequestScreen = () => {
     },
   ];
   const locationPermission = useSelector(state => state.commonReducer.location);
+  const [cabType, setCabType] = useState(null);
+  console.log('🚀 ~ RequestScreen ~ selectedCab:', cabType);
   const [pickupLocation, setPickupLocation] = useState({});
   const [dropLocation, setDropLocation] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -72,35 +74,23 @@ const RequestScreen = () => {
     longitude: 0,
   });
   const [points, setPoints] = useState({});
-  console.log('🚀 ~ points:=============================', points);
   const [multipleLocation, setMultipleLocation] = useState([]);
-  console.log('🚀 ~ RequestScreen ~ currentPosition:', multipleLocation);
   const [nearestRider, setNearestRider] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
   };
-  console.log("🚀 ~========================  origin :", origin)
+  console.log('🚀 ~ RequestScreen ~ origin:', origin);
   const destination = {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
-  console.log("🚀 ~ destination  ========================== :", destination)
-  // const waypoints = multipleLocation?.map((item, index) => {
-  //   const points = {
-  //     latitude: parseFloat(item?.lat),
-  //     longitude: parseFloat(item?.lng),
-  //   };
-  //   // setPoints(points);
-  //   return points;
-  // });
-  const waypoints = multipleLocation
-    ?.map(item => {
-      return `${parseFloat(item?.lat)},${parseFloat(item?.lng)}`;
-    })
-    .join('|');
+  console.log('🚀 ~ RequestScreen ~ destination:', destination);
+  const waypoints = multipleLocation?.map(item => ({
+    latitude: parseFloat(item?.lat),
+    longitude: parseFloat(item?.lng),
+  }));
 
-  console.log('🚀 ~ waypoints ~ waypoints:', waypoints);
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
     2: {
@@ -118,16 +108,59 @@ const RequestScreen = () => {
     4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
   };
 
+  // useEffect(() => {
+  //   requestLocationPermission();
+  // }, [isFocused]);
+
   useEffect(() => {
     getCurrentLocation();
+    // getcabsData()
   }, [isFocused]);
+  const getCurrentLocation = async () => {
+    console.log('frommmmmmmmmmmmmmmmmmm position function ');
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
 
+  const getcabsData = async () => {
+    const url = '';
+    const response = await Get(url, token);
+    if (response != undefined) {
+    }
+  };
   useEffect(() => {
     if (currentPosition) {
       mapRef.current?.animateToRegion(
         {
-          latitude: currentPosition.latitude,
-          longitude: currentPosition.longitude,
+          latitude: currentPosition?.latitude,
+          longitude: currentPosition?.longitude,
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         },
@@ -204,38 +237,6 @@ const RequestScreen = () => {
     };
     mapRef.current?.animateToRegion(reigion, 1000);
   }, [origin]);
-
-  const getCurrentLocation = async () => {
-    try {
-      const position = await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          position => {
-            const coords = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-            resolve(coords);
-            getAddressFromCoordinates(
-              position.coords.latitude,
-              position.coords.longitude,
-            );
-          },
-          error => {
-            reject(new Error(error.message));
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 10000,
-          },
-        );
-      });
-      setCurrentPosition(position);
-    } catch (error) {
-      console.error('Error getting location:', error);
-      throw error;
-    }
-  };
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
@@ -342,34 +343,6 @@ const RequestScreen = () => {
     setMultipleLocation(updatedStops);
   };
 
-  const routeapi = async (latitude, longitude) => {
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${
-      (origin?.latitude, origin?.longitude)
-    }&destination=${
-      (destination?.latitude, destination?.longitude)
-    }&waypoints=${24.8854482,67.0896565|24.8711218,67.0960808|24.8612199,67.0695211}&key=${apikey}`;
-    console.log('🚀 ~ routeapi ~ url:', url);
-    // const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${67.06656559999999}&destination=${67.062703}&waypoints=${24.8854482,67.0896565|24.8711218,67.0960808|24.8612199,67.0695211}&key=${apikey}`
-    try {
-      // console.log("🚀 ~ //}&waypoints=${encodeURIComponent ~ url:", url)
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log('🚀 ~ routeapi ~ data==================:', data);
-      if (data.status === 'OK') {
-        //   const givenaddress = data.results[0].formatted_address;
-        // setAddress(givenaddress);
-      } else {
-        console.log('No address found');
-      }
-    } catch (error) {
-      console.error('====================', error);
-    }
-  };
-
-  routeapi();
-  // useEffect(() => {
-  // }, [origin, destination]);
-
   return (
     <SafeAreaView style={styles.safearea_view}>
       <MapView
@@ -387,20 +360,11 @@ const RequestScreen = () => {
             <Marker
               coordinate={origin}
               title="pickup  Location"
-              pinColor={Color.themeBlack}
+              pinColor={Color.red}
             />
           </>
         )}
-        {/* {multipleLocation?.map((item, index) => {
-          // console.log("🚀 ~ {multipleLocation?.map ~ item:", item)
-          <Marker
-            key={`multipleLocation-${index}`}
-            coordinate={item}
-            title={`item ${index + 1}`}
-            pinColor="red"
-            style={{width: 15, height: 10}}
-          />;
-        })} */}
+
         {multipleLocation.map((stop, index) => (
           <Marker
             key={index}
@@ -410,21 +374,19 @@ const RequestScreen = () => {
               stop.name ||
               `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
             }
-            pinColor="black"
+            pinColor={Color.black}
           />
         ))}
 
         <MapViewDirections
+          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints.length}`}
           origin={origin}
-          waypoints={multipleLocation}
-          // splitWaypoints={true}
+          waypoints={waypoints}
           destination={destination}
           strokeColor={Color.black}
           strokeWidth={6}
           apikey={apikey}
-          // optimizeWaypoints={false}
           optimizeWaypoints={false}
-          // mode='DRIVING'
           onStart={params => {
             console.log(
               `Started routing between "${params?.origin}" and "${params?.destination}"`,
@@ -494,7 +456,17 @@ const RequestScreen = () => {
                   <View>
                     <CustomText style={styles.text}>{item?.name}</CustomText>
                     <CustomText style={styles.price}>{item?.price}</CustomText>
-                    <TouchableOpacity style={styles.btn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCabType(item);
+                      }}
+                      style={[
+                        styles.btn,
+                        {
+                          backgroundColor:
+                            cabType?.id == item?.id ? '#949392' : Color.black,
+                        },
+                      ]}>
                       <CustomText style={styles.btn_text}>Book Ride</CustomText>
                     </TouchableOpacity>
                   </View>
@@ -536,6 +508,7 @@ const RequestScreen = () => {
           onUpdateLocation={handleMultipleStopsUpdate}
           setAdditionalLocation={setAdditionalLocation}
           additionalLocation={additionalLocation}
+          fromrequest={true}
           isIcon
           islocation
         />
@@ -549,8 +522,18 @@ const RequestScreen = () => {
           text={'CONFIRM NOW'}
           marginBottom={moderateScale(10, 0.6)}
           onPress={() =>
-            pickupLocation && dropLocation != null
-              ? navigationService.navigate('FareScreen', {
+            // console.log(
+            //   '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ',
+            //   origin?.latitude && destination?.latitude != '' ? 'meerab ' : 'zerish',
+            // )
+            cabType == null
+              ? Platform.OS == 'android'
+                ? ToastAndroid.show(
+                    ' empty feilds is required',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('empty feilds is required')
+              : navigationService.navigate('FareScreen', {
                   distance: parseInt(distance),
                   fare: Number(fare),
                   pickup: origin,
@@ -558,13 +541,9 @@ const RequestScreen = () => {
                   currentPosition: currentPosition,
                   pickupLocation: pickupLocation,
                   dropoffLocation: dropLocation,
+                  CabType: cabType,
+                  multiplePickups: multipleLocation,
                 })
-              : Platform.OS == 'android'
-              ? ToastAndroid.show(
-                  ' empty feilds is required',
-                  ToastAndroid.SHORT,
-                )
-              : Alert.alert('empty feilds is required')
           }
         />
       </View>
@@ -590,8 +569,8 @@ const styles = StyleSheet.create({
   },
   cab_view: {
     height: windowHeight * 0.2,
-    width: windowWidth * 0.7,
     backgroundColor: Color.white,
+    width: windowWidth * 0.7,
     marginHorizontal: moderateScale(10, 0.6),
     borderRadius: moderateScale(20, 0.6),
     alignItems: 'center',
@@ -623,7 +602,6 @@ const styles = StyleSheet.create({
   btn: {
     width: moderateScale(100, 0.6),
     height: moderateScale(40, 0.6),
-    backgroundColor: Color.black,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
     alignItems: 'center',

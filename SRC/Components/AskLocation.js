@@ -39,6 +39,7 @@ const AskLocation = ({
   onUpdateLocation,
   additionalLocation,
   setAdditionalLocation,
+  fromrequest,
 }) => {
   const [addLocation, setAddLocation] = useState(false);
   return (
@@ -56,18 +57,20 @@ const AskLocation = ({
           </View>
         )}
       </View>
-      <CustomText
-        onPress={() => {
-          setAddLocation(true);
-        }}
-        isBold
-        style={{
-          fontSize: moderateScale(10, 0.6),
-          top: 10,
-          left: 235,
-        }}>
-        add multiple location
-      </CustomText>
+      {fromrequest && (
+        <CustomText
+          onPress={() => {
+            setAddLocation(true);
+          }}
+          isBold
+          style={{
+            fontSize: moderateScale(10, 0.6),
+            top: 10,
+            left: 235,
+          }}>
+          add multiple location
+        </CustomText>
+      )}
       {renderView}
       {islocation && (
         <View style={styles.seatView}>

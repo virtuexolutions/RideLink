@@ -22,7 +22,7 @@ import AppNavigator from './SRC/appNavigation';
 import {SafeAreaView, Text} from 'react-native';
 import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
 import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -42,14 +42,7 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NativeBaseProvider>
-          {/* <SafeAreaView>
-            <Text>hello
-
-            </Text>
-          </SafeAreaView> */}
           <MainContainer />
-
-          {/* <SendTripRecieptScreen/> */}
         </NativeBaseProvider>
       </PersistGate>
     </Provider>
@@ -63,9 +56,9 @@ const MainContainer = () => {
 
   useEffect(() => {
     async function GetPermission() {
+      await requestLocationPermission();
       await requestCameraPermission();
       await requestWritePermission();
-      await requestLocationPermission();
     }
     GetPermission();
   }, []);

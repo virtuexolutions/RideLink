@@ -34,11 +34,11 @@ export const SignupSchema = Yup.object({
   termsAccepted: Yup.boolean()
     .oneOf([true], 'You must accept the terms and conditions')
     .required('Required'),
-  modal: Yup.boolean().required('Car number is required'),
-  number: Yup.boolean().required('Car number is required'),
-  seat: Yup.bool().required('Seat is required'),
-  category: Yup.string().required('Category is Requried'),
-  image: Yup.object().required('Image of car is required'),
+  // modal: Yup.boolean().required('Car number is required'),
+  // number: Yup.boolean().required('Car number is required'),
+  // seat: Yup.bool().required('Seat is required'),
+  // category: Yup.string().required('Category is Requried'),
+  // image: Yup.object().required('Image of car is required'),
 });
 
 export const forgotpasswordSchema = Yup.object({

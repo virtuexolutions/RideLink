@@ -105,6 +105,7 @@ const Signup = () => {
             termsAccepted: false,
           }}
           validationSchema={SignupSchema}
+          // onSubmit={console.log('//////////////////////////')}>
           onSubmit={register}>
           {({
             values,
@@ -114,6 +115,7 @@ const Signup = () => {
             touched,
             setFieldValue,
           }) => {
+            // console.log('Errors:', errors);
             return (
               <View
                 style={[
@@ -282,6 +284,9 @@ const Signup = () => {
                   </CustomText>
                 )}
                 <CustomButton
+                  // onPress={() => {
+                  //   console.log('hell/lllllllllllllllllllllllllll');
+                  // }}
                   onPress={handleSubmit}
                   text={
                     isLoading ? (
