@@ -1,27 +1,21 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import Header from '../Components/Header';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import navigationService from '../navigationService';
-import CustomButton from '../Components/CustomButton';
-import PaymentMethodCard from '../Components/PaymentMethodCard';
-import MapViewDirections from 'react-native-maps-directions';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
+import CustomImage from '../Components/CustomImage';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
+import PaymentMethodCard from '../Components/PaymentMethodCard';
+import navigationService from '../navigationService';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const RideRequest = ({route}) => {
   const {type} = route.params;
@@ -44,23 +38,56 @@ const RideRequest = ({route}) => {
   //   }, 3000);
   // }, []);
 
-  const rideAcceptApi = async () => {
-    const url = '';
-    const body = {};
+  // const getCurrentLocation = async () => {
+  //   try {
+  //     const position = await new Promise((resolve, reject) => {
+  //       Geolocation.getCurrentPosition(
+  //         position => {
+  //           const coords = {
+  //             latitude: position.coords.latitude,
+  //             longitude: position.coords.longitude,
+  //           };
+  //           resolve(coords);
+  //           getAddressFromCoordinates(
+  //             position.coords.latitude,
+  //             position.coords.longitude,
+  //           );
+  //         },
+  //         error => {
+  //           reject(new Error(error.message));
+  //         },
+  //         {
+  //           enableHighAccuracy: true,
+  //           timeout: 15000,
+  //           maximumAge: 10000,
+  //         },
+  //       );
+  //     });
+  //     setCurrentPosition(position);
+  //   } catch (error) {
+  //     console.error('Error getting location:', error);
+  //     throw error;
+  //   }
+  // };
+  // console.log(
+  //   '🚀 ~ getCurrentLocation ~ getCurrentLocation:',
+  //   getCurrentLocation(),
+  // );
+
+  const onPressSendRequest = async status => {
+    const url = `auth/rider/ride_update/${3}`;
+    const body = {
+      status: 'accept',
+    };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
+    console.log('🚀 ~ onPressSendRequest ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
-    }
-  };
-
-  const rideCancelApi = async () => {
-    const url = '';
-    const body = {};
-    setLoading(true);
-    const response = await Post(url, body, apiHeader(token));
-    setLoading(false);
-    if (response != undefined) {
+      navigationService.navigate('PassengerDetails', {
+        type: '',
+        data: response?.data?.ride_info,
+      });
     }
   };
 
@@ -68,31 +95,38 @@ const RideRequest = ({route}) => {
     <SafeAreaView style={styles.safe_are}>
       <Header title={decline ? 'Cancel Ride' : 'Ride Request'} />
       <View style={styles.main_view}>
-        <View style={[styles.map_view]}>
+        {/* <View style={[styles.map_view]}>
           <CustomImage
             source={require('../Assets/Images/map3.png')}
             styles={styles.image}
           />
-        </View>
-        {/* <MapView
-          provider={PROVIDER_GOOGLE} 
+        </View> */}
+        <MapView
+          provider={PROVIDER_GOOGLE}
           style={styles.map}
-          region={{
+          initialRegion={{
             latitude: 37.3318456,
             longitude: -122.0296002,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}>
-          <Marker coordinate={origin} style={{width: 15, height: 10}} />
+          <Marker
+            coordinate={origin}
+            style={{width: 15, height: 10}}
+            pinColor={Color.red}></Marker>
           <MapViewDirections
             origin={origin}
             destination={destination}
-            strokeColor="blue"
+            strokeColor={Color.themeBlack}
             strokeWidth={10}
             apikey="AIzaSyCHuiMaFjSnFTQfRmAfTp9nZ9VpTICgNrc"
           />
-          <Marker coordinate={destination} />
-        </MapView> */}
+          <Marker
+            coordinate={destination}
+            style={{width: 15, height: 10}}
+            pinColor={Color.green}
+          />
+        </MapView>
         {type === 'fromIdentity' ? (
           <>
             {startNavigation ? (
@@ -281,7 +315,7 @@ const RideRequest = ({route}) => {
                     justifyContent: 'flex-start',
                   }}>
                   <CustomText style={styles.model} isBold>
-                    Taxi Model :
+                    Car Model :
                   </CustomText>
                   <CustomText style={styles.model}>
                     Toyata Vios (CO21DJ3684)
@@ -361,6 +395,7 @@ const RideRequest = ({route}) => {
                 bgColor={Color.darkBlue}
                 textTransform={'capitalize'}
                 elevation
+                loader={loading}
                 marginBottom={moderateScale(40, 0.6)}
                 onPress={() =>
                   navigationService.navigate('ChooseDeclineReasonScreen')
@@ -375,7 +410,7 @@ const RideRequest = ({route}) => {
                   marginBottom: moderateScale(20, 0.6),
                 }}>
                 <CustomButton
-                  text={'Accept'}
+                  text={'Send Request'}
                   fontSize={moderateScale(14, 0.3)}
                   textColor={Color.white}
                   borderRadius={moderateScale(30, 0.3)}
@@ -384,14 +419,13 @@ const RideRequest = ({route}) => {
                   bgColor={Color.darkBlue}
                   textTransform={'capitalize'}
                   elevation
-                  onPress={() =>
-                    navigationService.navigate('PassengerDetails', {
-                      type: '',
-                    })
-                  }
+                  onPress={() => onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
-                  onPress={() => setDecline(true)}
+                  onPress={() => {
+                    onPressSendRequest('reject');
+                    setDecline(true);
+                  }}
                   style={styles.icon_view}>
                   <Icon
                     name="cross"

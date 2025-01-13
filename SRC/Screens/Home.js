@@ -1,36 +1,33 @@
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
-  Image,
   ImageBackground,
+  Platform,
   SafeAreaView,
   StyleSheet,
-  Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {
-  requestLocationPermission,
-  windowHeight,
-  windowWidth,
-} from '../Utillity/utils';
-import {moderateScale, s} from 'react-native-size-matters';
-import Header from '../Components/Header';
+import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
-import SearchbarComponent from '../Components/SearchbarComponent';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
-
-import DeliveryBox from '../Components/DeliveryBox';
-import CustomButton from '../Components/CustomButton';
-import Userbox from '../Components/Userbox';
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Icon, ScrollView} from 'native-base';
-import navigationService from '../navigationService';
-import {useSelector} from 'react-redux';
-import {Get} from '../Axios/AxiosInterceptorFunction';
+import Header from '../Components/Header';
+import SearchbarComponent from '../Components/SearchbarComponent';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {useIsFocused} from '@react-navigation/native';
+import {Icon, ScrollView} from 'native-base';
+import Geolocation from 'react-native-geolocation-service';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import {useSelector} from 'react-redux';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
+import DeliveryBox from '../Components/DeliveryBox';
+import Userbox from '../Components/Userbox';
+import navigationService from '../navigationService';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
@@ -40,6 +37,11 @@ const Home = () => {
   const {user_type} = useSelector(state => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
   const deliveryList = [
     {
       id: 1,
@@ -123,12 +125,97 @@ const Home = () => {
     },
   ];
 
+  useEffect(() => {
+    if (user_type === 'Rider') {
+      getCurrentLocation();
+    }
+  }, []);
+
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
   const rideRequestList = async () => {
-    const url = '';
+    const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
+    console.log('🚀 ~ rideRequestList ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
+      setRequestList(response?.data?.ride_info);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      console.log('helllllllllllllllo');
+      rideRequestList();
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    updateLocation();
+    rideRequestList();
+  }, [currentPosition]);
+
+  const updateLocation = async () => {
+    const url = 'auth/rider/update-location';
+    const body = {
+      lat: currentPosition?.latitude,
+      lng: currentPosition?.longitude,
+    };
+    const response = await Post(url, body, apiHeader(token));
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('You are online now', ToastAndroid.SHORT)
+        : Alert.alert('You are online now');
     }
   };
 
@@ -359,7 +446,7 @@ const styles = StyleSheet.create({
   },
   ridelink_Box: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.255,
+    height: windowHeight * 0.25,
     alignSelf: 'center',
     borderRadius: moderateScale(17, 0.6),
     borderWidth: 1,

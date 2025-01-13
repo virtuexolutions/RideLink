@@ -24,11 +24,7 @@ import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import navigationService from '../navigationService';
-import {
-  requestLocationPermission,
-  windowHeight,
-  windowWidth,
-} from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const RequestScreen = () => {
   const isFocused = useIsFocused();
