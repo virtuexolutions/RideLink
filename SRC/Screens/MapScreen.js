@@ -8,7 +8,7 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import Pulse from 'react-native-pulse';
 import {moderateScale} from 'react-native-size-matters';
-import FontAwesome5 from 'react-native-   vector-icons/FontAwesome5';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
