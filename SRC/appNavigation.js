@@ -32,6 +32,7 @@ import Profile from './Screens/Profile';
 import {enableScreens} from 'react-native-screens';
 import MyWallet from './Screens/MyWallet';
 import AddYourCar from './Screens/AddYourCar';
+import History from './Screens/History';
 // import ReferFriendScreen from './Screens/ReferFriendScreen';
 // import LearningCenter from './Screens/LearningCenter';
 // import PrivacyPolicy from './Screens/PrivacyPolicy';
@@ -82,6 +83,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="AddYourCar" component={AddYourCar} />
+          <RootNav.Screen name="History" component={History} />
           {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
           {/* <RootNav.Screen
             name="TermsAndConditions"

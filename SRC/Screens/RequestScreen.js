@@ -24,16 +24,13 @@ import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import navigationService from '../navigationService';
-import {
-  requestLocationPermission,
-  windowHeight,
-  windowWidth,
-} from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const RequestScreen = () => {
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
+
   const cablist = [
     {
       id: 1,
@@ -56,9 +53,11 @@ const RequestScreen = () => {
       price: '$ 40.00',
     },
   ];
+
   const locationPermission = useSelector(state => state.commonReducer.location);
+  const [cabType, setCabType] = useState(null);
+  console.log('🚀 ~ RequestScreen ~ selectedCab:', cabType);
   const [pickupLocation, setPickupLocation] = useState({});
-  console.log('🚀 ~ RequestScreen ~ pickupLocation:', pickupLocation);
   const [dropLocation, setDropLocation] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
@@ -67,22 +66,28 @@ const RequestScreen = () => {
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
   const [address, setAddress] = useState('');
+  const [additionalLocation, setAdditionalLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
-  console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
-  console.log('🚀 ~ RequestScreen ~ currentPosition:', currentPosition);
+  const [points, setPoints] = useState({});
+  const [multipleLocation, setMultipleLocation] = useState([]);
   const [nearestRider, setNearestRider] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
   };
+  console.log('🚀 ~ RequestScreen ~ origin:', origin);
   const destination = {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
   console.log('🚀 ~ RequestScreen ~ destination:', destination);
+  const waypoints = multipleLocation?.map(item => ({
+    latitude: parseFloat(item?.lat),
+    longitude: parseFloat(item?.lng),
+  }));
 
   const fareStructure = {
     1: {baseFare: 10, additionalFarePerMile: 1},
@@ -101,16 +106,59 @@ const RequestScreen = () => {
     4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
   };
 
+  // useEffect(() => {
+  //   requestLocationPermission();
+  // }, [isFocused]);
+
   useEffect(() => {
     getCurrentLocation();
+    // getcabsData()
   }, [isFocused]);
+  const getCurrentLocation = async () => {
+    console.log('frommmmmmmmmmmmmmmmmmm position function ');
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
 
+  const getcabsData = async () => {
+    const url = '';
+    const response = await Get(url, token);
+    if (response != undefined) {
+    }
+  };
   useEffect(() => {
     if (currentPosition) {
       mapRef.current?.animateToRegion(
         {
-          latitude: currentPosition.latitude,
-          longitude: currentPosition.longitude,
+          latitude: currentPosition?.latitude,
+          longitude: currentPosition?.longitude,
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         },
@@ -148,7 +196,6 @@ const RequestScreen = () => {
       let km = Math.round(checkDistanceBetween / 1000);
 
       const distanceInMiles = km / 1.60934;
-      console.log('==================> distance ', distanceInMiles);
       const calculatedFare = calculateFare(distanceInMiles);
       setFare(calculatedFare);
       setDistance(km);
@@ -156,7 +203,6 @@ const RequestScreen = () => {
         // const apikey ='AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'
         const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
         try {
-          console.log('============= > frrom try');
           const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
           const response = await fetch(url);
           if (!response.ok) {
@@ -189,74 +235,6 @@ const RequestScreen = () => {
     };
     mapRef.current?.animateToRegion(reigion, 1000);
   }, [origin]);
-
-  // const getCurrentLocation = async () => {
-  //   try {
-  //     const position = await new Promise((resolve, reject) => {
-  //       console.log('hyyyyyyyyyyyyyeeeeeeeeeeeeeeee');
-  //       Geolocation.getCurrentPosition(
-  //         position => {
-  //           const coords = {
-  //             latitude: position.coords.latitude,
-  //             longitude: position.coords.longitude,
-  //           };
-  //           resolve(coords);
-  //           getAddressFromCoordinates(
-  //             position.coords.latitude,
-  //             position.coords.longitude,
-  //           );
-  //         },
-  //         error => {
-  //           reject(new Error(error.message));
-  //         },
-  //         {
-  //           enableHighAccuracy: true,
-  //           timeout: 15000,
-  //           maximumAge: 10000,
-  //         },
-  //       );
-  //     });
-  //     requestLocationPermission();
-  //     setCurrentPosition(position);
-  //     setIsModalVisible(false);
-  //     console.log('🚀 ~ getCurrentLocation ~ position:', position);
-  //   } catch (error) {
-  //     console.error('Error getting location:', error);
-  //     throw error;
-  //   }
-  // };
-
-  const getCurrentLocation = async () => {
-    try {
-      const position = await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          position => {
-            const coords = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-            resolve(coords);
-            getAddressFromCoordinates(
-              position.coords.latitude,
-              position.coords.longitude,
-            );
-          },
-          error => {
-            reject(new Error(error.message));
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 10000,
-          },
-        );
-      });
-      setCurrentPosition(position);
-    } catch (error) {
-      console.error('Error getting location:', error);
-      throw error;
-    }
-  };
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
@@ -357,8 +335,12 @@ const RequestScreen = () => {
       }),
     }))
     ?.sort((a, b) => a.distance - b.distance);
-  console.log('🚀 ~ sortedRiders ~ sortedRiders:', sortedRiders);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+
+  const handleMultipleStopsUpdate = updatedStops => {
+    setMultipleLocation(updatedStops);
+  };
+
   return (
     <SafeAreaView style={styles.safearea_view}>
       <MapView
@@ -374,38 +356,53 @@ const RequestScreen = () => {
         {Object.keys(pickupLocation)?.length > 0 && (
           <>
             <Marker
-              pinColor="green"
-              title="pick up"
               coordinate={origin}
-              style={{width: 15, height: 10}}
+              title="pickup  Location"
+              pinColor={Color.red}
             />
           </>
         )}
+
+        {multipleLocation.map((stop, index) => (
+          <Marker
+            key={index}
+            coordinate={{latitude: stop.lat, longitude: stop.lng}}
+            title={`Stop ${index + 1}`}
+            description={
+              stop.name ||
+              `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
+            }
+            pinColor={Color.black}
+          />
+        ))}
+
         <MapViewDirections
+          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints.length}`}
           origin={origin}
+          waypoints={waypoints}
           destination={destination}
-          strokeColor={Color.darkBlue}
+          strokeColor={Color.black}
           strokeWidth={6}
           apikey={apikey}
+          optimizeWaypoints={false}
           onStart={params => {
             console.log(
               `Started routing between "${params?.origin}" and "${params?.destination}"`,
             );
           }}
+          onError={e => {
+            console.log('map vview direction erorrrrrrrrrrrrrr', e);
+          }}
           tappable={true}
           onReady={result => {
-            mapRef.current.fitToCoordinates(
-              result.coordinates,
-              // console.log('===================' , result)
-              {
-                edgePadding: {
-                  right: 50,
-                  left: 50,
-                  top: 300, // Adjust this positive value based on your card's height
-                  bottom: 100,
-                },
+            mapRef.current.fitToCoordinates(result.coordinates, {
+              edgePadding: {
+                right: 50,
+                left: 50,
+                top: 300,
+                bottom: 100,
               },
-            );
+            });
           }}
         />
         {/* {sortedRiders?.map((item, index) => (
@@ -435,7 +432,7 @@ const RequestScreen = () => {
             <Marker
               coordinate={destination}
               title="Drop-off Location"
-              pinColor="black"
+              pinColor={Color.green}
             />
           )}
       </MapView>
@@ -457,7 +454,17 @@ const RequestScreen = () => {
                   <View>
                     <CustomText style={styles.text}>{item?.name}</CustomText>
                     <CustomText style={styles.price}>{item?.price}</CustomText>
-                    <TouchableOpacity style={styles.btn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCabType(item);
+                      }}
+                      style={[
+                        styles.btn,
+                        {
+                          backgroundColor:
+                            cabType?.id == item?.id ? '#949392' : Color.black,
+                        },
+                      ]}>
                       <CustomText style={styles.btn_text}>Book Ride</CustomText>
                     </TouchableOpacity>
                   </View>
@@ -494,6 +501,12 @@ const RequestScreen = () => {
           heading={'Where are you Going?'}
           locationType={locationType}
           setLocationType={setLocationType}
+          multipleLocation={multipleLocation}
+          setMultipleLocation={setMultipleLocation}
+          onUpdateLocation={handleMultipleStopsUpdate}
+          setAdditionalLocation={setAdditionalLocation}
+          additionalLocation={additionalLocation}
+          fromrequest={true}
           isIcon
           islocation
         />
@@ -507,8 +520,18 @@ const RequestScreen = () => {
           text={'CONFIRM NOW'}
           marginBottom={moderateScale(10, 0.6)}
           onPress={() =>
-            pickupLocation || dropLocation != null
-              ? navigationService.navigate('FareScreen', {
+            // console.log(
+            //   '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ',
+            //   origin?.latitude && destination?.latitude != '' ? 'meerab ' : 'zerish',
+            // )
+            cabType == null
+              ? Platform.OS == 'android'
+                ? ToastAndroid.show(
+                    ' empty feilds is required',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('empty feilds is required')
+              : navigationService.navigate('FareScreen', {
                   distance: parseInt(distance),
                   fare: Number(fare),
                   pickup: origin,
@@ -516,13 +539,9 @@ const RequestScreen = () => {
                   currentPosition: currentPosition,
                   pickupLocation: pickupLocation,
                   dropoffLocation: dropLocation,
+                  CabType: cabType,
+                  multiplePickups: multipleLocation,
                 })
-              : Platform.OS == 'android'
-              ? ToastAndroid.show(
-                  ' empty feilds is required',
-                  ToastAndroid.SHORT,
-                )
-              : Alert.alert('empty feilds is required')
           }
         />
       </View>
@@ -548,8 +567,8 @@ const styles = StyleSheet.create({
   },
   cab_view: {
     height: windowHeight * 0.2,
-    width: windowWidth * 0.7,
     backgroundColor: Color.white,
+    width: windowWidth * 0.7,
     marginHorizontal: moderateScale(10, 0.6),
     borderRadius: moderateScale(20, 0.6),
     alignItems: 'center',
@@ -581,7 +600,6 @@ const styles = StyleSheet.create({
   btn: {
     width: moderateScale(100, 0.6),
     height: moderateScale(40, 0.6),
-    backgroundColor: Color.black,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
     alignItems: 'center',

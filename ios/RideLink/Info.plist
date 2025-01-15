@@ -35,6 +35,11 @@
   <string>Zocial.ttf</string>
   <string>Fontisto.ttf</string>
   </array>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera for this feature.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to provide better service.</string>
+
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>

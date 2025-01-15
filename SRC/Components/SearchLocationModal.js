@@ -14,7 +14,6 @@ import 'react-native-get-random-values';
 
 import {useDispatch} from 'react-redux';
 import {setDropoffLocation} from '../Store/slices/common';
-// import { v4 as uuidv4 } from 'uuid';
 
 const SearchLocationModal = ({
   isModalVisible,
@@ -27,6 +26,9 @@ const SearchLocationModal = ({
   isyourLocation = false,
   setcurrentPossition,
   onPress,
+  addLocation,
+  setAdditionalLocation,
+  additionalLocation,
 }) => {
   console.log('🚀 ~ isModalVisible:', isModalVisible);
   const dispatch = useDispatch();

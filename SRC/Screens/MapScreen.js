@@ -1,26 +1,32 @@
-import {
-  ActivityIndicator,
-  Alert,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {isValidCoordinate} from 'geolib';
+import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
+import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {isValidCoordinate} from 'geolib';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
+import Pulse from 'react-native-pulse';
 import {moderateScale} from 'react-native-size-matters';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import DeclineModal from '../Components/DeclineModal';
+import RequestModal from '../Components/RequestModal';
+import navigationService from '../navigationService';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import CustomButton from '../Components/CustomButton';
 
 const MapScreen = props => {
   const mapRef = useRef();
   const pickupLocation = props?.route?.params?.pickupLocation;
-  console.log('🚀 ~ MapScreen ~ pickupLocation:', pickupLocation);
+  const multiplePickups = props?.route?.params?.multiplePickups;
+  console.log(
+    '🚀 ~ multiplePickups ===================================== from map screeen =:',
+    multiplePickups,
+  );
+  const cabType = props?.route?.params?.CabType;
   const dropoffLocation = props?.route?.params?.dropoffLocation;
   const Nearestcab = props?.route?.params?.isEnabled;
   const paymentMethod = props?.route?.params?.paymentMethod;
@@ -117,6 +123,7 @@ const MapScreen = props => {
   };
 
   const requestforRide = async () => {
+    const formData = new FormData();
     const url = 'auth/bookride';
     const body = {
       location_from: pickupLocation?.name,
@@ -129,10 +136,19 @@ const MapScreen = props => {
       amount: fare,
       payment_method: paymentMethod,
       nearest_cab: Nearestcab,
+      type: cabType?.name,
     };
-    console.log('🚀 ~ requestforRide ~ body:', body);
+    multiplePickups?.forEach((item, index) => {
+      //  return console.log("🚀 ~ multiplePickups?.forEach ~ item ========:", item)
+      formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
+      formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
+    });
+    for (let key in body) {
+      formData.append(key, body[key]);
+    }
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
+    console.log('🚀 ~ requestforRide ~ body:', response?.data);
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {
@@ -260,8 +276,8 @@ const MapScreen = props => {
           style={{left: 5}}
         />
       </View>
-      {/* <View style={{position: 'absolute', bottom: 20}}>
-        <AskLocation
+      <View style={{position: 'absolute', bottom: 20}}>
+        {/* <AskLocation
           main_view_style={{height: windowHeight * 0.17}}
           heading={'Waiting For Replies'}
           renderView={
@@ -294,7 +310,7 @@ const MapScreen = props => {
               </View>
             </View>
           }
-        />
+        /> */}
         <CustomButton
           width={windowWidth * 0.9}
           height={windowHeight * 0.07}
@@ -306,7 +322,7 @@ const MapScreen = props => {
             isLoading ? (
               <ActivityIndicator size={'small'} color={Color.white} />
             ) : (
-              'RAISE FARE'
+              'Request'
             )
           }
           isBold
@@ -316,7 +332,7 @@ const MapScreen = props => {
             // setModalVisible(true)
           }}
         />
-      </View> */}
+      </View>
       <RequestModal
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}

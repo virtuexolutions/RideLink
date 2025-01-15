@@ -15,7 +15,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useSelector} from 'react-redux';
 
 const PassengerDetails = ({route}) => {
-  const {type} = route.params;
+  const {type, data} = route.params;
+  console.log('🚀 ~ PassengerDetails ~ data:', data);
   console.log('🚀 ~ PassengerDetails ~ type:', type);
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
@@ -37,8 +38,8 @@ const PassengerDetails = ({route}) => {
           isuserCard
           image={require('../Assets/Images/user_image4.png')}
           name={' Theodora J. Gardner'}
-          pickuplocation={'Fannie Street San Angelo, Texas'}
-          dropofflocation={'Fannie Street San Angelo, Texas'}
+          pickuplocation={data?.location_from}
+          dropofflocation={data?.location_to}
           isButton={type === 'fromDecline' ? true : false}
           btn_text={'Decline'}
         />
@@ -202,12 +203,21 @@ const PassengerDetails = ({route}) => {
                     style={[styles.heading, {color: Color.red}]}>
                     $ 50.25
                   </CustomText>
-                  <View style={styles.image_view}>
-                    <CustomImage
-                      style={styles.image}
-                      source={require('../Assets/Images/visa_logo.png')}
-                    />
-                  </View>
+                  {data?.payment_method === 'visa' ? (
+                    <View style={styles.image_view}>
+                      <CustomImage
+                        style={styles.image}
+                        source={require('../Assets/Images/visa_logo.png')}
+                      />
+                    </View>
+                  ) : (
+                    <View style={styles.image_view}>
+                      <CustomImage
+                        style={styles.image}
+                        source={require('../Assets/Images/paypal.png')}
+                      />
+                    </View>
+                  )}
                 </View>
               </View>
             </View>
@@ -215,9 +225,10 @@ const PassengerDetails = ({route}) => {
             <View
               style={[styles.search_conatiner, {height: windowHeight * 0.1}]}>
               <CustomText isBold style={styles.heading}>
-                Promo Code{' '}
+                Promo Code
               </CustomText>
               <TextInput
+                editable={false}
                 placeholder="013244879498"
                 placeholderTextColor={Color.veryLightGray}
                 style={{borderBottomWidth: 0.5}}
@@ -226,11 +237,11 @@ const PassengerDetails = ({route}) => {
             <View style={styles.expensesContainer}>
               <View style={styles.amountView}>
                 <CustomText>Trip Fare Breakdown</CustomText>
-                <CustomText>$50.25</CustomText>
+                <CustomText>{'$ ' + data?.amount}</CustomText>
               </View>
               <View style={styles.amountView}>
                 <CustomText>Subtotal</CustomText>
-                <CustomText>$50.25</CustomText>
+                <CustomText>{'$ ' + data?.amount}</CustomText>
               </View>
               <View style={styles.amountView}>
                 <CustomText>Promo Code</CustomText>
@@ -249,8 +260,8 @@ const PassengerDetails = ({route}) => {
                   Total
                 </CustomText>
                 <CustomText isBold style={{fontSize: moderateScale(24, 0.4)}}>
-                  $105.75
-                </CustomText>{' '}
+                  {'$ ' + data?.amount}
+                </CustomText>
                 {/* Resolved Design's calculations issues */}
               </View>
             </View>
@@ -275,7 +286,10 @@ const PassengerDetails = ({route}) => {
                     if (type === 'fromDecline') {
                       navigationService.navigate('GoOnlineScreen');
                     } else {
-                      navigationService.navigate('RideScreen');
+                      navigationService.navigate('RideScreen', {
+                        data: data,
+                        type: 'details',
+                      });
                     }
                   } else {
                     if (isPaymentCom === true) {
