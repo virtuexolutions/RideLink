@@ -1,20 +1,21 @@
-import { Icon } from 'native-base';
+import {Icon} from 'native-base';
 import React from 'react';
 import {
   FlatList,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import navigationService from '../navigationService';
 
 const History = () => {
   const user_list = [
@@ -85,11 +86,7 @@ const History = () => {
           style={{marginBottom: moderateScale(20, 0.6)}}
           renderItem={({item}) => {
             return (
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() =>
-                  navigationService.navigate('RideRequest', {type: ''})
-                }>
+              <TouchableOpacity style={styles.card}>
                 <View style={styles.image_view}>
                   <CustomImage source={item.image} style={styles.image} />
                 </View>
@@ -151,6 +148,7 @@ const History = () => {
             );
           }}
         />
+        <View style={{height: moderateScale(50, 0.6), marginTop: 10}} />
       </View>
     </SafeAreaView>
   );
@@ -235,21 +233,13 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     // left:moderateScale(2,0.6)
   },
-  locationStyle: {
-    backgroundColor: 'green',
-    // alignItems:'center',
-    width: windowWidth * 0.55,
-    height: windowHeight * 0.08,
-    marginTop: moderateScale(15, 0.6),
-  },
   date: {
     fontSize: moderateScale(11, 0.6),
     color: Color.veryLightGray,
   },
   locationStyle: {
-    width: windowWidth * 0.55,
+    width: windowWidth * 0.5,
     height: windowHeight * 0.08,
-    marginLeft: moderateScale(40, 0.6),
     marginTop: moderateScale(15, 0.6),
   },
   buttonBox: {

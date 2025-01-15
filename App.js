@@ -22,6 +22,7 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
+import { PermissionsAndroid } from 'react-native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -163,6 +164,8 @@ const MainContainer = () => {
       await requestLocationPermission();
       await requestCameraPermission();
       await requestWritePermission();
+    
+   
     }
     GetPermission();
   }, []);

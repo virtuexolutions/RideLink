@@ -33,6 +33,7 @@ const LoginScreen = props => {
   const [loginMethod, setLoginMethod] = useState('');
   const {user_type} = useSelector(state => state.authReducer);
   const [device_token, setDeviceToken] = useState(null);
+  console.log("🚀 ~ device_token:", device_token)
 
   const loginWithGoogle = async response1 => {
     // return console.log('🚀 ~ loginWithGoogle ~ body:', response1);
