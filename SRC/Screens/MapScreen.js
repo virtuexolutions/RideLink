@@ -16,6 +16,7 @@ import DeclineModal from '../Components/DeclineModal';
 import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import CustomButton from '../Components/CustomButton';
 
 const MapScreen = props => {
   const mapRef = useRef();
@@ -142,13 +143,12 @@ const MapScreen = props => {
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
       formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
     });
-
     for (let key in body) {
       formData.append(key, body[key]);
     }
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    return console.log('🚀 ~ requestforRide ~ body:', response?.data);
+    console.log('🚀 ~ requestforRide ~ body:', response?.data);
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {

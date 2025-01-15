@@ -30,6 +30,7 @@ const RequestScreen = () => {
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
+
   const cablist = [
     {
       id: 1,
@@ -52,6 +53,7 @@ const RequestScreen = () => {
       price: '$ 40.00',
     },
   ];
+
   const locationPermission = useSelector(state => state.commonReducer.location);
   const [cabType, setCabType] = useState(null);
   console.log('🚀 ~ RequestScreen ~ selectedCab:', cabType);

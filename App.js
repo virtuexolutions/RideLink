@@ -11,7 +11,7 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 // import {StripeProvider} from '@stripe/stripe-react-native';
 import messaging from '@react-native-firebase/messaging';
-import {Icon, NativeBaseProvider} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import {persistor, store} from './SRC/Store/index';
 import {
@@ -22,10 +22,6 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import {SafeAreaView, Text} from 'react-native';
-import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
-import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
-import {useIsFocused} from '@react-navigation/native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
