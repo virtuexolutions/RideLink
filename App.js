@@ -19,10 +19,7 @@ import {
 } from './SRC/Utillity/utils';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import AppNavigator from './SRC/appNavigation';
-import {SafeAreaView, Text} from 'react-native';
-import SendTripRecieptScreen from './SRC/Screens/SendTripRecieptScreen';
-import ChooseDeclineReasonScreen from './SRC/Screens/ChooseDeclineReasonScreen';
-import { useIsFocused } from '@react-navigation/native';
+// import database from '@react-native-firebase/database';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -31,6 +28,16 @@ const App = () => {
     const key = await fetchKey(); // fetch key from your server here
     setPublishableKey(key);
   };
+
+  // useEffect(() => {
+  //   const onConnectionChanged = database()
+  //     .ref('.info/connected')
+  //     .on('value', (snapshot) => {
+  //       setIsConnected(snapshot.val() === true);
+  //     });
+
+  //   return () => database().ref('.info/connected').off('value', onConnectionChanged);
+  // }, []);
 
   console.reportErrorsAsExceptions = false;
   return (

@@ -9,25 +9,13 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale} from 'react-native-size-matters';
-import Pulse from 'react-native-pulse';
-import Color from '../Assets/Utilities/Color';
-import {Icon} from 'native-base';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import AskLocation from '../Components/AskLocation';
-import CustomText from '../Components/CustomText';
-import CustomButton from '../Components/CustomButton';
-import RequestModal from '../Components/RequestModal';
-import DeclineModal from '../Components/DeclineModal';
-import navigationService from '../navigationService';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import Geolocation from 'react-native-geolocation-service';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import {isValidCoordinate} from 'geolib';
-import Geolocation from 'react-native-geolocation-service';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import Color from '../Assets/Utilities/Color';
+import {moderateScale} from 'react-native-size-matters';
 
 const MapScreen = props => {
   const mapRef = useRef();

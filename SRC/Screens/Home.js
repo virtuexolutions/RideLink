@@ -37,6 +37,7 @@ const Home = () => {
   const isFocused = useIsFocused();
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
+  console.log('🚀 ~ Home ~ token:', token , user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const deliveryList = [
@@ -130,6 +131,17 @@ const Home = () => {
     if (response != undefined) {
     }
   };
+
+  const userRequestHistory = async () => {
+    const url = `auth/customer/ride_list?type=${activebutton}`;
+    const response = await Get(url, token);
+    console.log('🚀 ~ userRequestHistory ~ response:', response?.data);
+    if (response != undefined) {
+    }
+  };
+  useEffect(() => {
+    userRequestHistory();
+  }, [activebutton]);
 
   return (
     <SafeAreaView style={styles.safe_area}>
