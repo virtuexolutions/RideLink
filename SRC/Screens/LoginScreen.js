@@ -35,7 +35,7 @@ const LoginScreen = props => {
   const [device_token, setDeviceToken] = useState(null);
 
   const loginWithGoogle = async response1 => {
-    // return console.log('🚀 ~ loginWithGoogle ~ body:', response1);
+  console.log('🚀 ~ loginWithGoogle ~ body:', response1);
     const body = {...response1?.data};
     const url = 'google-login';
     const response = await Post(url, body, apiHeader(token));
