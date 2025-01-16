@@ -23,6 +23,7 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 const LoginScreen = props => {
   const dispatch = useDispatch();
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ ====================token:", token)
   const [username, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -53,6 +54,7 @@ const LoginScreen = props => {
       password: values.password,
       device_token: device_token,
     };
+   
     const url = 'login';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));

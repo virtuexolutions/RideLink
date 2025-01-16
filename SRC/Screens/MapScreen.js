@@ -39,6 +39,9 @@ const MapScreen = props => {
   const fare = props?.route?.params?.fare;
   const distance = props?.route?.params?.distance;
   const token = useSelector(state => state.authReducer.token);
+  const fcmToken = useSelector(state => state.authReducer.fcmToken);
+
+  console.log("🚀 ~ token:", fcmToken)
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [price, setPrice] = useState(fare);

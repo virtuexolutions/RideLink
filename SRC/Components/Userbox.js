@@ -10,55 +10,55 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {color} from 'native-base/lib/typescript/theme/styled-system';
 import CustomButton from './CustomButton';
 import {mode} from 'native-base/lib/typescript/theme/tools';
+import moment from 'moment';
+import {useSelector} from 'react-redux';
+import {baseUrl, profilePicUrl} from '../Config';
 
 const Userbox = ({data, onPress}) => {
+  const userData = useSelector(state => state.commonReducer.userData);
+
+  const {user_type} = useSelector(state => state.authReducer);
   return (
     <TouchableOpacity onPress={onPress} style={styles.details_Style}>
       <View style={styles.text_Style}>
         <View style={styles.image_Style}>
           <CustomImage
-            style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
-            source={data.image}
+            style={{width: '100%', height: '100%'}}
+            source={
+              userData?.photo
+                ? {uri: `${baseUrl}/${userData?.photo}`}
+                : require('../Assets/Images/user1.png')
+            }
           />
         </View>
-        <View
-          style={{
-            width: windowWidth * 0.55,
-            marginLeft: moderateScale(20, 0.6),
-          }}>
-          <CustomText
-            style={{fontSize: moderateScale(20, 0.6), color: Color.themeBlack}}>
-            {data.userID}
-          </CustomText>
-          <CustomText
-            style={{
-              fontSize: moderateScale(12, 0.6),
-              color: Color.themeDarkGray,
-            }}>
-            {data.subtext}
-          </CustomText>
+        <View style={styles.container}>
+          <CustomText style={styles.h1}>{/* {userData?.name} */}</CustomText>
+          <CustomText style={styles.status}>{data?.status}</CustomText>
         </View>
-        <CustomText
-          style={{
-            fontSize: moderateScale(12, 0.6),
-            color: Color.themeDarkGray,
-          }}>
-          {data.time}
+        <CustomText style={styles.time}>
+          {moment(data?.created_at).format('LT')}
         </CustomText>
       </View>
       {/* <View style={{flexDirection:'row'}}> */}
-      <View style={styles.locationStyle}>
+      <View
+        style={[
+          styles.locationStyle,
+          user_type == 'Rider' && {
+            marginLeft: moderateScale(10, 0.6),
+          },
+        ]}>
         <View style={{flexDirection: 'row', left: moderateScale(2, 0.6)}}>
           <View style={styles.fromLocationStyle}>
             <View style={styles.toLocationStyle}></View>
           </View>
           <CustomText
+            numberOfLines={1}
             style={{
               fontSize: moderateScale(12, 0.6),
               color: Color.themeDarkGray,
               marginLeft: moderateScale(5, 0.6),
             }}>
-            {data.fromLocation}
+            {data?.location_from}
           </CustomText>
         </View>
         <View
@@ -78,22 +78,47 @@ const Userbox = ({data, onPress}) => {
             size={moderateScale(18, 0.6)}
           />
           <CustomText
+            numberOfLines={1}
             style={{
               fontSize: moderateScale(12, 0.6),
               color: Color.themeDarkGray,
               marginLeft: moderateScale(5, 0.6),
             }}>
-            {data.toLocation}
+            {data?.location_to}
           </CustomText>
         </View>
       </View>
+      {user_type == 'Rider' && (
+        <View style={styles.row}>
+          <View style={styles.priceView}>
+            <CustomText isBold style={styles.txt}>
+              price :
+            </CustomText>
+            <CustomText style={styles.txt}>{`${data?.amount} $`}</CustomText>
+          </View>
+          <View style={styles.priceView}>
+            <CustomText isBold style={styles.txt}>
+              distance :
+            </CustomText>
+            <CustomText
+              style={[
+                styles.txt,
+                {
+                  marginHorizontal: moderateScale(5, 0.3),
+                },
+              ]}>
+              {data?.distance}
+            </CustomText>
+          </View>
+        </View>
+      )}
       <View style={styles.buttonBox}>
         <CustomButton
           text={'Details'}
           fontSize={moderateScale(14, 0.3)}
           textColor={Color.themeDarkGray}
           borderRadius={moderateScale(30, 0.3)}
-          width={windowWidth * 0.39}
+          width={user_type != 'Rider' ? windowWidth * 0.39 : windowWidth * 0.8}
           //   marginTop={moderateScale(10,.3)}
           height={windowHeight * 0.06}
           bgColor={Color.white}
@@ -101,17 +126,19 @@ const Userbox = ({data, onPress}) => {
           borderWidth={moderateScale(1.5, 0.6)}
           borderColor={Color.themeDarkGray}
         />
-        <CustomButton
-          text={'History'}
-          fontSize={moderateScale(14, 0.3)}
-          textColor={Color.white}
-          borderRadius={moderateScale(30, 0.3)}
-          width={windowWidth * 0.39}
-          //   marginTop={moderateScale(10,.3)}
-          height={windowHeight * 0.06}
-          bgColor={Color.themeBlack}
-          textTransform={'capitalize'}
-        />
+        {user_type != 'Rider' && (
+          <CustomButton
+            text={'History'}
+            fontSize={moderateScale(14, 0.3)}
+            textColor={Color.white}
+            borderRadius={moderateScale(30, 0.3)}
+            width={windowWidth * 0.39}
+            //   marginTop={moderateScale(10,.3)}
+            height={windowHeight * 0.06}
+            bgColor={Color.themeBlack}
+            textTransform={'capitalize'}
+          />
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -131,12 +158,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: moderateScale(19, 0.6),
     paddingVertical: moderateScale(7, 0.6),
+    marginVertical: moderateScale(10, 0.6),
   },
   image_Style: {
-    width: windowWidth * 0.055,
-    height: windowWidth * 0.055,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: windowWidth * 0.1,
+    height: windowWidth * 0.1,
+    borderRadius: (windowWidth * 0.1) / 2,
+    overflow: 'hidden',
   },
   text_Style: {
     flexDirection: 'row',
@@ -173,5 +201,31 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(10, 0.6),
     // backgroundColor:'green',
     // paddingHorizontal:moderateScale(10,0.6)
+  },
+  priceView: {
+    flexDirection: 'row',
+    marginLeft: moderateScale(17, 0.6),
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  txt: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.themeDarkGray,
+  },
+  container: {
+    width: windowWidth * 0.55,
+    marginLeft: moderateScale(20, 0.6),
+    // backgroundColor : 'red'
+  },
+  h1: {fontSize: moderateScale(20, 0.6), color: Color.themeBlack},
+  status: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.themeDarkGray,
+  },
+  time: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.themeDarkGray,
+    marginLeft: moderateScale(-10, 0.6),
   },
 });

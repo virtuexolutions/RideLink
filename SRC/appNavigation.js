@@ -248,6 +248,9 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="RideRequest" component={RideRequest} />
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
+      {/* <DrawerNavigation.Screen name="PaymentScreen" component={MapScreen} /> */}
+
+      <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />
 
       <DrawerNavigation.Screen
         name="RecieptScreen"
@@ -261,7 +264,6 @@ export const MyDrawer = () => {
         name="GoOnlineScreen"
         component={GoOnlineScreen}
       />
-      <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />
     </DrawerNavigation.Navigator>
   );
 };

@@ -39,12 +39,10 @@ import navigationService from '../navigationService';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ Home ~ token:', token);
   const isFocused = useIsFocused();
+  
   const [activebutton, setactivebutton] = useState('current');
-  console.log('🚀 ~ Home ~ activebutton:', activebutton);
   const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ Home ~ token:', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [currentPosition, setCurrentPosition] = useState({
@@ -93,46 +91,27 @@ const Home = () => {
 
   const user_list = [
     {
-      id: 1,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_Image.png'),
-    },
-    {
-      id: 2,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image2.png'),
-    },
-    {
-      id: 3,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image3.png'),
-    },
-    {
-      id: 4,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image4.png'),
-    },
-    {
-      id: 5,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_Image.png'),
-    },
-    {
-      id: 6,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image2.png'),
+      amount: 13,
+      created_at: '2025-01-15T14:02:21.000000Z',
+      date: null,
+      distance: 0.13294250476869293,
+      dropoff_location_lat: '24.8615147',
+      dropoff_location_lng: '67.0617251',
+      id: 227,
+      location_from: 'Azizabad Block 8 Gulberg Town, Karachi, Pakistan',
+      location_to:
+        'Nursery Pakistan Employees Co-Operative Housing Society, Karachi, Pakistan',
+      nearest_cab: '0',
+      payment_method: 'Card',
+      pickup_location_lat: '24.9207427',
+      pickup_location_lng: '67.0665656',
+      rider_id: null,
+      status: 'pending',
+      stops: null,
+      time: null,
+      updated_at: '2025-01-15T14:02:21.000000Z',
+      user: ['Object'],
+      user_id: 5,
     },
   ];
 
@@ -247,8 +226,8 @@ const Home = () => {
     setHistoryLoading(truee);
     const response = await Get(url, token);
     console.log('🚀 ~ userRequestHistory ~ response:', response?.data);
+    setHistoryLoading(false);
     if (response != undefined) {
-      setHistoryLoading(false);
       setHistoryList(response?.data);
     }
   };
@@ -347,30 +326,31 @@ const Home = () => {
               style={{marginBottom: moderateScale(20, 0.6)}}
               renderItem={({item}) => {
                 return (
-                  <TouchableOpacity
-                    style={styles.card}
-                    onPress={() =>
-                      navigationService.navigate('RideRequest', {type: ''})
-                    }>
-                    <View style={styles.image_view}>
-                      <CustomImage source={item.image} style={styles.image} />
-                    </View>
-                    <View style={styles.text_view}>
-                      <CustomText style={styles.text}>{item.name}</CustomText>
-                      <CustomText style={styles.location}>
-                        {item.location}
-                      </CustomText>
-                      <CustomText style={styles.date}>{item.date}</CustomText>
-                    </View>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="right"
-                        as={AntDesign}
-                        size={moderateScale(14, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                  </TouchableOpacity>
+                  <Userbox data={item} />
+                  // <TouchableOpacity
+                  //   style={styles.card}
+                  //   onPress={() =>
+                  //     navigationService.navigate('RideRequest', {type: ''})
+                  //   }>
+                  //   <View style={styles.image_view}>
+                  //     <CustomImage source={item.image} style={styles.image} />
+                  //   </View>
+                  //   <View style={styles.text_view}>
+                  //     <CustomText style={styles.text}>{item.name}</CustomText>
+                  //     <CustomText style={styles.location}>
+                  //       {item.location}
+                  //     </CustomText>
+                  //     <CustomText style={styles.date}>{item.date}</CustomText>
+                  //   </View>
+                  //   <View style={styles.icon_view}>
+                  //     <Icon
+                  //       name="right"
+                  //       as={AntDesign}
+                  //       size={moderateScale(14, 0.6)}
+                  //       color={Color.white}
+                  //     />
+                  //   </View>
+                  // </TouchableOpacity>
                 );
               }}
             />
@@ -434,7 +414,7 @@ const Home = () => {
               showsVerticalScrollIndicator={false}
               style={{paddingBottom: moderateScale(150, 0.6)}}
               contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-              data={userBox}
+              data={histry_list}
               renderItem={({item}) => {
                 return (
                   <Userbox
