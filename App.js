@@ -22,6 +22,7 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
+import { PermissionsAndroid } from 'react-native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -30,6 +31,16 @@ const App = () => {
     const key = await fetchKey();
     setPublishableKey(key);
   };
+
+  // useEffect(() => {
+  //   const onConnectionChanged = database()
+  //     .ref('.info/connected')
+  //     .on('value', (snapshot) => {
+  //       setIsConnected(snapshot.val() === true);
+  //     });
+
+  //   return () => database().ref('.info/connected').off('value', onConnectionChanged);
+  // }, []);
 
   console.reportErrorsAsExceptions = false;
   console.reportErrorsAsExceptions = false;
@@ -153,6 +164,8 @@ const MainContainer = () => {
       await requestLocationPermission();
       await requestCameraPermission();
       await requestWritePermission();
+    
+   
     }
     GetPermission();
   }, []);

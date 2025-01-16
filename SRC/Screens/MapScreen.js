@@ -2,7 +2,13 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {isValidCoordinate} from 'geolib';
 import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -146,9 +152,10 @@ const MapScreen = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
+    console.log('🚀 ~ requestforRide ~ body:', body);
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    console.log('🚀 ~ requestforRide ~ body:', response?.data);
+    return console.log('🚀 ~ requestforRide ~ body:', response?.data);
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {

@@ -3,6 +3,7 @@ import {
   Alert,
   FlatList,
   ImageBackground,
+  PermissionsAndroid,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -16,7 +17,14 @@ import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {
+  apiHeader,
+  requestCameraPermission,
+  requestLocationPermission,
+  requestWritePermission,
+  windowHeight,
+  windowWidth,
+} from '../Utillity/utils';
 import {useIsFocused} from '@react-navigation/native';
 import {Icon, ScrollView} from 'native-base';
 import Geolocation from 'react-native-geolocation-service';
@@ -31,17 +39,20 @@ import navigationService from '../navigationService';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ Home ~ token:", token)
+  console.log('🚀 ~ Home ~ token:', token);
   const isFocused = useIsFocused();
   const [activebutton, setactivebutton] = useState('current');
+  console.log('🚀 ~ Home ~ activebutton:', activebutton);
   const {user_type} = useSelector(state => state.authReducer);
+  console.log('🚀 ~ Home ~ token:', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
-
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [histry_list, setHistoryList] = useState([]);
   const deliveryList = [
     {
       id: 1,
@@ -156,6 +167,7 @@ const Home = () => {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
+            console.log('🚀 ~ position ~ coords:', coords);
             resolve(coords);
             getAddressFromCoordinates(
               position.coords.latitude,
@@ -191,6 +203,16 @@ const Home = () => {
     }
   };
 
+  // useEffect(() => {
+  //   async function GetPermission() {
+  //     // if(PermissionsAndroid.PERMISSIONS.)
+  //     await requestLocationPermission();
+  //     await requestCameraPermission();
+  //     await requestWritePermission();
+  //   }
+  //   GetPermission();
+  // }, []);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       console.log('helllllllllllllllo');
@@ -203,6 +225,7 @@ const Home = () => {
   useEffect(() => {
     updateLocation();
     rideRequestList();
+    userRequestHistory();
   }, [currentPosition]);
 
   const updateLocation = async () => {
@@ -221,14 +244,14 @@ const Home = () => {
 
   const userRequestHistory = async () => {
     const url = `auth/customer/ride_list?type=${activebutton}`;
+    setHistoryLoading(truee);
     const response = await Get(url, token);
-    console.log("🚀 ~ userRequestHistory ~ response:", response?.data)
+    console.log('🚀 ~ userRequestHistory ~ response:', response?.data);
     if (response != undefined) {
+      setHistoryLoading(false);
+      setHistoryList(response?.data);
     }
   };
-  useEffect(() => {
-    userRequestHistory();
-  }, [activebutton]);
 
   return (
     <SafeAreaView style={styles.safe_area}>
