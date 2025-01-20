@@ -16,9 +16,11 @@ import Header from '../Components/Header';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {baseUrl, imageUrl} from '../Config';
 
 const RideRequest = ({route}) => {
-  const {type} = route.params;
+  const {type, data} = route.params;
+  console.log('🚀 ~ RideRequest ~ data:', data);
   console.log('🚀 ~ RideRequest ~ type:', type);
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
@@ -30,8 +32,14 @@ const RideRequest = ({route}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const origin = {latitude: 37.3285792, longitude: -122.0356209};
-  const destination = {latitude: 37.3320305, longitude: -122.0355326};
+  const origin = {
+    latitude: parseFloat(data?.pickup_location_lat),
+    longitude: parseFloat(data?.pickup_location_lng),
+  };
+  const destination = {
+    latitude: parseFloat(data?.dropoff_location_lat),
+    longitude: parseFloat(data?.dropoff_location_lng),
+  };
   // useEffect(() => {
   //   setTimeout(() => {
   //     navigationService.navigate('PaymentScreen');
@@ -75,9 +83,9 @@ const RideRequest = ({route}) => {
   // );
 
   const onPressSendRequest = async status => {
-    const url = `auth/rider/ride_update/${3}`;
+    const url = `auth/rider/ride_update/${data?.id}`;
     const body = {
-      status: 'accept',
+      status: status,
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -105,8 +113,8 @@ const RideRequest = ({route}) => {
           provider={PROVIDER_GOOGLE}
           style={styles.map}
           initialRegion={{
-            latitude: 37.3318456,
-            longitude: -122.0296002,
+            latitude: parseFloat(data?.pickup_location_lat),
+            longitude: parseFloat(data?.pickup_location_lng),
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}>
@@ -303,11 +311,11 @@ const RideRequest = ({route}) => {
               <View style={styles.image_view}>
                 <CustomImage
                   style={styles.image}
-                  source={require('../Assets/Images/user_image4.png')}
+                  source={{uri: imageUrl + data?.user?.photo}}
                 />
               </View>
               <View style={{width: '80%'}}>
-                <CustomText style={styles.name}>Timothy L. Brown</CustomText>
+                <CustomText style={styles.name}>{data?.user?.name}</CustomText>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -340,10 +348,10 @@ const RideRequest = ({route}) => {
                     />
                     <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={[styles.text1]}>
-                        {'284 Long Street Gainesville'}
+                        pickup from
                       </CustomText>
                       <CustomText isBold style={styles.text1}>
-                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                        {data?.location_from}
                       </CustomText>
                     </View>
                   </View>
@@ -374,10 +382,10 @@ const RideRequest = ({route}) => {
                     />
                     <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={styles.text1}>
-                        {'PickUpLocation'}
+                        {'DropOff Location'}
                       </CustomText>
                       <CustomText isBold style={styles.text1}>
-                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                        {data?.location_to}
                       </CustomText>
                     </View>
                   </View>
@@ -419,6 +427,7 @@ const RideRequest = ({route}) => {
                   bgColor={Color.darkBlue}
                   textTransform={'capitalize'}
                   elevation
+                  loader={loading}
                   onPress={() => onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
@@ -473,7 +482,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     fontSize: moderateScale(11, 0.6),
-    textAlign: 'center',
+    // textAlign: 'center',
   },
   waiting_card: {
     width: windowWidth * 0.9,

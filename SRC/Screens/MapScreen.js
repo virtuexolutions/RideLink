@@ -23,15 +23,12 @@ import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
+import database from '@react-native-firebase/database';
 
 const MapScreen = props => {
   const mapRef = useRef();
   const pickupLocation = props?.route?.params?.pickupLocation;
   const multiplePickups = props?.route?.params?.multiplePickups;
-  console.log(
-    '🚀 ~ multiplePickups ===================================== from map screeen =:',
-    multiplePickups,
-  );
   const cabType = props?.route?.params?.CabType;
   const dropoffLocation = props?.route?.params?.dropoffLocation;
   const Nearestcab = props?.route?.params?.isEnabled;
@@ -40,8 +37,6 @@ const MapScreen = props => {
   const distance = props?.route?.params?.distance;
   const token = useSelector(state => state.authReducer.token);
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
-
-  console.log("🚀 ~ token:", fcmToken)
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [price, setPrice] = useState(fare);
@@ -148,17 +143,14 @@ const MapScreen = props => {
       type: cabType?.name,
     };
     multiplePickups?.forEach((item, index) => {
-      //  return console.log("🚀 ~ multiplePickups?.forEach ~ item ========:", item)
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
       formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
     });
     for (let key in body) {
       formData.append(key, body[key]);
     }
-    console.log('🚀 ~ requestforRide ~ body:', body);
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    return console.log('🚀 ~ requestforRide ~ body:', response?.data);
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {
@@ -172,14 +164,41 @@ const MapScreen = props => {
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
-    const response = await Get(url, token);
-    console.log(
-      '🚀 ~ rideUpdate ~ response =====================:',
-      response?.data,
-    );
-    if (response != undefined) {
+    try {
+      const response = await Get(url, token);
+      console.log('🚀 ~ rideUpdate ~ response:', response?.data);
+      if (response != undefined) {
+        await database()
+          .ref(`/rides/${response?.data?.ride_info?.id}/status`)
+          .set(response?.data?.ride_info?.status);
+        console.log('status update');
+      }
+    } catch (error) {
+      console.log('🚀 ~ rideUpdate ~ error:', error);
     }
   };
+
+  const listenForStatusChanges = () => {
+    const ref = database().ref(`/rides/${rideId}/status`);
+    ref.on('value', async snapshot => {
+      const status = snapshot.val();
+      console.log(`current status ${status}`);
+      if (status && status !== 'accept') {
+        await rideUpdate();
+      } else {
+        console.log('Ride accepted, stopping further updates.');
+        ref.off();
+      }
+    });
+  };
+
+  useEffect(() => {
+    listenForStatusChanges();
+    return () => {
+      const ref = database().ref(`/rides/${rideId}/status`);
+      ref.off();
+    };
+  }, [rideId, token]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -189,6 +208,7 @@ const MapScreen = props => {
   }, [isFocused]);
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+
   return (
     <SafeAreaView style={[styles.safe_are, styles.background_view]}>
       <MapView
@@ -337,7 +357,7 @@ const MapScreen = props => {
           }
           isBold
           onPress={() => {
-            // rideUpdate()
+            // rideUpdate();
             requestforRide();
             // setModalVisible(true)
           }}

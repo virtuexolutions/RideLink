@@ -1,41 +1,37 @@
-import React, {useEffect, useState} from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { ScrollView } from 'native-base';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  I18nManager,
   ImageBackground,
-  PermissionsAndroid,
   Platform,
   SafeAreaView,
   StyleSheet,
   ToastAndroid,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
+import Geolocation from 'react-native-geolocation-service';
+import { moderateScale } from 'react-native-size-matters';
+import Feather from 'react-native-vector-icons/Feather';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
+import { Get, Post } from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
+import DeliveryBox from '../Components/DeliveryBox';
 import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
-import {
-  apiHeader,
-  requestCameraPermission,
-  requestLocationPermission,
-  requestWritePermission,
-  windowHeight,
-  windowWidth,
-} from '../Utillity/utils';
-import {useIsFocused} from '@react-navigation/native';
-import {Icon, ScrollView} from 'native-base';
-import Geolocation from 'react-native-geolocation-service';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
-import {useSelector} from 'react-redux';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
-import CustomButton from '../Components/CustomButton';
-import DeliveryBox from '../Components/DeliveryBox';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
+import {
+  apiHeader,
+  windowHeight,
+  windowWidth
+} from '../Utillity/utils';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
@@ -43,6 +39,7 @@ const Home = () => {
   
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
+  console.log("🚀 ~ Homeeeeee ~ token:", token, user_type)
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [currentPosition, setCurrentPosition] = useState({
@@ -192,18 +189,19 @@ const Home = () => {
   //   GetPermission();
   // }, []);
 
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     rideRequestList();
+  //   }, 10000);
+
+  //   return () => clearTimeout(timeout);
+  // }, []);
+
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      console.log('helllllllllllllllo');
+    if (user_type === 'Rider') {
+      updateLocation();
       rideRequestList();
-    }, 10000);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    updateLocation();
-    rideRequestList();
+    }
     userRequestHistory();
   }, [currentPosition]);
 
@@ -318,42 +316,68 @@ const Home = () => {
 
         {user_type === 'Rider' ? (
           <ScrollView showsVerticalScrollIndicator={false}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              keyExtractor={item => item?.id}
-              data={user_list}
-              contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
-              style={{marginBottom: moderateScale(20, 0.6)}}
-              renderItem={({item}) => {
-                return (
-                  <Userbox data={item} />
-                  // <TouchableOpacity
-                  //   style={styles.card}
-                  //   onPress={() =>
-                  //     navigationService.navigate('RideRequest', {type: ''})
-                  //   }>
-                  //   <View style={styles.image_view}>
-                  //     <CustomImage source={item.image} style={styles.image} />
-                  //   </View>
-                  //   <View style={styles.text_view}>
-                  //     <CustomText style={styles.text}>{item.name}</CustomText>
-                  //     <CustomText style={styles.location}>
-                  //       {item.location}
-                  //     </CustomText>
-                  //     <CustomText style={styles.date}>{item.date}</CustomText>
-                  //   </View>
-                  //   <View style={styles.icon_view}>
-                  //     <Icon
-                  //       name="right"
-                  //       as={AntDesign}
-                  //       size={moderateScale(14, 0.6)}
-                  //       color={Color.white}
-                  //     />
-                  //   </View>
-                  // </TouchableOpacity>
-                );
-              }}
-            />
+            {isLoading ? (
+              <ActivityIndicator
+                style={styles.indicatorStyle}
+                size="small"
+                color={Color.black}
+              />
+            ) : (
+              <FlatList
+                ListEmptyComponent={
+                  <CustomText
+                    style={{
+                      textAlign: 'center',
+                      fontSize: moderateScale(11, 0.6),
+                      color: Color.red,
+                    }}>
+                    no data found
+                  </CustomText>
+                }
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item?.id}
+                data={requestList}
+                contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
+                style={{marginBottom: moderateScale(20, 0.6)}}
+                renderItem={({item}) => {
+                  return (
+                    <Userbox
+                      data={item}
+                      onPressDetails={() =>
+                        navigationService.navigate('RideRequest', {
+                          type: '',
+                          data: item,
+                        })
+                      }
+                    />
+                    // <TouchableOpacity
+                    //   style={styles.card}
+                    //   onPress={() =>
+                    //     navigationService.navigate('RideRequest', {type: ''})
+                    //   }>
+                    //   <View style={styles.image_view}>
+                    //     <CustomImage source={item.image} style={styles.image} />
+                    //   </View>
+                    //   <View style={styles.text_view}>
+                    //     <CustomText style={styles.text}>{item.name}</CustomText>
+                    //     <CustomText style={styles.location}>
+                    //       {item.location}
+                    //     </CustomText>
+                    //     <CustomText style={styles.date}>{item.date}</CustomText>
+                    //   </View>
+                    //   <View style={styles.icon_view}>
+                    //     <Icon
+                    //       name="right"
+                    //       as={AntDesign}
+                    //       size={moderateScale(14, 0.6)}
+                    //       color={Color.white}
+                    //     />
+                    //   </View>
+                    // </TouchableOpacity>
+                  );
+                }}
+              />
+            )}
           </ScrollView>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -410,20 +434,38 @@ const Home = () => {
                 textTransform={'capitalize'}
               />
             </View>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              style={{paddingBottom: moderateScale(150, 0.6)}}
-              contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-              data={histry_list}
-              renderItem={({item}) => {
-                return (
-                  <Userbox
-                    data={item}
-                    // onPress={}
-                  />
-                );
-              }}
-            />
+            {historyLoading ? (
+              <ActivityIndicator
+                style={styles.indicatorStyle}
+                size="small"
+                color={Color.black}
+              />
+            ) : (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                  <CustomText
+                    style={{
+                      textAlign: 'center',
+                      fontSize: moderateScale(11, 0.6),
+                      color: Color.red,
+                    }}>
+                    no data found
+                  </CustomText>
+                }
+                style={{paddingBottom: moderateScale(150, 0.6)}}
+                contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+                data={histry_list}
+                renderItem={({item}) => {
+                  return (
+                    <Userbox
+                      data={item}
+                      // onPress={}
+                    />
+                  );
+                }}
+              />
+            )}
           </ScrollView>
         )}
       </View>
@@ -438,6 +480,11 @@ const styles = StyleSheet.create({
     width: windowWidth,
     height: windowHeight,
     backgroundColor: Color.white,
+  },
+  indicatorStyle: {
+    paddingRight: 5,
+    paddingLeft: I18nManager.isRTL ? 5 : 0,
+    marginTop: moderateScale(20, 0.6),
   },
   main_Container: {
     height: windowHeight,

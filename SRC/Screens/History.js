@@ -74,6 +74,8 @@ const History = () => {
       price: '150',
     },
   ];
+  const getHistory = async() =>{
+  }
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={'Rides history'} />

@@ -22,7 +22,11 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import { PermissionsAndroid } from 'react-native';
+import {Alert, TouchableOpacity, View} from 'react-native';
+import navigationService from './SRC/navigationService';
+import CustomImage from './SRC/Components/CustomImage';
+import CustomText from './SRC/Components/CustomText';
+import {moderateScale} from 'react-native-size-matters';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -31,16 +35,6 @@ const App = () => {
     const key = await fetchKey();
     setPublishableKey(key);
   };
-
-  // useEffect(() => {
-  //   const onConnectionChanged = database()
-  //     .ref('.info/connected')
-  //     .on('value', (snapshot) => {
-  //       setIsConnected(snapshot.val() === true);
-  //     });
-
-  //   return () => database().ref('.info/connected').off('value', onConnectionChanged);
-  // }, []);
 
   console.reportErrorsAsExceptions = false;
   console.reportErrorsAsExceptions = false;
@@ -64,11 +58,38 @@ const App = () => {
   const [notificationModal, setNotificationModal] = useState(false);
   console.log('🚀 ~ App ~ notificationModal:', notificationModal);
 
+  // useEffect(() => {
+  //   console.log('chl rha ha')
+  //   requestUserPermission();
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log('A new FCM message arrived:', remoteMessage);
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //     setNotificationModal(true);
+  //     setNotification({
+  //       title: remoteMessage.notification.title,
+  //       body: remoteMessage.notification.body,
+  //     });
+  //     const timer = setTimeout(() => {
+  //       setNotificationModal(false);
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   });
+  //   unsubscribe();
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(remoteMessage => {
+  //       console.log('🚀 ~ useEffect ~ remoteMessage:', remoteMessage);
+  //       if (remoteMessage && remoteMessage.data?.screen) {
+  //         navigation.navigate(remoteMessage.data.screen, {
+  //           messageData: remoteMessage.data,
+  //         });
+  //       }
+  //     });
+  // });
+
   useEffect(() => {
     requestUserPermission();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived:', remoteMessage);
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
       setNotificationModal(true);
       setNotification({
         title: remoteMessage.notification.title,
@@ -79,18 +100,17 @@ const App = () => {
       }, 3000);
       return () => clearTimeout(timer);
     });
-    unsubscribe();
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
-        console.log('🚀 ~ useEffect ~ remoteMessage:', remoteMessage);
         if (remoteMessage && remoteMessage.data?.screen) {
-          navigation.navigate(remoteMessage.data.screen, {
+          navigationService.navigate(remoteMessage.data.screen, {
             messageData: remoteMessage.data,
           });
         }
       });
-  });
+    console.log('Running Firebase Notification ==> ');
+  }, []);
 
   return (
     //   <StripeProvider
@@ -164,8 +184,6 @@ const MainContainer = () => {
       await requestLocationPermission();
       await requestCameraPermission();
       await requestWritePermission();
-    
-   
     }
     GetPermission();
   }, []);
