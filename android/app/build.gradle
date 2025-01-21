@@ -88,15 +88,14 @@ android {
         versionCode 1
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
-           ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a" 
-        }
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++17"
-            }
-        }
-    }
+    //      ndk {
+    //         abiFilters "armeabi-v7a", "arm64-v8a" // Include relevant ABIs
+    //     }
+    //     externalNativeBuild {
+    //         cmake {
+    //             cppFlags "-std=c++17" // Example flag, adjust as needed
+    //         }
+    // }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -118,12 +117,12 @@ android {
         }
     }
 }
-
+}
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-vector-icons')
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
 
     //    implementation(project(':react-native-onesignal')){
