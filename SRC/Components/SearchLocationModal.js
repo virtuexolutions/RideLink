@@ -30,7 +30,6 @@ const SearchLocationModal = ({
   setAdditionalLocation,
   additionalLocation,
 }) => {
-  console.log('🚀 ~ isModalVisible:', isModalVisible);
   const dispatch = useDispatch();
 
   return (
@@ -78,11 +77,11 @@ const SearchLocationModal = ({
             // value: inputValue,
           }}
           onPress={(data, details = null) => {
-            console.log('Location ========>>>>', {
-              name: data?.description,
-              lat: details?.geometry?.location?.lat,
-              lng: details?.geometry?.location?.lng,
-            });
+            // console.log('Location ========>>>>', {
+            //   name: data?.description,
+            //   lat: details?.geometry?.location?.lat,
+            //   lng: details?.geometry?.location?.lng,
+            // });
             setIsModalVisible(false);
             locationType == 'pickup'
               ? dispatch(

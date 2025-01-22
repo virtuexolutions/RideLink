@@ -56,7 +56,6 @@ const RequestScreen = () => {
 
   const locationPermission = useSelector(state => state.commonReducer.location);
   const [cabType, setCabType] = useState(null);
-  console.log('🚀 ~ RequestScreen ~ selectedCab:', cabType);
   const [pickupLocation, setPickupLocation] = useState({});
   const [dropLocation, setDropLocation] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -78,12 +77,10 @@ const RequestScreen = () => {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
   };
-  console.log('🚀 ~ RequestScreen ~ origin:', origin);
   const destination = {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
-  console.log('🚀 ~ RequestScreen ~ destination:', destination);
   const waypoints = multipleLocation?.map(item => ({
     latitude: parseFloat(item?.lat),
     longitude: parseFloat(item?.lng),
@@ -115,7 +112,6 @@ const RequestScreen = () => {
     // getcabsData()
   }, [isFocused]);
   const getCurrentLocation = async () => {
-    console.log('frommmmmmmmmmmmmmmmmmm position function ');
     try {
       const position = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
@@ -147,12 +143,7 @@ const RequestScreen = () => {
     }
   };
 
-  const getcabsData = async () => {
-    const url = '';
-    const response = await Get(url, token);
-    if (response != undefined) {
-    }
-  };
+ 
   useEffect(() => {
     if (currentPosition) {
       mapRef.current?.animateToRegion(
@@ -255,7 +246,6 @@ const RequestScreen = () => {
   const nearestRide = async () => {
     const url = 'auth/customer/near_riders_list';
     const response = await Get(url, token);
-    console.log('🚀 ~ nearestRide ~ response:', response?.data?.data);
     if (response != undefined) {
       setNearestRider(response?.data?.data);
     }
@@ -386,9 +376,9 @@ const RequestScreen = () => {
           apikey={apikey}
           optimizeWaypoints={false}
           onStart={params => {
-            console.log(
-              `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            );
+            // console.log(
+            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
+            // );
           }}
           onError={e => {
             console.log('map vview direction erorrrrrrrrrrrrrr', e);
@@ -520,17 +510,13 @@ const RequestScreen = () => {
           text={'CONFIRM NOW'}
           marginBottom={moderateScale(10, 0.6)}
           onPress={() =>
-            // console.log(
-            //   '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ',
-            //   origin?.latitude && destination?.latitude != '' ? 'meerab ' : 'zerish',
-            // )
             cabType == null
               ? Platform.OS == 'android'
                 ? ToastAndroid.show(
-                    ' empty feilds is required',
+                    ' cab type is required',
                     ToastAndroid.SHORT,
                   )
-                : Alert.alert('empty feilds is required')
+                : Alert.alert('cab type is required')
               : navigationService.navigate('FareScreen', {
                   distance: parseInt(distance),
                   fare: Number(fare),

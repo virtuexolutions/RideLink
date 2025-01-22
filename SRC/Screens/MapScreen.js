@@ -23,15 +23,12 @@ import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
+import database, {firebase} from '@react-native-firebase/database';
 
 const MapScreen = props => {
   const mapRef = useRef();
   const pickupLocation = props?.route?.params?.pickupLocation;
   const multiplePickups = props?.route?.params?.multiplePickups;
-  console.log(
-    '🚀 ~ multiplePickups ===================================== from map screeen =:',
-    multiplePickups,
-  );
   const cabType = props?.route?.params?.CabType;
   const dropoffLocation = props?.route?.params?.dropoffLocation;
   const Nearestcab = props?.route?.params?.isEnabled;
@@ -40,16 +37,15 @@ const MapScreen = props => {
   const distance = props?.route?.params?.distance;
   const token = useSelector(state => state.authReducer.token);
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
-
-  console.log("🚀 ~ token:", fcmToken)
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [price, setPrice] = useState(fare);
-  const [modalVisible, setModalVisible] = useState(false);
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
   const [rideStatus, setRideStatus] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  console.log('🚀 ~=========================== rideStatus:', rideStatus);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -148,47 +144,80 @@ const MapScreen = props => {
       type: cabType?.name,
     };
     multiplePickups?.forEach((item, index) => {
-      //  return console.log("🚀 ~ multiplePickups?.forEach ~ item ========:", item)
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
       formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
     });
     for (let key in body) {
       formData.append(key, body[key]);
     }
-    console.log('🚀 ~ requestforRide ~ body:', body);
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    return console.log('🚀 ~ requestforRide ~ body:', response?.data);
     setIsLoading(false);
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
-      Alert.alert(
-        'Waiting',
-        'Please wait here for rider to find your Request. If there is no reponse then add your Fare',
-      );
+      Alert.alert('Waiting', 'Please wait here for rider to find your Request');
     }
   };
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
-    const response = await Get(url, token);
-    console.log(
-      '🚀 ~ rideUpdate ~ response =====================:',
-      response?.data,
-    );
-    if (response != undefined) {
+    try {
+      const response = await Get(url, token);
+      console.log('🚀 ~ rideUpdate ~ responses:', response?.data);
+      if (response != undefined) {
+        await database()
+          .ref(`/rides/${response?.data?.ride_info?.id}/status`)
+          .set(response?.data?.ride_info?.status);
+        setRideStatus(response?.data?.ride_info?.status);
+
+        console.log('status update');
+      }
+    } catch (error) {
+      console.log('🚀 ~ rideUpdate ~ error:', error);
     }
   };
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await firebase
+  //         .database()
+  //         .ref('requests/')
+  //         .once('value');
+  //       if (response.exists()) {
+  //         console.log('resssssssssssssssssponseeee,',response)
+  //         // setData(response.val());
+  //       } else {
+  //         console.log('response is nullllllllllllllllll')
+  //         // setData(null); // Handle the case where there is no data
+  //       }
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+  const waypoints = multiplePickups?.map(item => ({
+    latitude: parseFloat(item?.lat),
+    longitude: parseFloat(item?.lng),
+  }));
 
   useEffect(() => {
     const interval = setInterval(() => {
       rideId != '' && rideUpdate();
+      if(rideStatus.toLocaleLowerCase() == 'accepte'){
+        setModalVisible(true)
+      }
     }, 5000);
     return () => clearInterval(interval);
   }, [isFocused]);
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+
   return (
     <SafeAreaView style={[styles.safe_are, styles.background_view]}>
       <MapView
@@ -211,12 +240,6 @@ const MapScreen = props => {
         //   heading: 0,
         //   altitude: 1000,
         // }}
-        // region={{
-        //   latitude: currentPosition?.latitude || 0,
-        //   longitude: currentPosition?.longitude || 0,
-        //   latitudeDelta: 0.067,
-        //   longitudeDelta: 0.067,
-        // }}
       >
         {Object.keys(pickupLocation)?.length > 0 && (
           <>
@@ -228,16 +251,17 @@ const MapScreen = props => {
             />
           </>
         )}
-        <MapViewDirections
+        {/* <MapViewDirections
+        key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${multiplePickups?.length}`}
           origin={origin}
           destination={destination}
           strokeColor={Color.darkBlue}
           strokeWidth={6}
           apikey={apikey}
           onStart={params => {
-            console.log(
-              `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            );
+            // console.log(
+            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
+            // );
           }}
           tappable={true}
           onReady={result => {
@@ -253,6 +277,35 @@ const MapScreen = props => {
                 },
               },
             );
+          }}
+        /> */}
+        <MapViewDirections
+          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
+          origin={origin}
+          waypoints={waypoints}
+          destination={destination}
+          strokeColor={Color.black}
+          strokeWidth={6}
+          apikey={apikey}
+          optimizeWaypoints={false}
+          onStart={params => {
+            // console.log(
+            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
+            // );
+          }}
+          onError={e => {
+            console.log('map vview direction erorrrrrrrrrrrrrr', e);
+          }}
+          tappable={true}
+          onReady={result => {
+            mapRef.current.fitToCoordinates(result.coordinates, {
+              edgePadding: {
+                right: 50,
+                left: 50,
+                top: 300,
+                bottom: 100,
+              },
+            });
           }}
         />
         {dropoffLocation != null &&
@@ -337,7 +390,7 @@ const MapScreen = props => {
           }
           isBold
           onPress={() => {
-            // rideUpdate()
+            // rideUpdate();
             requestforRide();
             // setModalVisible(true)
           }}

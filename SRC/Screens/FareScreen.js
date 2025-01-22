@@ -24,7 +24,6 @@ import {useSelector} from 'react-redux';
 const FareScreen = props => {
   const data = props?.route?.params;
   const multiplePickups = props?.route?.params?.multiplePickups;
-  console.log("🚀 ~ multiplePickups ============================ aafrom fare screen :", multiplePickups)
   const CabType = props?.route?.params?.CabType;
   const fare = props?.route?.params?.fare;
   const pickupLocation = props?.route?.params?.pickupLocation;

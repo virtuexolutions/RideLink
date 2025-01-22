@@ -1,20 +1,19 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import moment from 'moment';
+import {Icon} from 'native-base';
 import React from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {baseUrl} from '../Config';
 import {windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale, verticalScale} from 'react-native-size-matters';
+import CustomButton from './CustomButton';
 import CustomImage from './CustomImage';
 import CustomText from './CustomText';
-import Color from '../Assets/Utilities/Color';
-import {Icon} from 'native-base';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {color} from 'native-base/lib/typescript/theme/styled-system';
-import CustomButton from './CustomButton';
-import {mode} from 'native-base/lib/typescript/theme/tools';
-import moment from 'moment';
-import {useSelector} from 'react-redux';
-import {baseUrl, profilePicUrl} from '../Config';
 
-const Userbox = ({data, onPress}) => {
+const Userbox = ({data, onPress, onPressDetails}) => {
+  console.log("🚀 ~ Userbox ~ onPressDetails:", onPressDetails)
   const userData = useSelector(state => state.commonReducer.userData);
 
   const {user_type} = useSelector(state => state.authReducer);
@@ -116,15 +115,14 @@ const Userbox = ({data, onPress}) => {
         <CustomButton
           text={'Details'}
           fontSize={moderateScale(14, 0.3)}
-          textColor={Color.themeDarkGray}
+          textColor={user_type != 'Rider' ? Color.themeDarkGray : Color.white}
           borderRadius={moderateScale(30, 0.3)}
           width={user_type != 'Rider' ? windowWidth * 0.39 : windowWidth * 0.8}
           //   marginTop={moderateScale(10,.3)}
           height={windowHeight * 0.06}
-          bgColor={Color.white}
+          bgColor={user_type != 'Rider' ? Color.white : Color.black}
           textTransform={'capitalize'}
-          borderWidth={moderateScale(1.5, 0.6)}
-          borderColor={Color.themeDarkGray}
+          onPress={onPressDetails}
         />
         {user_type != 'Rider' && (
           <CustomButton
@@ -149,7 +147,7 @@ export default Userbox;
 const styles = StyleSheet.create({
   details_Style: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.27,
+    height: windowHeight * 0.28,
     borderRadius: moderateScale(17, 0.6),
     // backgroundColor:'green',
     borderRadius: moderateScale(17, 0.6),

@@ -20,7 +20,6 @@ import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {editProfileSchema} from '../Constant/schema';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {setUserData} from '../Store/slices/common';
