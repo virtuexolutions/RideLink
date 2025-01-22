@@ -20,8 +20,6 @@ import {baseUrl, imageUrl} from '../Config';
 
 const RideRequest = ({route}) => {
   const {type, data} = route.params;
-  console.log('🚀 ~ RideRequest ~ data:', data);
-  console.log('🚀 ~ RideRequest ~ type:', type);
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
@@ -89,7 +87,6 @@ const RideRequest = ({route}) => {
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    console.log('🚀 ~ onPressSendRequest ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       navigationService.navigate('PassengerDetails', {
@@ -418,7 +415,7 @@ const RideRequest = ({route}) => {
                   marginBottom: moderateScale(20, 0.6),
                 }}>
                 <CustomButton
-                  text={'Send Request'}
+                  text={'Accept'}
                   fontSize={moderateScale(14, 0.3)}
                   textColor={Color.white}
                   borderRadius={moderateScale(30, 0.3)}

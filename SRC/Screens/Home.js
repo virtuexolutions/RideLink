@@ -8,17 +8,19 @@ import {
   I18nManager,
   ImageBackground,
   Platform,
+  RefreshControl,
   SafeAreaView,
   StyleSheet,
   ToastAndroid,
-  View
+  View,
 } from 'react-native';
+
 import Geolocation from 'react-native-geolocation-service';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Get, Post } from '../Axios/AxiosInterceptorFunction';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
@@ -27,21 +29,19 @@ import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
-import {
-  apiHeader,
-  windowHeight,
-  windowWidth
-} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {getDatabase, onChildAdded, ref} from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
   const isFocused = useIsFocused();
-  
+  const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
   console.log("🚀 ~ Homeeeeee ~ token:", token, user_type)
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
+  const [modal_visible, setModalVisible] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -143,7 +143,6 @@ const Home = () => {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
-            console.log('🚀 ~ position ~ coords:', coords);
             resolve(coords);
             getAddressFromCoordinates(
               position.coords.latitude,
@@ -171,13 +170,22 @@ const Home = () => {
     const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
-    console.log('🚀 ~ rideRequestList ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       setRequestList(response?.data?.ride_info);
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const db = getDatabase();
+    const requestsRef = ref(db, 'requests');
+    const unsubscribe = onChildAdded(requestsRef, snapshot => {
+      console.log('New request added:', snapshot.val());
+      rideRequestList();
+    });
+    return () => unsubscribe();
+  }, []);
 
   // useEffect(() => {
   //   async function GetPermission() {
@@ -229,6 +237,14 @@ const Home = () => {
       setHistoryList(response?.data);
     }
   };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      // rideRequestList()
+    }, 2000);
+  }, []);
 
   return (
     <SafeAreaView style={styles.safe_area}>
@@ -315,7 +331,11 @@ const Home = () => {
         </View>
 
         {user_type === 'Rider' ? (
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            showsVerticalScrollIndicator={false}>
             {isLoading ? (
               <ActivityIndicator
                 style={styles.indicatorStyle}
@@ -350,30 +370,6 @@ const Home = () => {
                         })
                       }
                     />
-                    // <TouchableOpacity
-                    //   style={styles.card}
-                    //   onPress={() =>
-                    //     navigationService.navigate('RideRequest', {type: ''})
-                    //   }>
-                    //   <View style={styles.image_view}>
-                    //     <CustomImage source={item.image} style={styles.image} />
-                    //   </View>
-                    //   <View style={styles.text_view}>
-                    //     <CustomText style={styles.text}>{item.name}</CustomText>
-                    //     <CustomText style={styles.location}>
-                    //       {item.location}
-                    //     </CustomText>
-                    //     <CustomText style={styles.date}>{item.date}</CustomText>
-                    //   </View>
-                    //   <View style={styles.icon_view}>
-                    //     <Icon
-                    //       name="right"
-                    //       as={AntDesign}
-                    //       size={moderateScale(14, 0.6)}
-                    //       color={Color.white}
-                    //     />
-                    //   </View>
-                    // </TouchableOpacity>
                   );
                 }}
               />

@@ -56,7 +56,6 @@ const RequestScreen = () => {
 
   const locationPermission = useSelector(state => state.commonReducer.location);
   const [cabType, setCabType] = useState(null);
-  console.log('🚀 ~ RequestScreen ~ selectedCab:', cabType);
   const [pickupLocation, setPickupLocation] = useState({});
   const [dropLocation, setDropLocation] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -64,7 +63,9 @@ const RequestScreen = () => {
   const [completePayment, setCompletePayment] = useState(false);
   const [fare, setFare] = useState(0);
   const [time, setTime] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ time:', time);
   const [distance, setDistance] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ distance:', distance);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
@@ -78,12 +79,10 @@ const RequestScreen = () => {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
   };
-  console.log('🚀 ~ RequestScreen ~ origin:', origin);
   const destination = {
     latitude: parseFloat(dropLocation?.lat),
     longitude: parseFloat(dropLocation?.lng),
   };
-  console.log('🚀 ~ RequestScreen ~ destination:', destination);
   const waypoints = multipleLocation?.map(item => ({
     latitude: parseFloat(item?.lat),
     longitude: parseFloat(item?.lng),
@@ -115,7 +114,6 @@ const RequestScreen = () => {
     // getcabsData()
   }, [isFocused]);
   const getCurrentLocation = async () => {
-    console.log('frommmmmmmmmmmmmmmmmmm position function ');
     try {
       const position = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
@@ -147,12 +145,6 @@ const RequestScreen = () => {
     }
   };
 
-  const getcabsData = async () => {
-    const url = '';
-    const response = await Get(url, token);
-    if (response != undefined) {
-    }
-  };
   useEffect(() => {
     if (currentPosition) {
       mapRef.current?.animateToRegion(
@@ -255,40 +247,11 @@ const RequestScreen = () => {
   const nearestRide = async () => {
     const url = 'auth/customer/near_riders_list';
     const response = await Get(url, token);
-    console.log('🚀 ~ nearestRide ~ response:', response?.data?.data);
     if (response != undefined) {
       setNearestRider(response?.data?.data);
     }
   };
 
-  // componentDidMount() {
-  //   this.watchId = navigator.geolocation.watchPosition(
-  //     (position) => {
-
-  //       var region = regionFrom(
-  //         position.coords.latitude,
-  //         position.coords.longitude,
-  //         position.coords.accuracy
-  //       );
-  //       // update the UI
-  //       this.setState({
-  //         region: region,
-  //         accuracy: position.coords.accuracy
-  //       });
-
-  //       if(this.state.has_passenger && this.state.passenger){
-  //         // next: add code for sending driver's current location to passenger
-  //       }
-  //     },
-  //     (error) => this.setState({ error: error.message }),
-  //     {
-  //       enableHighAccuracy: true, // allows you to get the most accurate location
-  //       timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  //       maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
-  //       distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-  //     },
-  //   );
-  // }
 
   // useEffect(() => {
   //   // const riderPosition = nearestRider.watchPosition
@@ -386,9 +349,9 @@ const RequestScreen = () => {
           apikey={apikey}
           optimizeWaypoints={false}
           onStart={params => {
-            console.log(
-              `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            );
+            // console.log(
+            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
+            // );
           }}
           onError={e => {
             console.log('map vview direction erorrrrrrrrrrrrrr', e);
@@ -520,27 +483,23 @@ const RequestScreen = () => {
           text={'CONFIRM NOW'}
           marginBottom={moderateScale(10, 0.6)}
           onPress={() =>
-            // console.log(
-            //   '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ',
-            //   origin?.latitude && destination?.latitude != '' ? 'meerab ' : 'zerish',
-            // )
             cabType == null
               ? Platform.OS == 'android'
-                ? ToastAndroid.show(
-                    ' empty feilds is required',
-                    ToastAndroid.SHORT,
-                  )
-                : Alert.alert('empty feilds is required')
+                ? ToastAndroid.show(' Select A Cab Type', ToastAndroid.SHORT)
+                : Alert.alert('Select A Cab Type')
               : navigationService.navigate('FareScreen', {
-                  distance: parseInt(distance),
-                  fare: Number(fare),
-                  pickup: origin,
-                  dropoff: destination,
-                  currentPosition: currentPosition,
-                  pickupLocation: pickupLocation,
-                  dropoffLocation: dropLocation,
-                  CabType: cabType,
-                  multiplePickups: multipleLocation,
+                  rideData: {
+                    distance: parseInt(distance),
+                    time: time,
+                    fare: Number(fare),
+                    pickup: origin,
+                    dropoff: destination,
+                    currentPosition: currentPosition,
+                    pickupLocation: pickupLocation,
+                    dropoffLocation: dropLocation,
+                    CabType: cabType,
+                    multiplePickups: multipleLocation,
+                  },
                 })
           }
         />

@@ -127,7 +127,9 @@ const PaymentMethodCard = ({
         </View>
       ) : (
         <>
-          <CustomText style={styles.price}>{`$${fare}`}</CustomText>
+          <CustomText style={styles.price}>
+            <CustomText style={{
+            }}>Fare : </CustomText>{`$${fare}`}</CustomText>
           <CustomText style={styles.text}>Payment Method</CustomText>
           <View style={styles.payment_view}>
             <View style={styles.payment_subview}>
@@ -191,6 +193,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: moderateScale(12, 0.6),
+    // backgroundColor :'red',
     fontWeight: '700',
     width: windowWidth * 0.8,
     height: moderateScale(22, 0.6),

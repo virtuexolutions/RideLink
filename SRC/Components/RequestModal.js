@@ -14,16 +14,18 @@ import {Rating} from 'react-native-ratings';
 const RequestModal = ({
   isVisible,
   onBackdropPress,
+  data,
   onPressAccept,
   onPressDecline,
 }) => {
+  console.log("🚀 ~ data:", data)
   return (
     <Modal
       isVisible={isVisible}
       swipeDirection="up"
       style={{
         justifyContent: 'center',
-        alignItems: 'center',
+        aligndatas: 'center',
       }}
       onBackdropPress={onBackdropPress}>
       <View style={styles.main_view}>
@@ -76,7 +78,7 @@ const RequestModal = ({
                     PickUp
                   </CustomText>
                   <CustomText style={[styles.text1]}>
-                    Fannie Street San Angelo, Texas
+                    {data?.pickupLocation}
                   </CustomText>
                 </View>
               </View>
@@ -112,7 +114,7 @@ const RequestModal = ({
                     DropOff
                   </CustomText>
                   <CustomText style={[styles.text1]}>
-                    Fannie Street San Angelo, Texas
+                    {data?.dropoffLocation}
                   </CustomText>
                 </View>
               </View>
@@ -122,14 +124,14 @@ const RequestModal = ({
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              alignItems: 'center',
+              aligndatas: 'center',
               marginTop: moderateScale(12, 0.6),
             }}>
             <CustomText isBold style={{fontSize: moderateScale(16, 0)}}>
               Total
             </CustomText>
             <CustomText isBold style={{fontSize: moderateScale(16, 0)}}>
-              $ 45.00
+             {`$${data?.fare}`}
             </CustomText>
           </View>
         </View>
@@ -140,13 +142,13 @@ const RequestModal = ({
           borderRadius={moderateScale(30, 0.3)}
           textColor={Color.white}
           textTransform={'none'}
-          text={'ACCEPT'}
+          text={'See The Rider'}
           isBold
           style={{top: moderateScale(-40)}}
           marginBottom={moderateScale(10, 0.6)}
           onPress={onPressAccept}
         />
-        <CustomButton
+        {/* <CustomButton
           width={windowWidth * 0.92}
           height={windowHeight * 0.075}
           bgColor={Color.white}
@@ -159,7 +161,7 @@ const RequestModal = ({
           marginBottom={moderateScale(10, 0.6)}
           borderWidth={2}
           onPress={onPressDecline}
-        />
+        /> */}
       </View>
     </Modal>
   );
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
   header_view: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    aligndatas: 'center',
     paddingVertical: moderateScale(10, 0.6),
     borderBottomWidth: 0.6,
     borderBottomColor: Color.grey,
@@ -236,6 +238,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.black,
     borderRadius: windowWidth,
     justifyContent: 'center',
-    alignItems: 'center',
+    aligndatas: 'center',
   },
 });
