@@ -63,7 +63,9 @@ const RequestScreen = () => {
   const [completePayment, setCompletePayment] = useState(false);
   const [fare, setFare] = useState(0);
   const [time, setTime] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ time:', time);
   const [distance, setDistance] = useState(0);
+  console.log('🚀 ~ RequestScreen ~ distance:', distance);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
@@ -143,7 +145,6 @@ const RequestScreen = () => {
     }
   };
 
- 
   useEffect(() => {
     if (currentPosition) {
       mapRef.current?.animateToRegion(
@@ -251,34 +252,6 @@ const RequestScreen = () => {
     }
   };
 
-  // componentDidMount() {
-  //   this.watchId = navigator.geolocation.watchPosition(
-  //     (position) => {
-
-  //       var region = regionFrom(
-  //         position.coords.latitude,
-  //         position.coords.longitude,
-  //         position.coords.accuracy
-  //       );
-  //       // update the UI
-  //       this.setState({
-  //         region: region,
-  //         accuracy: position.coords.accuracy
-  //       });
-
-  //       if(this.state.has_passenger && this.state.passenger){
-  //         // next: add code for sending driver's current location to passenger
-  //       }
-  //     },
-  //     (error) => this.setState({ error: error.message }),
-  //     {
-  //       enableHighAccuracy: true, // allows you to get the most accurate location
-  //       timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  //       maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
-  //       distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-  //     },
-  //   );
-  // }
 
   // useEffect(() => {
   //   // const riderPosition = nearestRider.watchPosition
@@ -512,21 +485,21 @@ const RequestScreen = () => {
           onPress={() =>
             cabType == null
               ? Platform.OS == 'android'
-                ? ToastAndroid.show(
-                    ' cab type is required',
-                    ToastAndroid.SHORT,
-                  )
-                : Alert.alert('cab type is required')
+                ? ToastAndroid.show(' Select A Cab Type', ToastAndroid.SHORT)
+                : Alert.alert('Select A Cab Type')
               : navigationService.navigate('FareScreen', {
-                  distance: parseInt(distance),
-                  fare: Number(fare),
-                  pickup: origin,
-                  dropoff: destination,
-                  currentPosition: currentPosition,
-                  pickupLocation: pickupLocation,
-                  dropoffLocation: dropLocation,
-                  CabType: cabType,
-                  multiplePickups: multipleLocation,
+                  rideData: {
+                    distance: parseInt(distance),
+                    time: time,
+                    fare: Number(fare),
+                    pickup: origin,
+                    dropoff: destination,
+                    currentPosition: currentPosition,
+                    pickupLocation: pickupLocation,
+                    dropoffLocation: dropLocation,
+                    CabType: cabType,
+                    multiplePickups: multipleLocation,
+                  },
                 })
           }
         />

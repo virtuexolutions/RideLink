@@ -13,7 +13,6 @@ import CustomText from './CustomText';
 import navigationService from '../navigationService';
 
 const DeliveryBox = ({data}) => {
-  console.log('🚀 ~ DeliveryBox ~ data:', data);
   const [focused, setFocused] = useState('');
   return (
     <TouchableOpacity

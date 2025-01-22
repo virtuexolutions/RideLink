@@ -22,24 +22,11 @@ import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 
 const FareScreen = props => {
-  const data = props?.route?.params;
-  const multiplePickups = props?.route?.params?.multiplePickups;
-  const CabType = props?.route?.params?.CabType;
-  const fare = props?.route?.params?.fare;
-  const pickupLocation = props?.route?.params?.pickupLocation;
-  const dropoffLocation = props?.route?.params?.dropoffLocation;
-  const distance = props?.route?.params?.distance;
-  const currentPosition = props?.route?.params?.currentPosition;
+  const ridedata = props?.route?.params?.rideData;
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  // const pickupLocatin = useSelector(
-  //   state => state.commonReducer.pickupLocatinName,
-  // );
-  // const dropoffLocation = useSelector(
-  //   state => state.commonReducer.dropoffLocationName,
-  // );
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -48,10 +35,10 @@ const FareScreen = props => {
         {isPaymentCom === true ? (
           <>
             <AskLocation
-              pickupLocation={pickupLocation}
-              dropLocation={dropoffLocation}
-              pickupLocationName={data?.dropoffLocation?.name}
-              dropLocationName={data?.pickupLocation?.name}
+              pickupLocation={ridedata?.pickupLocation}
+              dropLocation={ridedata?.dropoffLocation}
+              pickupLocationName={ridedata?.dropoffLocation?.name}
+              dropLocationName={ridedata?.pickupLocation?.name}
               heading={'Where are you Going?'}
               isIcon
               islocation
@@ -72,7 +59,7 @@ const FareScreen = props => {
         ) : (
           <>
             <PaymentMethodCard
-              fare={fare}
+              fare={ridedata?.fare}
               setIsEnabled={setIsEnabled}
               isEnabled={isEnabled}
               paymentMethod={paymentMethod}
@@ -111,15 +98,16 @@ const FareScreen = props => {
             onPress={() => {
               if (isPaymentCom === true) {
                 navigationService.navigate('MapScreen', {
-                  pickupLocation: pickupLocation,
-                  dropoffLocation: dropoffLocation,
-                  fare: fare,
+                  ridedata,
+                  // pickupLocation: ridedata?.pickupLocation,
+                  // dropoffLocation: ridedata?.dropoffLocation,
+                  // fare: ridedata?.fare,
                   paymentMethod: paymentMethod,
                   isEnabled: isEnabled,
-                  distance: distance,
-                  currentPosition: currentPosition,
-                  CabType: CabType,
-                  multiplePickups: multiplePickups,
+                  // distance: ridedata?.distance,
+                  // currentPosition: ridedata?.currentPosition,
+                  // CabType: ridedata?.CabType,
+                  // multiplePickups: ridedata?.multiplePickups,
                 });
               } else {
                 setPaymentCom(true);

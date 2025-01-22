@@ -23,23 +23,26 @@ import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
-import database, {firebase} from '@react-native-firebase/database';
+import database, {
+  firebase,
+  getDatabase,
+  onChildAdded,
+  ref,
+} from '@react-native-firebase/database';
 
 const MapScreen = props => {
   const mapRef = useRef();
-  const pickupLocation = props?.route?.params?.pickupLocation;
-  const multiplePickups = props?.route?.params?.multiplePickups;
-  const cabType = props?.route?.params?.CabType;
-  const dropoffLocation = props?.route?.params?.dropoffLocation;
-  const Nearestcab = props?.route?.params?.isEnabled;
+  const ridedata = props?.route?.params?.ridedata;
   const paymentMethod = props?.route?.params?.paymentMethod;
-  const fare = props?.route?.params?.fare;
-  const distance = props?.route?.params?.distance;
+  const nearestcab = props?.route?.params?.isEnabled;
+
   const token = useSelector(state => state.authReducer.token);
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
+
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const [price, setPrice] = useState(fare);
+
+  const [price, setPrice] = useState(ridedata?.fare);
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
@@ -118,32 +121,32 @@ const MapScreen = props => {
   };
 
   const origin = {
-    latitude: parseFloat(pickupLocation?.lat),
-    longitude: parseFloat(pickupLocation?.lng),
+    latitude: parseFloat(ridedata?.pickupLocation?.lat),
+    longitude: parseFloat(ridedata?.pickupLocation?.lng),
   };
 
   const destination = {
-    latitude: parseFloat(dropoffLocation?.lng),
-    longitude: parseFloat(dropoffLocation?.lng),
+    latitude: parseFloat(ridedata?.dropoffLocation?.lng),
+    longitude: parseFloat(ridedata?.dropoffLocation?.lng),
   };
 
   const requestforRide = async () => {
     const formData = new FormData();
     const url = 'auth/bookride';
     const body = {
-      location_from: pickupLocation?.name,
-      location_to: dropoffLocation?.name,
-      dropoff_location_lat: dropoffLocation?.lat,
-      dropoff_location_lng: dropoffLocation?.lng,
-      pickup_location_lat: pickupLocation?.lat,
-      pickup_location_lng: pickupLocation?.lng,
-      distance: distance,
-      amount: fare,
+      location_from: ridedata?.pickupLocation?.name,
+      location_to: ridedata?.dropoffLocation?.name,
+      dropoff_location_lat: ridedata?.dropoffLocation?.lat,
+      dropoff_location_lng: ridedata?.dropoffLocation?.lng,
+      pickup_location_lat: ridedata?.pickupLocation?.lat,
+      pickup_location_lng: ridedata?.pickupLocation?.lng,
+      distance: ridedata?.distance,
+      amount: ridedata?.fare,
       payment_method: paymentMethod,
-      nearest_cab: Nearestcab,
-      type: cabType?.name,
+      nearest_cab: nearestcab,
+      type: ridedata?.CabType?.name,
     };
-    multiplePickups?.forEach((item, index) => {
+    ridedata?.multiplePickups?.forEach((item, index) => {
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
       formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
     });
@@ -156,71 +159,106 @@ const MapScreen = props => {
     console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
-      Alert.alert('Waiting', 'Please wait here for rider to find your Request');
+      if (rideStatus?.toLocaleLowerCase() != 'accept') {
+        Alert.alert(
+          'Waiting',
+          'Please wait here for rider to find your Request',
+        );
+      }
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await firebase
+          .database()
+          .ref('requests/')
+          .once('value')
+          .then(snapshot => {
+            console.log('🚀 ~ fetchData ~ snapshot:', snapshot);
+            const matchedRide = snapshot.val[rideId];
+            console.log('🚀 ~ fetchData ~ matchedRide:', matchedRide);
+          });
+        console.log('🚀 ~ fetchData ~ response:', response);
+        if (response.exists()) {
+          console.log('resssssssssssssssssponseeee,', response);
+
+          // setData(response.val());
+        } else {
+          console.log('response is nullllllllllllllllll');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
     try {
       const response = await Get(url, token);
-      console.log('🚀 ~ rideUpdate ~ responses:', response?.data);
+      console.log('🚀 ~ rideUpdate ~ responaases:', response?.data);
       if (response != undefined) {
         await database()
           .ref(`/rides/${response?.data?.ride_info?.id}/status`)
           .set(response?.data?.ride_info?.status);
         setRideStatus(response?.data?.ride_info?.status);
-
         console.log('status update');
       }
     } catch (error) {
       console.log('🚀 ~ rideUpdate ~ error:', error);
     }
   };
+  // useEffect(() => {
+  //   const checkStatus = async () => {
+  //     const db = getDatabase();
+  //     const requestsRef = ref(db, 'requests');
+  //     console.log('🚀 ~ checkStatus ~ requestsRef:', requestsRef);
+  //     // await database()
+  //     //   .ref(`/rides/${rideId}/status`)
+  //     //   .once('value', snapshot => {
+  //     //     console.log('🚀 ~ awaitdatabase ~ snapshot:', snapshot);
+  //     //   });
+  //   };
+  //   return checkStatus();
+  // }, []);
 
   // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await firebase
-  //         .database()
-  //         .ref('requests/')
-  //         .once('value');
-  //       if (response.exists()) {
-  //         console.log('resssssssssssssssssponseeee,',response)
-  //         // setData(response.val());
-  //       } else {
-  //         console.log('response is nullllllllllllllllll')
-  //         // setData(null); // Handle the case where there is no data
-  //       }
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
+  //   if (rideId != '') {
+  //     const db = getDatabase();
+  //     const requestsRef = ref(db, 'requests');
+  //     console.log("🚀 ~ useEffect ~ requestsRef:", requestsRef)
+  //     const unsubscribe = onChildAdded(requestsRef, snapshot => {
+  //       console.log('status change =============:', snapshot.val());
+  //       rideUpdate();
+  //     });
+  //     return () => unsubscribe();
+  //   }
   // }, []);
-  const waypoints = multiplePickups?.map(item => ({
-    latitude: parseFloat(item?.lat),
-    longitude: parseFloat(item?.lng),
-  }));
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      rideId != '' && rideUpdate();
-      if(rideStatus.toLocaleLowerCase() == 'accepte'){
-        setModalVisible(true)
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isFocused]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     rideId != '' && rideUpdate();
+  //     if (rideStatus == 'accept') {
+  //       setModalVisible(true);
+  //     }
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, [isFocused]);
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
   return (
     <SafeAreaView style={[styles.safe_are, styles.background_view]}>
       <MapView
+        scrollEnabled={false} // Disable scrolling
+        zoomEnabled={false} // Disable zooming
+        rotateEnabled={false} // Disable rotation
+        pitchEnabled={false}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -240,84 +278,7 @@ const MapScreen = props => {
         //   heading: 0,
         //   altitude: 1000,
         // }}
-      >
-        {Object.keys(pickupLocation)?.length > 0 && (
-          <>
-            <Marker
-              pinColor="green"
-              title="pick up"
-              coordinate={pickupLocation}
-              style={{width: 15, height: 10}}
-            />
-          </>
-        )}
-        {/* <MapViewDirections
-        key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${multiplePickups?.length}`}
-          origin={origin}
-          destination={destination}
-          strokeColor={Color.darkBlue}
-          strokeWidth={6}
-          apikey={apikey}
-          onStart={params => {
-            // console.log(
-            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            // );
-          }}
-          tappable={true}
-          onReady={result => {
-            mapRef.current.fitToCoordinates(
-              result.coordinates,
-              // console.log('===================' , result)
-              {
-                edgePadding: {
-                  right: 50,
-                  left: 50,
-                  top: 300, // Adjust this positive value based on your card's height
-                  bottom: 100,
-                },
-              },
-            );
-          }}
-        /> */}
-        <MapViewDirections
-          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
-          origin={origin}
-          waypoints={waypoints}
-          destination={destination}
-          strokeColor={Color.black}
-          strokeWidth={6}
-          apikey={apikey}
-          optimizeWaypoints={false}
-          onStart={params => {
-            // console.log(
-            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            // );
-          }}
-          onError={e => {
-            console.log('map vview direction erorrrrrrrrrrrrrr', e);
-          }}
-          tappable={true}
-          onReady={result => {
-            mapRef.current.fitToCoordinates(result.coordinates, {
-              edgePadding: {
-                right: 50,
-                left: 50,
-                top: 300,
-                bottom: 100,
-              },
-            });
-          }}
-        />
-        {dropoffLocation != null &&
-          Object.keys(dropoffLocation)?.length > 0 &&
-          isValidCoordinate(dropoffLocation) && (
-            <Marker
-              coordinate={dropoffLocation}
-              title="Drop-off Location"
-              pinColor="black"
-            />
-          )}
-      </MapView>
+      ></MapView>
 
       <Pulse
         color={Color.black}
@@ -381,6 +342,7 @@ const MapScreen = props => {
           borderRadius={moderateScale(30, 0.3)}
           textColor={Color.white}
           textTransform={'none'}
+          disable={rideId ? true : false}
           text={
             isLoading ? (
               <ActivityIndicator size={'small'} color={Color.white} />
@@ -390,9 +352,7 @@ const MapScreen = props => {
           }
           isBold
           onPress={() => {
-            // rideUpdate();
             requestforRide();
-            // setModalVisible(true)
           }}
         />
       </View>
@@ -403,15 +363,24 @@ const MapScreen = props => {
           setModalVisible(false);
           setDeclineModal(true);
         }}
+        data={{
+          pickupLocation: ridedata?.pickupLocation,
+          dropoffLocation: ridedata?.dropoffLocation,
+          fare: ridedata?.fare,
+          time: ridedata?.time,
+          distance: ridedata?.distance,
+        }}
         onPressAccept={() =>
           navigationService.navigate('RideScreen', {
-            rideStatus: rideStatus,
-            rideId: rideId,
-            pickupLocation: pickupLocation,
-            dropoffLocation: dropoffLocation,
-            Nearestcab: Nearestcab,
-            paymentMethod: paymentMethod,
-            fare: fare,
+            ridedata: {
+              rideStatus: rideStatus,
+              rideId: rideId,
+              pickupLocation: ridedata?.pickupLocation,
+              dropoffLocation: ridedata?.dropoffLocation,
+              Nearestcab: ridedata?.Nearestcab,
+              paymentMethod: ridedata?.paymentMethod,
+              fare: ridedata?.fare,
+            },
           })
         }
       />

@@ -34,12 +34,10 @@ import {getDatabase, onChildAdded, ref} from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ Home ~ token:', token);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ Homeeeeee ~ token: usertype', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [modal_visible, setModalVisible] = useState(false);
@@ -144,7 +142,6 @@ const Home = () => {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
-            console.log('🚀 ~ position ~ coords:', coords);
             resolve(coords);
             getAddressFromCoordinates(
               position.coords.latitude,
@@ -186,7 +183,6 @@ const Home = () => {
       console.log('New request added:', snapshot.val());
       rideRequestList();
     });
-
     return () => unsubscribe();
   }, []);
 

@@ -16,8 +16,6 @@ import {useSelector} from 'react-redux';
 
 const PassengerDetails = ({route}) => {
   const {type, data} = route.params;
-  console.log('🚀 ~ PassengerDetails ~ data:', data);
-  console.log('🚀 ~ PassengerDetails ~ type:', type);
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
