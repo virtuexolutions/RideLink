@@ -25,6 +25,7 @@ import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {SignupSchema} from '../Constant/schema';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {setUserData} from '../Store/slices/common';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -63,8 +64,7 @@ const Signup = () => {
       Platform.OS == 'android'
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
-      navigation.navigate('AddYourCar');
-      // dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserData(response?.data?.user_info));
     }
   };
 
@@ -111,7 +111,7 @@ const Signup = () => {
           }}
           validationSchema={SignupSchema}
           // onSubmit={console.log('//////////////////////////')}>
-          onSubmit={register}>
+          onSubmit={onPressregister}>
           {({
             values,
             handleChange,

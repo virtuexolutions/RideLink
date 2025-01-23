@@ -48,7 +48,6 @@ const MapScreen = props => {
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('');
-  console.log('🚀 ~ statuss:', status);
   console.log('🚀 ~=========================== rideStatus:', rideStatus);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
@@ -177,8 +176,8 @@ const MapScreen = props => {
         const data = snapshot.val();
         console.log('🚀 ~ useEffect ~ data:', data);
         if (data.status && data.status !== 'pending') {
-          console.log(typeof data?.status, '--==================?');
-          // setStatus(data.status);
+          console.log("🚀 ~ useEffect ~ data.status:", data.status)
+          setModalVisible(true);
         }
       }
     });
@@ -346,7 +345,7 @@ const MapScreen = props => {
         />
       </View>
       <RequestModal
-        isVisible={status === 'accept'}
+        isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}
         onPressDecline={() => {
           setModalVisible(false);

@@ -1,5 +1,5 @@
 import {Icon} from 'native-base';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -20,6 +20,8 @@ import {baseUrl, imageUrl} from '../Config';
 
 const RideRequest = ({route}) => {
   const {type, data} = route.params;
+  console.log('🚀 ~ RideRequest ~ data:', data);
+  const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
@@ -29,7 +31,8 @@ const RideRequest = ({route}) => {
   const [decline, setDecline] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ RideRequest ~ userData:', userData);
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -38,6 +41,21 @@ const RideRequest = ({route}) => {
     latitude: parseFloat(data?.dropoff_location_lat),
     longitude: parseFloat(data?.dropoff_location_lng),
   };
+
+  useEffect(() => {
+    if (data?.pickup_location_lat) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: parseFloat(data?.pickup_location_lat),
+          longitude: parseFloat(data?.pickup_location_lng),
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
+        },
+        1000,
+      );
+    }
+  }, [data]);
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     navigationService.navigate('PaymentScreen');
@@ -87,11 +105,12 @@ const RideRequest = ({route}) => {
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
+    console.log('🚀 ~ RideRequest ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       navigationService.navigate('PassengerDetails', {
         type: '',
-        data: response?.data?.ride_info,
+        data: response?.data,
       });
     }
   };
@@ -107,13 +126,14 @@ const RideRequest = ({route}) => {
           />
         </View> */}
         <MapView
+          ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={styles.map}
           initialRegion={{
             latitude: parseFloat(data?.pickup_location_lat),
             longitude: parseFloat(data?.pickup_location_lng),
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
+            latitudeDelta: 0.0522,
+            longitudeDelta: 0.0521,
           }}>
           <Marker
             coordinate={origin}
@@ -124,7 +144,7 @@ const RideRequest = ({route}) => {
             destination={destination}
             strokeColor={Color.themeBlack}
             strokeWidth={10}
-            apikey="AIzaSyCHuiMaFjSnFTQfRmAfTp9nZ9VpTICgNrc"
+            apikey="AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM"
           />
           <Marker
             coordinate={destination}

@@ -13,9 +13,11 @@ import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useSelector} from 'react-redux';
+import {imageUrl} from '../Config';
 
 const PassengerDetails = ({route}) => {
   const {type, data} = route.params;
+  console.log('🚀 ~ PassengerDetails ~ data:', data);
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -34,9 +36,9 @@ const PassengerDetails = ({route}) => {
       <View style={styles.main_view}>
         <PaymentMethodCard
           isuserCard
-          image={require('../Assets/Images/user_image4.png')}
-          name={' Theodora J. Gardner'}
-          pickuplocation={data?.location_from}
+          image={{uri: `${imageUrl} + ${data?.user?.photo}`}}
+          name={data?.user?.name}
+          pickuplocation={data?.locatioFn_from}
           dropofflocation={data?.location_to}
           isButton={type === 'fromDecline' ? true : false}
           btn_text={'Decline'}
