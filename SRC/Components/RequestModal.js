@@ -18,7 +18,6 @@ const RequestModal = ({
   onPressAccept,
   onPressDecline,
 }) => {
-  console.log("🚀 ~ data:", data)
   return (
     <Modal
       isVisible={isVisible}

@@ -1,6 +1,6 @@
-import { useIsFocused } from '@react-navigation/native';
-import { ScrollView } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import {ScrollView} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -38,7 +38,7 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
-  console.log("🚀 ~ Homeeeeee ~ token:", token, user_type)
+  console.log('🚀 ~ Homeeeeee ~ toksen:', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [modal_visible, setModalVisible] = useState(false);
@@ -170,6 +170,10 @@ const Home = () => {
     const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
+    console.log(
+      '🚀 ~ rideRequestList ~ resssponse:',
+      response?.data?.ride_info,
+    );
     setIsLoading(false);
     if (response != undefined) {
       setRequestList(response?.data?.ride_info);
@@ -185,7 +189,7 @@ const Home = () => {
       rideRequestList();
     });
     return () => unsubscribe();
-  }, []);
+  }, [isFocused]);
 
   // useEffect(() => {
   //   async function GetPermission() {
@@ -208,7 +212,6 @@ const Home = () => {
   useEffect(() => {
     if (user_type === 'Rider') {
       updateLocation();
-      rideRequestList();
     }
     userRequestHistory();
   }, [currentPosition]);

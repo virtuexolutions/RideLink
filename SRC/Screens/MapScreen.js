@@ -47,6 +47,8 @@ const MapScreen = props => {
   const [rideId, setRideID] = useState('');
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [status, setStatus] = useState('');
+  console.log('🚀 ~ statuss:', status);
   console.log('🚀 ~=========================== rideStatus:', rideStatus);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
@@ -167,56 +169,22 @@ const MapScreen = props => {
     }
   };
 
-  const listenForStatusChanges = () => {
-    const ref = database().ref(`/rides/${rideId}/status`);
-    ref.on('value', async snapshot => {
-      const status = snapshot.val();
-      console.log(`current status ${status}`);
-      if (status && status !== 'accept') {
-        await rideUpdate();
-      } else {
-        console.log('Ride accepted, stopping further updates.');
-        ref.off();
+  useEffect(() => {
+    const reference = database().ref(`/requests/${rideId}`);
+    console.log('🚀 ~ useEffect ~ reference:', reference);
+    const listener = reference.on('value', snapshot => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log('🚀 ~ useEffect ~ data:', data);
+        if (data.status && data.status !== 'pending') {
+          console.log(typeof data?.status, '--==================?');
+          // setStatus(data.status);
+        }
       }
     });
-  };
 
-  useEffect(() => {
-    listenForStatusChanges();
-    return () => {
-      const ref = database().ref(`/rides/${rideId}/status`);
-      ref.off();
-    };
-  }, [rideId, token]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await firebase
-          .database()
-          .ref('requests/')
-          .once('value')
-          .then(snapshot => {
-            console.log('🚀 ~ fetchData ~ snapshot:', snapshot);
-            const matchedRide = snapshot.val[rideId];
-            console.log('🚀 ~ fetchData ~ matchedRide:', matchedRide);
-          });
-        console.log('🚀 ~ fetchData ~ response:', response);
-        if (response.exists()) {
-          console.log('resssssssssssssssssponseeee,', response);
-
-          // setData(response.val());
-        } else {
-          console.log('response is nullllllllllllllllll');
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    return () => reference.off('value', listener);
+  }, [rideId]);
 
   const rideUpdate = async () => {
     const url = `auth/ride/${rideId}`;
@@ -378,7 +346,7 @@ const MapScreen = props => {
         />
       </View>
       <RequestModal
-        isVisible={modalVisible}
+        isVisible={status === 'accept'}
         onBackdropPress={() => setModalVisible(false)}
         onPressDecline={() => {
           setModalVisible(false);
