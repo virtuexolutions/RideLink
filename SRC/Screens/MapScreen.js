@@ -147,6 +147,7 @@ const MapScreen = props => {
       payment_method: paymentMethod,
       nearest_cab: nearestcab,
       type: ridedata?.CabType?.name,
+      time :ridedata?.time,
     };
     ridedata?.multiplePickups?.forEach((item, index) => {
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
@@ -178,11 +179,6 @@ const MapScreen = props => {
         console.log('🚀 ~ useEffect ~ data:', data);
         if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
           setRideuptedData(data);
-          console.log(
-            data,
-            '--===== herrrrrrrrrrrrrrreeeeeeeeeee im =============?',
-          );
-          console.Console;
           setModalVisible(true);
           // setStatus(data.status);
         }
@@ -305,24 +301,18 @@ const MapScreen = props => {
           setModalVisible(false);
           setDeclineModal(true);
         }}
-        // data={{
-        //   pickupLocation: ridedata?.pickupLocation,
-        //   dropoffLocation: ridedata?.dropoffLocation,
-        //   fare: ridedata?.fare,
-        //   time: ridedata?.time,
-        //   distance: ridedata?.distance,
-        // }}
+        data={rideupdatedData}
         onPressAccept={() =>
-          navigationService.navigate('RideScreen', {
-            ridedata: {
-              rideStatus: rideStatus,
-              rideId: rideId,
-              pickupLocation: ridedata?.pickupLocation,
-              dropoffLocation: ridedata?.dropoffLocation,
-              Nearestcab: ridedata?.Nearestcab,
-              paymentMethod: ridedata?.paymentMethod,
-              fare: ridedata?.fare,
-            },
+          navigationService.navigate('RideScreen', {data: rideupdatedData
+            // ridedata: {
+            //   // rideStatus: rideStatus,
+            //   // rideId: rideId,
+            //   // pickupLocation: ridedata?.pickupLocation,
+            //   // dropoffLocation: ridedata?.dropoffLocation,
+            //   // Nearestcab: ridedata?.Nearestcab,
+            //   // paymentMethod: ridedata?.paymentMethod,
+            //   // fare: ridedata?.fare,
+            // },
           })
         }
       />

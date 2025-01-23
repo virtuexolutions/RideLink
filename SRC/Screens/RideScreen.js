@@ -19,8 +19,8 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const RideScreen = ({route}) => {
   const {data, type} = route.params;
-  const data1 = route.params.rideupdatedData;
-  console.log("🚀 ~ RideScreen ~ dat==================a1:", data1)
+  const rideData = route?.params?.data;
+  console.log('🚀 ~ RideScreen ~ dat==================a1:', rideData);
 
   const mapRef = useRef(null);
   // const rideStatus = props?.route?.params?.rideStatus;
@@ -277,7 +277,7 @@ const RideScreen = ({route}) => {
                           style={{left: 5}}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
-                          {/* {pickupLocation?.name} */}
+                          {rideData?.ride_info?.location_from}
                         </CustomText>
                       </View>
                       <View
@@ -293,6 +293,7 @@ const RideScreen = ({route}) => {
                           style={{left: 5}}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
+                        {rideData?.ride_info?.location_to}
                           {/* {dropoffLocation?.name} */}
                         </CustomText>
                       </View>
