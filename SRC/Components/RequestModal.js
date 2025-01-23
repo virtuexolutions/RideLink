@@ -77,7 +77,8 @@ const RequestModal = ({
                     PickUp
                   </CustomText>
                   <CustomText style={[styles.text1]}>
-                    {data?.pickupLocation}
+                    jashjdghasgdhgasgdjgashd
+                    {/* {data?.pickupLocation} */}
                   </CustomText>
                 </View>
               </View>
@@ -113,7 +114,8 @@ const RequestModal = ({
                     DropOff
                   </CustomText>
                   <CustomText style={[styles.text1]}>
-                    {data?.dropoffLocation}
+                    djklashdjkhajskhdjkhajksdhjkahsjkdhasd
+                    {/* {data?.dropoffLocation} */}
                   </CustomText>
                 </View>
               </View>
@@ -130,7 +132,8 @@ const RequestModal = ({
               Total
             </CustomText>
             <CustomText isBold style={{fontSize: moderateScale(16, 0)}}>
-             {`$${data?.fare}`}
+              04950934059034
+              {/* {758738475834`$${data?.fare}`} */}
             </CustomText>
           </View>
         </View>

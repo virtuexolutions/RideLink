@@ -19,6 +19,9 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const RideScreen = ({route}) => {
   const {data, type} = route.params;
+  const data1 = route.params.rideupdatedData;
+  console.log("🚀 ~ RideScreen ~ dat==================a1:", data1)
+
   const mapRef = useRef(null);
   // const rideStatus = props?.route?.params?.rideStatus;
   // const rideId = props?.route?.params?.rideId;

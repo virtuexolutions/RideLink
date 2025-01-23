@@ -45,11 +45,12 @@ const MapScreen = props => {
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
+  console.log('🚀 ~ rideId:', rideId);
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('');
-  console.log('🚀 ~ statuss:', status);
-  console.log('🚀 ~=========================== rideStatus:', rideStatus);
+  const [rideupdatedData, setRideuptedData] = useState(true);
+  console.log("🚀 ~ rideupdatedData:", rideupdatedData)
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -157,7 +158,6 @@ const MapScreen = props => {
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLoading(false);
-    console.log('responseeeeeeeeeeeeeee ', response?.data.data?.id);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
       if (rideStatus?.toLocaleLowerCase() != 'accept') {
@@ -176,8 +176,14 @@ const MapScreen = props => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         console.log('🚀 ~ useEffect ~ data:', data);
-        if (data.status && data.status !== 'pending') {
-          console.log(typeof data?.status, '--==================?');
+        if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
+          setRideuptedData(data);
+          console.log(
+            data,
+            '--===== herrrrrrrrrrrrrrreeeeeeeeeee im =============?',
+          );
+          console.Console;
+          setModalVisible(true);
           // setStatus(data.status);
         }
       }
@@ -185,59 +191,6 @@ const MapScreen = props => {
 
     return () => reference.off('value', listener);
   }, [rideId]);
-
-  const rideUpdate = async () => {
-    const url = `auth/ride/${rideId}`;
-    try {
-      const response = await Get(url, token);
-      console.log('🚀 ~ rideUpdate ~ responaases:', response?.data);
-      if (response != undefined) {
-        await database()
-          .ref(`/rides/${response?.data?.ride_info?.id}/status`)
-          .set(response?.data?.ride_info?.status);
-        setRideStatus(response?.data?.ride_info?.status);
-        console.log('status update');
-      }
-    } catch (error) {
-      console.log('🚀 ~ rideUpdate ~ error:', error);
-    }
-  };
-  // useEffect(() => {
-  //   const checkStatus = async () => {
-  //     const db = getDatabase();
-  //     const requestsRef = ref(db, 'requests');
-  //     console.log('🚀 ~ checkStatus ~ requestsRef:', requestsRef);
-  //     // await database()
-  //     //   .ref(`/rides/${rideId}/status`)
-  //     //   .once('value', snapshot => {
-  //     //     console.log('🚀 ~ awaitdatabase ~ snapshot:', snapshot);
-  //     //   });
-  //   };
-  //   return checkStatus();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (rideId != '') {
-  //     const db = getDatabase();
-  //     const requestsRef = ref(db, 'requests');
-  //     console.log("🚀 ~ useEffect ~ requestsRef:", requestsRef)
-  //     const unsubscribe = onChildAdded(requestsRef, snapshot => {
-  //       console.log('status change =============:', snapshot.val());
-  //       rideUpdate();
-  //     });
-  //     return () => unsubscribe();
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     rideId != '' && rideUpdate();
-  //     if (rideStatus == 'accept') {
-  //       setModalVisible(true);
-  //     }
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, [isFocused]);
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
@@ -331,7 +284,7 @@ const MapScreen = props => {
           borderRadius={moderateScale(30, 0.3)}
           textColor={Color.white}
           textTransform={'none'}
-          disable={rideId ? true : false}
+          disabled={rideId != '' ? true : false}
           text={
             isLoading ? (
               <ActivityIndicator size={'small'} color={Color.white} />
@@ -346,19 +299,19 @@ const MapScreen = props => {
         />
       </View>
       <RequestModal
-        isVisible={status === 'accept'}
-        onBackdropPress={() => setModalVisible(false)}
+        isVisible={modalVisible}
+        // onBackdropPress={() => setModalVisible(false)}
         onPressDecline={() => {
           setModalVisible(false);
           setDeclineModal(true);
         }}
-        data={{
-          pickupLocation: ridedata?.pickupLocation,
-          dropoffLocation: ridedata?.dropoffLocation,
-          fare: ridedata?.fare,
-          time: ridedata?.time,
-          distance: ridedata?.distance,
-        }}
+        // data={{
+        //   pickupLocation: ridedata?.pickupLocation,
+        //   dropoffLocation: ridedata?.dropoffLocation,
+        //   fare: ridedata?.fare,
+        //   time: ridedata?.time,
+        //   distance: ridedata?.distance,
+        // }}
         onPressAccept={() =>
           navigationService.navigate('RideScreen', {
             ridedata: {

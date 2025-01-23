@@ -35,6 +35,7 @@ import {getDatabase, onChildAdded, ref} from '@react-native-firebase/database';
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
   const isFocused = useIsFocused();
+  console.log("🚀 ~ Home ~ isFocused:", isFocused)
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
@@ -170,10 +171,7 @@ const Home = () => {
     const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
-    console.log(
-      '🚀 ~ rideRequestList ~ resssponse:',
-      response?.data?.ride_info,
-    );
+   
     setIsLoading(false);
     if (response != undefined) {
       setRequestList(response?.data?.ride_info);
@@ -185,6 +183,7 @@ const Home = () => {
     const db = getDatabase();
     const requestsRef = ref(db, 'requests');
     const unsubscribe = onChildAdded(requestsRef, snapshot => {
+      console.log('=========================ss=============sss=== insideeeeeeeeeeeeeeeeeeeeeeee')
       console.log('New request added:', snapshot.val());
       rideRequestList();
     });

@@ -32,7 +32,6 @@ import Header from '../Components/Header';
 const AddYourCar = props => {
   const dispatch = useDispatch();
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ token:=====>', token);
   const [username, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -40,7 +39,6 @@ const AddYourCar = props => {
   const [imagePicker, setImagePicker] = useState(false);
   const [cartype, setCarType] = useState('');
   const [image, setImage] = useState({});
-  console.log('🚀 ~ AddYourCar ~ image:', image);
   const navigation = useNavigation();
   const [loginMethod, setLoginMethod] = useState('');
   const {user_type} = useSelector(state => state.authReducer);
@@ -56,13 +54,20 @@ const AddYourCar = props => {
       category: cartype,
       model: values.carModel,
       status: 'active',
+      type :'hjhjhjk'
     };
+    for (let key in body) {
+      if (key == '') {
+        Platform.OS == 'android'
+          ? ToastAndroid.show(`${key} is required`, ToastAndroid.SHORT)
+          : alert(`${key} is required`);
+      }
+      formData.append(key, body[key]);
+    }
     formData.append('image', image);
-    console.log('🚀 ~ register ~ body:', body);
     const url = 'auth/rider/car_update';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    console.log('🚀 ~ onSubmit ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       Platform.OS == 'android'
