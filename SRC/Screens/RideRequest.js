@@ -17,10 +17,10 @@ import PaymentMethodCard from '../Components/PaymentMethodCard';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {baseUrl, imageUrl} from '../Config';
+import Geolocation from 'react-native-geolocation-service';
 
 const RideRequest = ({route}) => {
   const {type, data} = route.params;
-  console.log('🚀 ~ RideRequest ~ data:', data);
   const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
@@ -32,7 +32,10 @@ const RideRequest = ({route}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ RideRequest ~ userData:', userData);
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -56,61 +59,72 @@ const RideRequest = ({route}) => {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigationService.navigate('PaymentScreen');
-  //   }, 3000);
-  // }, []);
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
 
-  // const getCurrentLocation = async () => {
-  //   try {
-  //     const position = await new Promise((resolve, reject) => {
-  //       Geolocation.getCurrentPosition(
-  //         position => {
-  //           const coords = {
-  //             latitude: position.coords.latitude,
-  //             longitude: position.coords.longitude,
-  //           };
-  //           resolve(coords);
-  //           getAddressFromCoordinates(
-  //             position.coords.latitude,
-  //             position.coords.longitude,
-  //           );
-  //         },
-  //         error => {
-  //           reject(new Error(error.message));
-  //         },
-  //         {
-  //           enableHighAccuracy: true,
-  //           timeout: 15000,
-  //           maximumAge: 10000,
-  //         },
-  //       );
-  //     });
-  //     setCurrentPosition(position);
-  //   } catch (error) {
-  //     console.error('Error getting location:', error);
-  //     throw error;
-  //   }
-  // };
-  // console.log(
-  //   '🚀 ~ getCurrentLocation ~ getCurrentLocation:',
-  //   getCurrentLocation(),
-  // );
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onPressSendRequest = async status => {
     const url = `auth/rider/ride_update/${data?.id}`;
     const body = {
       status: status,
+      lat: currentPosition?.latitude,
+      lng: currentPosition?.longitude,
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    console.log('🚀 ~ RideRequest ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       navigationService.navigate('PassengerDetails', {
         type: '',
-        data: response?.data,
+        data: data,
       });
     }
   };

@@ -13,7 +13,7 @@ import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useSelector} from 'react-redux';
-import {imageUrl} from '../Config';
+import {baseUrl, imageUrl, profilePicUrl} from '../Config';
 
 const PassengerDetails = ({route}) => {
   const {type, data} = route.params;
@@ -23,6 +23,7 @@ const PassengerDetails = ({route}) => {
   const [isPaymentCom, setPaymentCom] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const {user_type} = useSelector(state => state.authReducer);
+  console.log(`${baseUrl}/${data?.user?.photo}`,'`${baseUrl}/${data?.user?.photo}`')
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -36,9 +37,10 @@ const PassengerDetails = ({route}) => {
       <View style={styles.main_view}>
         <PaymentMethodCard
           isuserCard
-          image={{uri: `${imageUrl} + ${data?.user?.photo}`}}
+        
+          image={data?.user?.photo}
           name={data?.user?.name}
-          pickuplocation={data?.locatioFn_from}
+          pickuplocation={data?.location_from}
           dropofflocation={data?.location_to}
           isButton={type === 'fromDecline' ? true : false}
           btn_text={'Decline'}

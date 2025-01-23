@@ -50,7 +50,7 @@ const MapScreen = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
-  console.log("🚀 ~ rideupdatedData:", rideupdatedData)
+  console.log('🚀 ~ rideupdatedData:', rideupdatedData);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
