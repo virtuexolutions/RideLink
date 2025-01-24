@@ -31,6 +31,7 @@ import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {getDatabase, onChildAdded, ref} from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
@@ -39,7 +40,7 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ Homeeeeee ~ toksen:', token, user_type);
+  console.log('🚀 ~ Homeeeeee ~ token:', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [modal_visible, setModalVisible] = useState(false);
@@ -49,6 +50,7 @@ const Home = () => {
   });
   const [historyLoading, setHistoryLoading] = useState(false);
   const [histry_list, setHistoryList] = useState([]);
+  
   const deliveryList = [
     {
       id: 1,
@@ -211,6 +213,7 @@ const Home = () => {
   useEffect(() => {
     if (user_type === 'Rider') {
       updateLocation();
+      rideRequestList();
     }
     userRequestHistory();
   }, [currentPosition]);

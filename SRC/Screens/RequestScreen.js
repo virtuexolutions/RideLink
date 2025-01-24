@@ -63,9 +63,7 @@ const RequestScreen = () => {
   const [completePayment, setCompletePayment] = useState(false);
   const [fare, setFare] = useState(0);
   const [time, setTime] = useState(0);
-  console.log('🚀 ~ RequestScreen ~ time:', time);
   const [distance, setDistance] = useState(0);
-  console.log('🚀 ~ RequestScreen ~ distance:', distance);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
@@ -251,7 +249,6 @@ const RequestScreen = () => {
       setNearestRider(response?.data?.data);
     }
   };
-
 
   // useEffect(() => {
   //   // const riderPosition = nearestRider.watchPosition

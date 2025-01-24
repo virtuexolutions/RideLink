@@ -28,6 +28,9 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DropDownSingleSelect from './DropDownSingleSelect';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import Header from '../Components/Header';
+import {setUserData} from '../Store/slices/common';
+import {setUserToken} from '../Store/slices/auth';
+import navigationService from '../navigationService';
 
 const AddYourCar = props => {
   const dispatch = useDispatch();
@@ -75,6 +78,7 @@ const AddYourCar = props => {
         : Alert.alert('Your car is Updated');
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));
+      navigationService.navigate('Home');
     }
   };
 
@@ -244,10 +248,10 @@ const AddYourCar = props => {
                     width={windowWidth * 0.8}
                     placeholder={'Select Car Category'}
                     dropdownStyle={{
-                      width: windowWidth * 0.8,
+                      width: windowWidth * 0.9,
                       marginRight: moderateScale(3, 0.2),
                       marginTop: 10,
-                      alignSelf: 'flex-start',
+                      alignSelf: 'center',
                       marginBottom: moderateScale(20, 0.6),
                       height: windowHeight * 0.065,
                     }}
@@ -255,7 +259,7 @@ const AddYourCar = props => {
                       backgroundColor: Color.white,
                       height: windowHeight * 0.06,
                       borderWidth: 0.1,
-                      alignSelf: 'flex-start',
+                      alignSelf: 'center',
                     }}
                   />
                   <CustomText
@@ -313,8 +317,8 @@ const AddYourCar = props => {
                         fontSize: moderateScale(11, 0.6),
                         color: Color.grey,
                       }}>
-                      Please add valid Imformation about your Car and add front
-                      and clear image.
+                      Please add valid Imformation about your Car add front and
+                      clear image.
                     </CustomText>
                   </View>
                   <CustomButton

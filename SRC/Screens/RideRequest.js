@@ -1,5 +1,5 @@
 import {Icon} from 'native-base';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -17,9 +17,11 @@ import PaymentMethodCard from '../Components/PaymentMethodCard';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {baseUrl, imageUrl} from '../Config';
+import Geolocation from 'react-native-geolocation-service';
 
 const RideRequest = ({route}) => {
   const {type, data} = route.params;
+  const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
@@ -29,7 +31,11 @@ const RideRequest = ({route}) => {
   const [decline, setDecline] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const userData = useSelector(state => state.commonReducer.userData);
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -38,52 +44,79 @@ const RideRequest = ({route}) => {
     latitude: parseFloat(data?.dropoff_location_lat),
     longitude: parseFloat(data?.dropoff_location_lng),
   };
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigationService.navigate('PaymentScreen');
-  //   }, 3000);
-  // }, []);
 
-  // const getCurrentLocation = async () => {
-  //   try {
-  //     const position = await new Promise((resolve, reject) => {
-  //       Geolocation.getCurrentPosition(
-  //         position => {
-  //           const coords = {
-  //             latitude: position.coords.latitude,
-  //             longitude: position.coords.longitude,
-  //           };
-  //           resolve(coords);
-  //           getAddressFromCoordinates(
-  //             position.coords.latitude,
-  //             position.coords.longitude,
-  //           );
-  //         },
-  //         error => {
-  //           reject(new Error(error.message));
-  //         },
-  //         {
-  //           enableHighAccuracy: true,
-  //           timeout: 15000,
-  //           maximumAge: 10000,
-  //         },
-  //       );
-  //     });
-  //     setCurrentPosition(position);
-  //   } catch (error) {
-  //     console.error('Error getting location:', error);
-  //     throw error;
-  //   }
-  // };
-  // console.log(
-  //   '🚀 ~ getCurrentLocation ~ getCurrentLocation:',
-  //   getCurrentLocation(),
-  // );
+  useEffect(() => {
+    if (data?.pickup_location_lat) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: parseFloat(data?.pickup_location_lat),
+          longitude: parseFloat(data?.pickup_location_lng),
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
+        },
+        1000,
+      );
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onPressSendRequest = async status => {
     const url = `auth/rider/ride_update/${data?.id}`;
     const body = {
       status: status,
+      lat: currentPosition?.latitude,
+      lng: currentPosition?.longitude,
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -91,7 +124,7 @@ const RideRequest = ({route}) => {
     if (response != undefined) {
       navigationService.navigate('PassengerDetails', {
         type: '',
-        data: response?.data?.ride_info,
+        data: data,
       });
     }
   };
@@ -107,13 +140,14 @@ const RideRequest = ({route}) => {
           />
         </View> */}
         <MapView
+          ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={styles.map}
           initialRegion={{
             latitude: parseFloat(data?.pickup_location_lat),
             longitude: parseFloat(data?.pickup_location_lng),
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
+            latitudeDelta: 0.0522,
+            longitudeDelta: 0.0521,
           }}>
           <Marker
             coordinate={origin}
@@ -124,7 +158,7 @@ const RideRequest = ({route}) => {
             destination={destination}
             strokeColor={Color.themeBlack}
             strokeWidth={10}
-            apikey="AIzaSyCHuiMaFjSnFTQfRmAfTp9nZ9VpTICgNrc"
+            apikey="AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM"
           />
           <Marker
             coordinate={destination}

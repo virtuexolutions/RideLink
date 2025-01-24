@@ -8,6 +8,7 @@ import CustomImage from './CustomImage';
 import CustomButton from './CustomButton';
 import {Icon} from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { baseUrl } from '../Config';
 
 const PaymentMethodCard = ({
   isuserCard,
@@ -25,6 +26,7 @@ const PaymentMethodCard = ({
   setIsEnabled,
   isEnabled,
 }) => {
+  console.log("🚀 ~ image:", image?.uri)
   const [isPaymentCom, setPaymentCom] = useState(false);
   // const [paymentMethod, setPaymentMethod] = useState('Card');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -35,7 +37,9 @@ const PaymentMethodCard = ({
         <View>
           <View style={styles.profile_view}>
             <View style={styles.image_view}>
-              <CustomImage style={styles.image} source={image} />
+              {/* <CustomImage style={styles.image} source={require('../Assets/Images/ridelink.png')}
+              /> */}
+              <CustomImage style={styles.image} source={{uri:`${baseUrl}/${image}`}} />
             </View>
             <CustomText
               isBold
@@ -247,10 +251,13 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.15,
     width: windowWidth * 0.15,
     borderRadius: windowHeight,
+    // backgroundColor :'green' ,
+    overflow :'hidden', 
   },
   image: {
     width: '100%',
     height: '100%',
+    // backgroundColor :'red'
   },
   profile_view: {
     flexDirection: 'row',

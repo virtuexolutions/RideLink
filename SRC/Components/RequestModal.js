@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   main_view: {
     height: windowHeight,
     width: windowWidth,
-    backgroundColor: 'rgba(225, 225, 225, 0.23)',
+    backgroundColor: 'rgba(225, 225, 225, 0.20)',
   },
   sub_view: {
     width: windowWidth * 0.9,
