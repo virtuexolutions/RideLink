@@ -13,7 +13,6 @@ import CustomImage from './CustomImage';
 import CustomText from './CustomText';
 
 const Userbox = ({data, onPress, onPressDetails}) => {
-  console.log("🚀 ~ Userbox ~ onPressDetails:", onPressDetails)
   const userData = useSelector(state => state.commonReducer.userData);
 
   const {user_type} = useSelector(state => state.authReducer);

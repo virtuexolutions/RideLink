@@ -26,7 +26,6 @@ const PaymentMethodCard = ({
   setIsEnabled,
   isEnabled,
 }) => {
-  console.log("🚀 ~ image:", image?.uri)
   const [isPaymentCom, setPaymentCom] = useState(false);
   // const [paymentMethod, setPaymentMethod] = useState('Card');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);

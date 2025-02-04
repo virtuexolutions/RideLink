@@ -35,12 +35,13 @@ import database from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ Home ~ token:", token)
+  const {user_type} = useSelector(state => state.authReducer);
+
   const isFocused = useIsFocused();
-  console.log("🚀 ~ Home ~ isFocused:", isFocused)
+
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
-  const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ Homeeeeee ~ token:', token, user_type);
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [modal_visible, setModalVisible] = useState(false);
@@ -50,7 +51,7 @@ const Home = () => {
   });
   const [historyLoading, setHistoryLoading] = useState(false);
   const [histry_list, setHistoryList] = useState([]);
-  
+
   const deliveryList = [
     {
       id: 1,
@@ -66,52 +67,6 @@ const Home = () => {
       id: 3,
       image: require('../Assets/Images/catimage.png'),
       title: 'Pets',
-    },
-  ];
-  const userBox = [
-    {
-      id: 1,
-      image: require('../Assets/Images/headerPhoto.png'),
-      userID: 'Y3I4USQ2',
-      subtext: 'Natalya Undergrowth',
-      time: '07:30am',
-      fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester',
-    },
-    {
-      id: 2,
-      image: require('../Assets/Images/headerPhoto.png'),
-      userID: 'Y3I4USQ2',
-      subtext: 'Natalya Undergrowth',
-      time: '07:30am',
-      fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester',
-    },
-  ];
-
-  const user_list = [
-    {
-      amount: 13,
-      created_at: '2025-01-15T14:02:21.000000Z',
-      date: null,
-      distance: 0.13294250476869293,
-      dropoff_location_lat: '24.8615147',
-      dropoff_location_lng: '67.0617251',
-      id: 227,
-      location_from: 'Azizabad Block 8 Gulberg Town, Karachi, Pakistan',
-      location_to:
-        'Nursery Pakistan Employees Co-Operative Housing Society, Karachi, Pakistan',
-      nearest_cab: '0',
-      payment_method: 'Card',
-      pickup_location_lat: '24.9207427',
-      pickup_location_lng: '67.0665656',
-      rider_id: null,
-      status: 'pending',
-      stops: null,
-      time: null,
-      updated_at: '2025-01-15T14:02:21.000000Z',
-      user: ['Object'],
-      user_id: 5,
     },
   ];
 
@@ -133,7 +88,7 @@ const Home = () => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error(error);
+      console.error('error from home screen ' ,error);
     }
   };
 
@@ -173,7 +128,7 @@ const Home = () => {
     const url = 'auth/rider/ride-request-list ';
     setIsLoading(true);
     const response = await Get(url, token);
-   
+
     setIsLoading(false);
     if (response != undefined) {
       setRequestList(response?.data?.ride_info);
@@ -182,33 +137,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const db = getDatabase();
-    const requestsRef = ref(db, 'requests');
-    const unsubscribe = onChildAdded(requestsRef, snapshot => {
-      console.log('=========================ss=============sss=== insideeeeeeeeeeeeeeeeeeeeeeee')
-      console.log('New request added:', snapshot.val());
-      rideRequestList();
-    });
-    return () => unsubscribe();
+    if (user_type == 'Rider') {
+      const db = getDatabase();
+      const requestsRef = ref(db, 'requests');
+      const unsubscribe = onChildAdded(requestsRef, snapshot => {
+        // console.log('New request added:', snapshot.val());
+        rideRequestList();
+      });
+      return () => unsubscribe();
+    }
   }, [isFocused]);
-
-  // useEffect(() => {
-  //   async function GetPermission() {
-  //     // if(PermissionsAndroid.PERMISSIONS.)
-  //     await requestLocationPermission();
-  //     await requestCameraPermission();
-  //     await requestWritePermission();
-  //   }
-  //   GetPermission();
-  // }, []);
-
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     rideRequestList();
-  //   }, 10000);
-
-  //   return () => clearTimeout(timeout);
-  // }, []);
 
   useEffect(() => {
     if (user_type === 'Rider') {
@@ -236,20 +174,19 @@ const Home = () => {
     const url = `auth/customer/ride_list?type=${activebutton}`;
     setHistoryLoading(truee);
     const response = await Get(url, token);
-    console.log('🚀 ~ userRequestHistory ~ response:', response?.data);
     setHistoryLoading(false);
     if (response != undefined) {
       setHistoryList(response?.data);
     }
   };
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      // rideRequestList()
-    }, 2000);
-  }, []);
+  // const onRefresh = React.useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //     // rideRequestList()
+  //   }, 2000);
+  // }, []);
 
   return (
     <SafeAreaView style={styles.safe_area}>
@@ -273,7 +210,6 @@ const Home = () => {
             imageStyle={{
               height: '100%',
               width: '100%',
-              // borderRadius: moderateScale(17, 0.6),
             }}
             source={require('../Assets/Images/bgcimage.png')}>
             <View
@@ -336,11 +272,7 @@ const Home = () => {
         </View>
 
         {user_type === 'Rider' ? (
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false}>
             {isLoading ? (
               <ActivityIndicator
                 style={styles.indicatorStyle}
@@ -393,7 +325,7 @@ const Home = () => {
                   justifyContent: 'center',
                 }}
                 renderItem={({item}) => {
-                  return <DeliveryBox data={item} />;
+                  return <DeliveryBox data={item} />
                 }}
               />
             </View>
@@ -409,7 +341,6 @@ const Home = () => {
                 }
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.42}
-                //   marginTop={moderateScale(10,.3)}
                 height={windowHeight * 0.053}
                 bgColor={
                   activebutton === 'current' ? Color.btn_Color : 'transparent'
@@ -461,7 +392,6 @@ const Home = () => {
                   return (
                     <Userbox
                       data={item}
-                      // onPress={}
                     />
                   );
                 }}
@@ -493,7 +423,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     paddingHorizontal: moderateScale(20, 0.6),
     paddingVertical: moderateScale(10, 0.6),
-    // backgroundColor : 'red' ,
   },
   ridelink_Box: {
     width: windowWidth * 0.88,

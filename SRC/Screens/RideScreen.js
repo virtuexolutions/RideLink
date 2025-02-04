@@ -16,22 +16,20 @@ import Header from '../Components/Header';
 import navigationService from '../navigationService';
 import {customMapStyle} from '../Utillity/mapstyle';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+import {useIsFocused} from '@react-navigation/native';
+import {object} from 'yup';
 
 const RideScreen = ({route}) => {
   const {data, type} = route.params;
+  console.log('🚀 ~ RideScreen ~ data:', data?.ride_id);
   const rideData = route?.params?.data;
-  console.log('🚀 ~ RideScreen ~ dat==================a1:', rideData);
-
+  const isFocused = useIsFocused();
   const mapRef = useRef(null);
-  // const rideStatus = props?.route?.params?.rideStatus;
-  // const rideId = props?.route?.params?.rideId;
-  // const pickupLocation = props?.route?.params?.pickupLocation;
-  // const dropoffLocation = props?.route?.params?.dropoffLocation;
-  // const Nearestcab = props?.route?.params?.Nearestcab;
-  // const paymentMethod = props?.route?.params?.paymentMethod;
-  // const fare = props?.route?.params?.fare;
 
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ RideScreen ~ token:", token)
   const [additionalTime, setAdditionalTime] = useState(false);
   const {user_type} = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(null);
@@ -42,16 +40,20 @@ const RideScreen = ({route}) => {
     latitude: 0,
     longitude: 0,
   });
-  console.log('🚀 ~ RideScreen ~ currentPosition:', currentPosition);
 
+  const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+  const origin = {
+    lat: parseFloat(data?.ride_info?.pickup_location_lat),
+    lng: parseFloat(data?.ride_info?.pickup_location_lng),
+  };
   const destination = {
-    latitude: parseFloat(data?.pickup_location_lat),
-    longitude: parseFloat(data?.pickup_location_lng),
+    lat: parseFloat(data?.ride_info?.rider?.lat),
+    lng: parseFloat(data?.ride_info?.rider?.lng),
   };
 
   useEffect(() => {
     getCurrentLocation();
-  }, []);
+  }, [isFocused]);
 
   const getCurrentLocation = async () => {
     try {
@@ -97,18 +99,26 @@ const RideScreen = ({route}) => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error(error);
+      console.error('--------------------------------- error', error);
     }
   };
 
-  const rideRquestCancel = async () => {
-    const url = `auth/customer/ride_update/${rideId}`;
+  const rideCancel = async () => {
+    const url = `auth/customer/ride_update/${data?.ride_id}`;
     setIsLoading(true);
-    const response = await Post(url, {status: rideStatus}, apiHeader(token));
+    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
+
+    console.log(
+      '🚀 ~ rideRquestCancel ~ response ======================= = == = > > > > >> > > >>:',
+      response?.data,
+    );
     setIsLoading(false);
     if (response != undefined) {
+      navigationService.navigate('MapScreen', {ridedata: data});
     }
   };
+
+
   const handleConfirm = time => {
     setSelectedTime(time.toLocaleTimeString());
   };
@@ -125,8 +135,8 @@ const RideScreen = ({route}) => {
 
   useEffect(() => {
     const reigion = {
-      latitude: currentPosition?.latitude,
-      longitude: currentPosition?.longitude,
+      latitude: parseFloat(currentPosition?.latitude),
+      longitude: parseFloat(currentPosition?.longitude),
       latitudeDelta: 0.0522,
       longitudeDelta: 0.0521,
     };
@@ -136,6 +146,7 @@ const RideScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
+        showBack={true}
         title={
           additionalTime
             ? 'Wait For Additional Time'
@@ -147,42 +158,57 @@ const RideScreen = ({route}) => {
       <View style={styles.main_view}>
         <MapView
           provider={PROVIDER_GOOGLE}
-          customMapStyle={customMapStyle}
+          // customMapStyle={customMapStyle}
           ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: currentPosition?.latitude || 24.859879,
-            longitude: currentPosition?.longitude || 67.062703,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
+            latitude: parseFloat(currentPosition?.latitude),
+            longitude: parseFloat(currentPosition?.longitude),
+            latitudeDelta: 0.0522,
+            longitudeDelta: 0.0521,
           }}>
-          <Marker
-            coordinate={{
-              latitude: 24.859879,
-              longitude: 67.062703,
-            }}
-            pinColor={Color.red}
-          />
-          <Marker
-            coordinate={{
-              latitude: 24.9187994,
-              longitude: 67.0636104,
-            }}
-            pinColor={Color.red}
-          />
+          {Object.keys(origin)?.length > 0 && (
+            <Marker coordinate={origin} pinColor={Color.red} />
+          )}
+
           <MapViewDirections
+            apikey={'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'}
+            // origin={origin}
             origin={{
-              latitude: 24.859879,
-              longitude: 67.062703,
+              longitude: origin?.lng,
+              latitude: origin?.lat,
             }}
             destination={{
-              latitude: 24.9187994,
-              longitude: 67.0636104,
+              latitude: destination?.lat,
+              longitude: destination?.lng,
             }}
             strokeColor={Color.themeBlack}
-            strokeWidth={10}
-            apikey="YOUR_GOOGLE_MAPS_API_KEY"
+            strokeWidth={6}
+            // optimizeWaypoints={false}
+            onStart={params => {
+              console.log(
+                `Started =======eee================ ==========ssssssssss======= sssssssssssss routing between "${params?.origin}" and "${params?.destination}"`,
+              );
+            }}
+            onError={error => {
+              console.log(
+                'map vview rrrrrrrrrrrrrrrrr direction er ------- orrrrrrrrrrrrrr',
+                error,
+              );
+            }}
+            tappable={true}
+            onReady={result => {
+              mapRef.current.fitToCoordinates(result.coordinates, {
+                edgePadding: {
+                  right: 50,
+                  left: 50,
+                  top: 300,
+                  bottom: 100,
+                },
+              });
+            }}
           />
+          <Marker coordinate={destination} pinColor={Color.red} />
         </MapView>
         {user_type === 'Rider' && start_waiting === true ? (
           <>
@@ -293,8 +319,7 @@ const RideScreen = ({route}) => {
                           style={{left: 5}}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
-                        {rideData?.ride_info?.location_to}
-                          {/* {dropoffLocation?.name} */}
+                          {rideData?.ride_info?.location_to}
                         </CustomText>
                       </View>
                       <View
@@ -316,19 +341,34 @@ const RideScreen = ({route}) => {
                           />
                           <CustomText
                             onPress={() => {
-                              setTimepicker(true);
+                              console.log(
+                                'here is add additional time button ================',
+                                rideData?.ride_info?.payment_method,
+                              );
                             }}
+                            // onPress={() => {
+                            //   setTimepicker(true);
+                            // }}
                             style={styles.text2}>
                             ADD ADDITIONAL TIME
                           </CustomText>
                         </TouchableOpacity>
-                        <CustomText
-                          onPress={() => {
-                            rideRquestCancel();
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: 'red',
                           }}
-                          style={styles.text2}>
-                          CANCEL RIDE
-                        </CustomText>
+                          onPress={() => {
+                            console.log('chl ja bhai ---------------------');
+                            // rideCancel();
+                          }}>
+                          <CustomText
+                            onPress={() => {
+                              rideCancel();
+                            }}
+                            style={styles.text2}>
+                            CANCEL RIDE
+                          </CustomText>
+                        </TouchableOpacity>
                       </View>
                       <CustomButton
                         text={'PAY Now'}
@@ -338,14 +378,12 @@ const RideScreen = ({route}) => {
                         width={windowWidth * 0.85}
                         marginTop={moderateScale(10, 0.3)}
                         height={windowHeight * 0.07}
-                        bgColor={Color.darkBlue}
+                        bgColor={Color.themeBlack}
                         textTransform={'capitalize'}
                         isBold
                         onPress={() =>
                           navigationService.navigate('PaymentScreen', {
-                            Nearestcab: Nearestcab,
-                            paymentMethod: paymentMethod,
-                            fare: fare,
+                            data: rideData,
                           })
                         }
                       />
@@ -405,11 +443,10 @@ const RideScreen = ({route}) => {
             )}
           </>
         )}
-        {/* <TimePicker value={value} onChange={handleChange} />; */}
-        {/* <View style={styles.container}>
+        {/* <RNDateTimePicker mode="time" value={value} onChange={handleChange} />;
+        <View style={styles.container}>
           <DateTimePickerModal
             isDarkModeEnabled={true}
-
             // pickerComponentStyleIOS={{}}
             // timePickerModeAndroid="false"
             isVisible={timePicker}
@@ -417,7 +454,7 @@ const RideScreen = ({route}) => {
             onConfirm={handleConfirm}
             // onCancel={hidePicker}
             customHeaderIOS={{
-              backgroundColor : 'red'
+              backgroundColor: 'red',
             }}
             pickerComponentStyleIOS={{
               datePickerIOS: styles.pickerComponentStyleIOS, // Custom styles for iOS picker

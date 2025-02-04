@@ -17,7 +17,6 @@ import {setUserToken} from '../Store/slices/auth';
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ Drawer ~ user_type:', user_type);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
   const adminData = [

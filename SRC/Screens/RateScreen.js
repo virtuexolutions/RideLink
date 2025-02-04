@@ -20,13 +20,18 @@ import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 import {useSelector} from 'react-redux';
 
-const RateScreen = () => {
+const RateScreen = props => {
+  const data = props?.route?.params?.data;
   const {user_type} = useSelector(state => state.authReducer);
 
   return (
     <SafeAreaView>
       <View style={styles.mainContainer}>
-        <Header textstyle={{fontWeight: 'regular'}} title={'Rate Passenger'} />
+        <Header
+          showBack={true}
+          textstyle={{fontWeight: 'regular'}}
+          title={user_type == 'Customer' ? 'rate Rider' : 'Rate Passenger'}
+        />
         <View style={styles.box}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <View style={styles.image_Style}>
@@ -38,25 +43,9 @@ const RateScreen = () => {
                 source={require('../Assets/Images/riderphoto.png')}
               />
             </View>
-            <CustomText
-              style={{
-                fontSize: moderateScale(14, 0.6),
-                fontWeight: 'bold',
-                color: Color.themeBlack,
-                width: windowWidth * 0.45,
-                marginLeft: moderateScale(13, 0.6),
-              }}>
-              Theodora J. Gardner
-            </CustomText>
+            <CustomText style={styles.name}>Theodora J. Gardner</CustomText>
             <TouchableOpacity style={styles.button}>
-              <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.white,
-                  fontWeight: 'bold',
-                }}>
-                COMPLETE
-              </CustomText>
+              <CustomText style={styles.ride_status}>COMPLETE</CustomText>
             </TouchableOpacity>
           </View>
           <View style={{marginTop: moderateScale(20, 0.6)}}>
@@ -69,33 +58,14 @@ const RateScreen = () => {
                   size={moderateScale(12, 0.6)}
                 />
               </View>
-              <View style={{marginLeft: moderateScale(10, 0.6)}}>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(12, 0.6),
-                    color: Color.themeBlack,
-                    fontWeight: 'bold',
-                  }}>
-                  Pickup
-                </CustomText>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(10, 0.6),
-                    color: Color.themeBlack,
-                    fontWeight: 'bold',
-                  }}>
-                  Fannie Street San Angelo, Texas
+              <View style={styles.loca_con}>
+                <CustomText style={styles.text}>Pickup</CustomText>
+                <CustomText numberOfLines={2} style={styles.value}>
+                  {data?.ride_info?.location_from}
                 </CustomText>
               </View>
             </View>
-            <View
-              style={{
-                transform: [{rotate: '90deg'}],
-                position: 'absolute',
-                width: windowWidth * 0.1,
-                top: moderateScale(30, 0.6),
-                left: moderateScale(-4, 0.6),
-              }}>
+            <View style={styles.rotate_View}>
               <CustomText style={{color: Color.black}}>.........</CustomText>
             </View>
             <View
@@ -108,22 +78,10 @@ const RateScreen = () => {
                   size={moderateScale(12, 0.6)}
                 />
               </View>
-              <View style={{marginLeft: moderateScale(10, 0.6)}}>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(12, 0.6),
-                    color: Color.themeBlack,
-                    fontWeight: 'bold',
-                  }}>
-                  Drop Off
-                </CustomText>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(10, 0.6),
-                    color: Color.themeBlack,
-                    fontWeight: 'bold',
-                  }}>
-                  Neville Street Salem, Colorado
+              <View style={styles.loca_con}>
+                <CustomText style={styles.text}>Drop Off</CustomText>
+                <CustomText numberOfLines={2} style={styles.value2}>
+                  {data?.ride_info?.location_to}
                 </CustomText>
               </View>
             </View>
@@ -131,90 +89,41 @@ const RateScreen = () => {
         </View>
         <View style={styles.amountBox}>
           <View style={{gap: moderateScale(10, 0.6)}}>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                  fontWeight: '600',
-                }}>
-                Trip Fare Breakdown
-              </CustomText>
-              <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                }}>
-                $50.25
-              </CustomText>
+            <View style={styles.row}>
+              <CustomText style={styles.trip_t}>Trip Fare Breakdown</CustomText>
+              <CustomText style={styles.h1}>$50.25</CustomText>
             </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={styles.row}>
               <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                  fontWeight: '600',
-                }}>
+                style={[
+                  styles.h1,
+                  {
+                    fontWeight: '600',
+                  },
+                ]}>
                 Subtotal
               </CustomText>
-              <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                }}>
-                $50.25
-              </CustomText>
+              <CustomText style={styles.h1}>$50.25</CustomText>
             </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={styles.row}>
               <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                  fontWeight: '600',
-                }}>
+                style={[
+                  styles.h1,
+                  {
+                    fontWeight: '600',
+                  },
+                ]}>
                 Promo Code
               </CustomText>
-              <CustomText
-                style={{
-                  fontSize: moderateScale(12, 0.6),
-                  color: Color.themeBlack,
-                }}>
-                $5.25
-              </CustomText>
+              <CustomText style={styles.h1}>$5.25</CustomText>
             </View>
           </View>
-          <View
-            style={{
-              width: windowWidth * 0.8,
-              backgroundColor: Color.lightGrey,
-              borderColor: Color.lightGrey,
-              borderWidth: 0.5,
-              marginTop: moderateScale(10, 0.6),
-            }}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: moderateScale(15, 0.6),
-            }}>
-            <CustomText
-              isBold
-              style={{
-                fontSize: moderateScale(16, 0.6),
-                color: Color.themeBlack,
-              }}>
+          <View style={styles.container1} />
+          <View style={styles.row2}>
+            <CustomText isBold style={styles.h1}>
               Total
             </CustomText>
-            <CustomText
-              isBold
-              style={{
-                fontSize: moderateScale(16, 0.6),
-                color: Color.themeBlack,
-              }}>
+            <CustomText isBold style={styles.h1}>
               $54.00
             </CustomText>
           </View>
@@ -229,12 +138,7 @@ const RateScreen = () => {
           tintColor={Color.white}
           style={{marginTop: moderateScale(30, 0.6)}}
         />
-        <View
-          style={{
-            position: 'absolute',
-            bottom: moderateScale(30, 0.6),
-            alignSelf: 'center',
-          }}>
+        <View style={styles.btn_view}>
           <CustomButton
             text={'SUBMIT'}
             fontSize={moderateScale(15, 0.3)}
@@ -270,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
   },
   box: {
-    height: windowHeight * 0.23,
+    height: windowHeight * 0.25,
     width: windowWidth * 0.89,
     // paddingHorizontal:moderateScale(15,0.6),
     backgroundColor: Color.white,
@@ -320,4 +224,68 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(25, 0.6),
     paddingHorizontal: moderateScale(15, 0.6),
   },
+  name: {
+    fontSize: moderateScale(14, 0.6),
+    fontWeight: 'bold',
+    color: Color.themeBlack,
+    width: windowWidth * 0.45,
+    marginLeft: moderateScale(13, 0.6),
+  },
+  ride_status: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.white,
+    fontWeight: 'bold',
+  },
+  text: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.themeBlack,
+    fontWeight: 'bold',
+  },
+  value: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.themeBlack,
+    width: '90%',
+    fontWeight: 'bold',
+  },
+  rotate_View: {
+    transform: [{rotate: '90deg'}],
+    position: 'absolute',
+    width: windowWidth * 0.1,
+    top: moderateScale(40, 0.6),
+    left: moderateScale(-4, 0.6),
+  },
+  value2: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.themeBlack,
+    fontWeight: 'bold',
+    width: '85%',
+  },
+  trip_t: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.themeBlack,
+    fontWeight: '600',
+  },
+  row: {flexDirection: 'row', justifyContent: 'space-between'},
+  h1: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.themeBlack,
+  },
+  container1: {
+    width: windowWidth * 0.8,
+    backgroundColor: Color.lightGrey,
+    borderColor: Color.lightGrey,
+    borderWidth: 0.5,
+    marginTop: moderateScale(10, 0.6),
+  },
+  row2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: moderateScale(15, 0.6),
+  },
+  btn_view: {
+    position: 'absolute',
+    bottom: moderateScale(30, 0.6),
+    alignSelf: 'center',
+  },
+  loca_con: {marginLeft: moderateScale(10, 0.6)},
 });

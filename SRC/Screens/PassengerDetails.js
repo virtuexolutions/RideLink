@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
@@ -14,16 +14,49 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useSelector} from 'react-redux';
 import {baseUrl, imageUrl, profilePicUrl} from '../Config';
+import { getDatabase } from '@react-native-firebase/database';
+import { useIsFocused } from '@react-navigation/native';
 
 const PassengerDetails = ({route}) => {
   const {type, data} = route.params;
-  console.log('🚀 ~ PassengerDetails ~ data:', data);
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isPaymentCom, setPaymentCom] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const isFocused = useIsFocused()
+  const [paymentMethod, setPaymentMethod] = useState('Card');
+  const [isPaymentCom, setPaymentCom] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
   const {user_type} = useSelector(state => state.authReducer);
-  console.log(`${baseUrl}/${data?.user?.photo}`,'`${baseUrl}/${data?.user?.photo}`')
+  const [modalVisible ,setModalVisible ] =useState(false)
+  const [ridedata ,setRideData] = useState('')
+ 
+
+
+
+
+
+
+
+  useEffect(() => {
+    const reference = getDatabase().ref(`/requests/${rideId}`);
+    console.log('🚀 ~ useEffect ~ reference:', reference);
+    const listener = reference.on('value', snapshot => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
+          // setRideuptedData(data);
+          // setModalVisible(true);
+          // setStatus(data.status);
+        }
+      }
+    });
+
+    return () => reference.off('value', listener);
+  }, [isFocused]);
+
+
+
+
+
+
 
   return (
     <SafeAreaView style={styles.safearea_view}>

@@ -27,6 +27,7 @@ import navigationService from './SRC/navigationService';
 import CustomImage from './SRC/Components/CustomImage';
 import CustomText from './SRC/Components/CustomText';
 import {moderateScale} from 'react-native-size-matters';
+import {StripeProvider} from '@stripe/stripe-react-native';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -52,6 +53,7 @@ const App = () => {
 
   useEffect(() => {
     requestUserPermission();
+    
   }, []);
 
   const [notification, setNotification] = useState();
@@ -113,65 +115,68 @@ const App = () => {
   }, []);
 
   return (
-    //   <StripeProvider
-    //   publishableKey={"pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12"}
-    //   // merchantIdentifier="merchant.identifier" // required for Apple Pay
-    //   // urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
-    // >
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <NativeBaseProvider>
-          <MainContainer />
-        </NativeBaseProvider>
-      </PersistGate>
-      {notificationModal === true && (
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={() => setNotificationModal(false)}
-          style={{
-            width: windowWidth * 0.95,
-            height: windowHeight * 0.08,
-            backgroundColor: Color.lightGrey,
-            alignSelf: 'center',
-            borderRadius: moderateScale(15, 0.6),
-            position: 'absolute',
-            top: 10,
-          }}>
-          <View
+    <StripeProvider
+    publishableKey={'pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12'}
+      // publishableKey={
+      //   'pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12'
+      // }
+      // merchantIdentifier="merchant.identifier" // required for Apple Pay
+      // urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
+    >
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <NativeBaseProvider>
+            <MainContainer />
+          </NativeBaseProvider>
+        </PersistGate>
+        {notificationModal === true && (
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setNotificationModal(false)}
             style={{
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              paddingHorizontal: moderateScale(15, 0.6),
-              flexDirection: 'row',
-              marginTop: moderateScale(10, 0.6),
+              width: windowWidth * 0.95,
+              height: windowHeight * 0.08,
+              backgroundColor: Color.lightGrey,
+              alignSelf: 'center',
+              borderRadius: moderateScale(15, 0.6),
+              position: 'absolute',
+              top: 10,
             }}>
             <View
               style={{
-                height: moderateScale(40, 0.6),
-                width: moderateScale(40, 0.6),
-                marginRight: moderateScale(10, 0.6),
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                paddingHorizontal: moderateScale(15, 0.6),
+                flexDirection: 'row',
+                marginTop: moderateScale(10, 0.6),
               }}>
-              <CustomImage
-                style={{width: '100%', height: '100%'}}
-                resizeMode={'cover'}
-                source={require('./SRC/Assets/Images/notification.png')}
-              />
+              <View
+                style={{
+                  height: moderateScale(40, 0.6),
+                  width: moderateScale(40, 0.6),
+                  marginRight: moderateScale(10, 0.6),
+                }}>
+                <CustomImage
+                  style={{width: '100%', height: '100%'}}
+                  resizeMode={'cover'}
+                  source={require('./SRC/Assets/Images/notification.png')}
+                />
+              </View>
+              <View style={{width: windowWidth * 0.8}}>
+                <CustomText isBold style={{fontSize: moderateScale(14, 0.3)}}>
+                  {'notification?.title'}
+                </CustomText>
+                <CustomText
+                  numberOfLines={1}
+                  style={{fontSize: moderateScale(12, 0.3)}}>
+                  {'notification?.body'}
+                </CustomText>
+              </View>
             </View>
-            <View style={{width: windowWidth * 0.8}}>
-              <CustomText isBold style={{fontSize: moderateScale(14, 0.3)}}>
-                {'notification?.title'}
-              </CustomText>
-              <CustomText
-                numberOfLines={1}
-                style={{fontSize: moderateScale(12, 0.3)}}>
-                {'notification?.body'}
-              </CustomText>
-            </View>
-          </View>
-        </TouchableOpacity>
-      )}
-    </Provider>
-    // </StripeProvider>
+          </TouchableOpacity>
+        )}
+      </Provider>
+    </StripeProvider>
   );
 };
 

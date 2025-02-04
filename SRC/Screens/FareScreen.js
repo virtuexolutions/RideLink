@@ -30,7 +30,7 @@ const FareScreen = props => {
 
   return (
     <SafeAreaView style={styles.safearea_view}>
-      <Header title={'Offer your Fare'} />
+      <Header showBack={true} title={'Offer your Fare'} />
       <View style={styles.main_view}>
         {isPaymentCom === true ? (
           <>
@@ -99,15 +99,8 @@ const FareScreen = props => {
               if (isPaymentCom === true) {
                 navigationService.navigate('MapScreen', {
                   ridedata,
-                  // pickupLocation: ridedata?.pickupLocation,
-                  // dropoffLocation: ridedata?.dropoffLocation,
-                  // fare: ridedata?.fare,
                   paymentMethod: paymentMethod,
                   isEnabled: isEnabled,
-                  // distance: ridedata?.distance,
-                  // currentPosition: ridedata?.currentPosition,
-                  // CabType: ridedata?.CabType,
-                  // multiplePickups: ridedata?.multiplePickups,
                 });
               } else {
                 setPaymentCom(true);

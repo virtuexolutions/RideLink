@@ -56,8 +56,8 @@ const RequestScreen = () => {
 
   const locationPermission = useSelector(state => state.commonReducer.location);
   const [cabType, setCabType] = useState(null);
-  const [pickupLocation, setPickupLocation] = useState({});
-  const [dropLocation, setDropLocation] = useState({});
+  const [pickupLocation, setPickupLocation] = useState(null);
+  const [dropLocation, setDropLocation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
   const [completePayment, setCompletePayment] = useState(false);
@@ -238,63 +238,61 @@ const RequestScreen = () => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error(error);
+      console.error('errrrrrrrrrrrrrrrrrr from cordinatesssssss', error);
     }
   };
 
-  const nearestRide = async () => {
-    const url = 'auth/customer/near_riders_list';
-    const response = await Get(url, token);
-    if (response != undefined) {
-      setNearestRider(response?.data?.data);
-    }
-  };
+  // const nearestRide = async () => {
+  //   const url = 'auth/customer/near_riders_list';
+  //   const response = await Get(url, token);
+  //   if (response != undefined) {
+  //     setNearestRider(response?.data?.data);
+  //   }
+  // };
+
+  // // useEffect(() => {
+  // //   // const riderPosition = nearestRider.watchPosition
+  // //   // this.watchId = navigator.Wa
+  // //   this.watchId = navigator.geolocation.watchPosition(
+  // //         (position) => {
+  // //           const region = regionFrom(
+  // //             position.coords.latitude,
+  // //             position.coords.longitude,
+  // //             position.coords.accuracy
+  // //           );
+  // //           // update the UI
+  // //           this.setState({
+  // //             region: region,
+  // //             accuracy: position.coords.accuracy
+  // //           });
+
+  // //           if(this.state.has_passenger && this.state.passenger){
+  // //             // next: add code for sending driver's current location to passenger
+  // //           }
+  // //         },
+  // //         (error) => this.setState({ error: error.message }),
+  // //         {
+  // //           enableHighAccuracy: true, // allows you to get the most accurate location
+  // //           timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
+  // //           maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
+  // //           distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
+  // //         },
+  // //       );
+  // // }, [])
 
   // useEffect(() => {
-  //   // const riderPosition = nearestRider.watchPosition
-  //   // this.watchId = navigator.Wa
-  //   this.watchId = navigator.geolocation.watchPosition(
-  //         (position) => {
-  //         console.log("🚀 ~ useEffect ~ position:", position)
+  //   nearestRide();
+  // }, [isFocused]);
 
-  //           const region = regionFrom(
-  //             position.coords.latitude,
-  //             position.coords.longitude,
-  //             position.coords.accuracy
-  //           );
-  //           // update the UI
-  //           this.setState({
-  //             region: region,
-  //             accuracy: position.coords.accuracy
-  //           });
-
-  //           if(this.state.has_passenger && this.state.passenger){
-  //             // next: add code for sending driver's current location to passenger
-  //           }
-  //         },
-  //         (error) => this.setState({ error: error.message }),
-  //         {
-  //           enableHighAccuracy: true, // allows you to get the most accurate location
-  //           timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  //           maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
-  //           distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-  //         },
-  //       );
-  // }, [])
-
-  useEffect(() => {
-    nearestRide();
-  }, [isFocused]);
-
-  const sortedRiders = nearestRider
-    ?.map(rider => ({
-      ...rider,
-      distance: haversine(currentPosition, {
-        latitude: nearestRider.lat,
-        longitude: nearestRider.lng,
-      }),
-    }))
-    ?.sort((a, b) => a.distance - b.distance);
+  // const sortedRiders = nearestRider
+  //   ?.map(rider => ({
+  //     ...rider,
+  //     distance: haversine(currentPosition, {
+  //       latitude: nearestRider.lat,
+  //       longitude: nearestRider.lng,
+  //     }),
+  //   }))
+  //   ?.sort((a, b) => a.distance - b.distance);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
   const handleMultipleStopsUpdate = updatedStops => {
@@ -313,7 +311,7 @@ const RequestScreen = () => {
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}>
-        {Object.keys(pickupLocation)?.length > 0 && (
+        {Object.keys(origin)?.length > 0 && (
           <>
             <Marker
               coordinate={origin}
@@ -337,7 +335,7 @@ const RequestScreen = () => {
         ))}
 
         <MapViewDirections
-          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints.length}`}
+          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
           origin={origin}
           waypoints={waypoints}
           destination={destination}
@@ -386,9 +384,9 @@ const RequestScreen = () => {
             </View>
           </Marker>
         ))} */}
-        {dropLocation != null &&
-          Object.keys(dropLocation)?.length > 0 &&
-          isValidCoordinate(dropLocation) && (
+        {destination != null &&
+          Object.keys(destination)?.length > 0 &&
+          isValidCoordinate(destination) && (
             <Marker
               coordinate={destination}
               title="Drop-off Location"
@@ -479,26 +477,34 @@ const RequestScreen = () => {
           textTransform={'none'}
           text={'CONFIRM NOW'}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={() =>
-            cabType == null
-              ? Platform.OS == 'android'
-                ? ToastAndroid.show(' Select A Cab Type', ToastAndroid.SHORT)
-                : Alert.alert('Select A Cab Type')
-              : navigationService.navigate('FareScreen', {
-                  rideData: {
-                    distance: parseInt(distance),
-                    time: time,
-                    fare: Number(fare),
-                    pickup: origin,
-                    dropoff: destination,
-                    currentPosition: currentPosition,
-                    pickupLocation: pickupLocation,
-                    dropoffLocation: dropLocation,
-                    CabType: cabType,
-                    multiplePickups: multipleLocation,
-                  },
-                })
-          }
+          onPress={() => {
+            if (
+              cabType != null &&
+              dropLocation != null &&
+              pickupLocation != null
+            ) {
+              navigationService.navigate('FareScreen', {
+                rideData: {
+                  distance: parseInt(distance),
+                  time: time,
+                  fare: Number(fare),
+                  pickup: origin,
+                  dropoff: destination,
+                  currentPosition: currentPosition,
+                  pickupLocation: pickupLocation,
+                  dropoffLocation: dropLocation,
+                  CabType: cabType,
+                  multiplePickups: multipleLocation,
+                },
+              })
+
+            } else {
+              Platform.OS == 'android'
+              ? ToastAndroid.show('required feild is empty ', ToastAndroid.SHORT)
+              : Alert.alert('required feild is empty');
+            
+            }
+          }}
         />
       </View>
       {/* </ImageBackground> */}

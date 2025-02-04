@@ -45,12 +45,10 @@ const MapScreen = props => {
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
-  console.log('🚀 ~ rideId:', rideId);
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
-  console.log('🚀 ~ rideupdatedData:', rideupdatedData);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -147,7 +145,7 @@ const MapScreen = props => {
       payment_method: paymentMethod,
       nearest_cab: nearestcab,
       type: ridedata?.CabType?.name,
-      time :ridedata?.time,
+      time: ridedata?.time,
     };
     ridedata?.multiplePickups?.forEach((item, index) => {
       formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
@@ -176,7 +174,6 @@ const MapScreen = props => {
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log('🚀 ~ useEffect ~ data:', data);
         if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
           setRideuptedData(data);
           setModalVisible(true);
@@ -296,23 +293,15 @@ const MapScreen = props => {
       </View>
       <RequestModal
         isVisible={modalVisible}
-        // onBackdropPress={() => setModalVisible(false)}
         onPressDecline={() => {
           setModalVisible(false);
           setDeclineModal(true);
         }}
         data={rideupdatedData}
         onPressAccept={() =>
-          navigationService.navigate('RideScreen', {data: rideupdatedData
-            // ridedata: {
-            //   // rideStatus: rideStatus,
-            //   // rideId: rideId,
-            //   // pickupLocation: ridedata?.pickupLocation,
-            //   // dropoffLocation: ridedata?.dropoffLocation,
-            //   // Nearestcab: ridedata?.Nearestcab,
-            //   // paymentMethod: ridedata?.paymentMethod,
-            //   // fare: ridedata?.fare,
-            // },
+          navigationService.navigate('RideScreen', {
+            data: rideupdatedData,
+    
           })
         }
       />

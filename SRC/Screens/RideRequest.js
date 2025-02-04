@@ -23,6 +23,7 @@ const RideRequest = ({route}) => {
   const {type, data} = route.params;
   const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
+  const userData = useSelector(state => state.commonReducer.userData);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
   const [dropoff, setDropOff] = useState(false);
@@ -31,7 +32,6 @@ const RideRequest = ({route}) => {
   const [decline, setDecline] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const userData = useSelector(state => state.commonReducer.userData);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -107,7 +107,7 @@ const RideRequest = ({route}) => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error(error);
+      console.error('getAddressFromCoordinates from conrdinatesssssssssssss',error);
     }
   };
 

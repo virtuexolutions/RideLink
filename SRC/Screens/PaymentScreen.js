@@ -1,5 +1,11 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import React, {useState} from 'react';
 import Header from '../Components/Header';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
@@ -9,43 +15,132 @@ import CreditCardComponent from '../Components/CreditCardComponent';
 import CustomText from '../Components/CustomText';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
+import {CardField, createToken} from '@stripe/stripe-react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const PaymentScreen = props => {
-  const nearestcab = props?.route?.param?.Nearestcab;
-  const fare = props?.route?.params?.fare;
-  const payment_method = props?.route?.params?.paymentMethod;
+  const data = props?.route?.params?.data;
+  const [loading, setLoading] = useState(false);
+  const [stripeToken, setStripeToken] = useState(null);
 
+  const strpieToken = async () => {
+    setLoading(true);
+    const responsetoken = await createToken({
+      type: 'Card',
+    });
+
+    return console.log(
+      '🚀 ~ strpieToken======================== ~ responsetoken:',
+      JSON.stringify(responsetoken ,null,2),
+    );
+
+    if (responsetoken != undefined) {
+      setStripeToken(responsetoken?.token?.id);
+      setLoading(false);
+    }
+  };
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header title={'Offer Your Fare'} />
+      <Header showBack={true} title={'Offer Your Fare'} />
       <View style={styles.main_view}>
         <PaymentMethodCard
-          paymentMethod={payment_method}
-          isEnabled={nearestcab}
+          fare={data?.ride_info?.amount}
+          paymentMethod={data?.ride_info?.payment_method}
+          isEnabled={data?.ride_info?.nearest_cab}
         />
-        <CreditCardComponent />
+        {/* <CreditCardComponent /> */}
+        <LinearGradient
+          colors={['#1f1f1f', '#cfcfcf']} // Adjust these colors for a closer match
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          style={styles.addcard}
+          // style={styles.modal}
+        >
+          {/* <View style={styles.modal}> */}
+          <View style={styles.header}>
+            <CustomText
+              style={{
+                color: Color.white,
+                fontSize: moderateScale(13, 0.6),
+              }}>
+              Add Card Details
+            </CustomText>
+          </View>
+
+          <CardField
+            postalCodeEnabled={false}
+            placeholderColor={Color.darkGray}
+            placeholders={{
+              number: '4242 4242 4242 4242',
+            }}
+            // placeholdersColor={'black'}
+            cardStyle={{
+              backgroundColor: Color.white,
+              borderRadius: moderateScale(15, 0.6),
+              width: windowWidth * 0.5,
+              borderRadius: moderateScale(35, 0.6),
+              // placeholderColor:'red',
+              textColor: 'black',
+              placeholderColor: Color.darkGray,
+            }}
+            style={{
+              width: '95%',
+              height: windowHeight * 0.06,
+              marginVertical: moderateScale(10, 0.3),
+            }}
+            onCardChange={cardDetails => {}}
+            onFocus={focusedField => {}}
+          />
+          <CustomButton
+            textColor={Color.black}
+            text={
+              loading ? (
+                <ActivityIndicator color={'black'} size={'small'} />
+              ) : (
+                'add'
+              )
+            }
+            onPress={() => {
+              strpieToken();
+            }}
+            width={windowWidth * 0.35}
+            height={windowHeight * 0.05}
+            borderRadius={moderateScale(25, 0.6)}
+            fontSize={moderateScale(14, 0.3)}
+            textTransform={'uppercase'}
+            // isGradient={true}
+            isBold
+            disabled={loading}
+          />
+          {/* </View> */}
+        </LinearGradient>
+
         <CustomText isBold style={styles.heading}>
           Details
         </CustomText>
         <View style={styles.card}>
           <View style={[styles.text_view, {marginTop: 0}]}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
+            <CustomText
+              style={styles.text}>{`$${data?.ride_info?.amount}`}</CustomText>
           </View>
           <View style={styles.text_view}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
+            <CustomText
+              style={styles.text}>{`$${data?.ride_info?.amount}`}</CustomText>
           </View>
           <View style={styles.text_view}>
             <CustomText style={styles.heading_text}>Sub Total</CustomText>
-            <CustomText style={styles.text}>{`$${fare}`}</CustomText>
+            <CustomText
+              style={styles.text}>{`$${data?.ride_info?.amount}`}</CustomText>
           </View>
         </View>
         <View style={styles.text_view}>
           <CustomText isBold style={[styles.heading, {marginTop: 0}]}>
             Total
           </CustomText>
-          <CustomText style={styles.text}>{`$${fare}`}</CustomText>
+          <CustomText
+            style={styles.text}>{`$${data?.ride_info?.amount}`}</CustomText>
         </View>
         <CustomButton
           width={windowWidth * 0.9}
@@ -57,7 +152,7 @@ const PaymentScreen = props => {
           text={'PAY NOW'}
           marginTop={moderateScale(25, 0.6)}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={() => navigationService.navigate('RateScreen')}
+          onPress={() => navigationService.navigate('RateScreen', {data: data})}
         />
       </View>
     </SafeAreaView>
@@ -114,5 +209,43 @@ const styles = StyleSheet.create({
   heading_text: {
     fontSize: moderateScale(14, 0.6),
     color: Color.black,
+  },
+  addcard: {
+    borderRadius: moderateScale(14, 0.4),
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.2,
+    // justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: moderateScale(20, 0.6),
+    overflow: 'hidden',
+    // paddingHorizontal: moderateScale(15, 0.6),
+    // paddingVertical: moderateScale(20, 0.6),
+  },
+  header: {
+    width: '100%',
+    height: windowHeight * 0.05,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginBottom: moderateScale(10, 0.6),
+  },
+  modal: {
+    // backgroundColor: Color.black,
+    // backgroundColor: 'rgba(109, 106, 108, 0.72)',
+    // // backgroundColor: 'rgba(76, 73, 75, 0.79)',
+    // // backgroundColor: 'rgba(36, 35, 36, 0.53)',
+    backgroundColor: 'red',
+
+    borderRadius: moderateScale(14, 0.4),
+    borderWidth: 2,
+    borderColor: Color.themeBlack,
+    width: windowWidth * 0.9,
+    // height: windowHeight * 0.3,
+    paddingBottom: moderateScale(20, 0.6),
+    flexDirection: 'column',
+    // alignItems: 'center',
+    // paddingTop: windowHeight * 0.03,
+    // gap: 12,
+    overflow: 'hidden',
   },
 });
