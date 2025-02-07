@@ -29,12 +29,14 @@ import database, {
   onChildAdded,
   ref,
 } from '@react-native-firebase/database';
+import CancelRide from '../Components/CancelRide';
 
 const MapScreen = props => {
   const mapRef = useRef();
   const ridedata = props?.route?.params?.ridedata;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const nearestcab = props?.route?.params?.isEnabled;
+  const fromrideScreen =props?.route?.params?.fromrideScreen;
 
   const token = useSelector(state => state.authReducer.token);
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
@@ -42,11 +44,15 @@ const MapScreen = props => {
   const navigation = useNavigation();
 
   const [price, setPrice] = useState(ridedata?.fare);
+
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
+  console.log("🚀 ~ rideId:", rideId)
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [isVisible ,setIsVisible] = useState(false)
+  console.log("🚀 ~ isVisible ===================================== canccel modal===============:", isVisible)
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
   const [currentPosition, setCurrentPosition] = useState({
@@ -168,6 +174,9 @@ const MapScreen = props => {
     }
   };
 
+
+
+
   useEffect(() => {
     const reference = database().ref(`/requests/${rideId}`);
     console.log('🚀 ~ useEffect ~ reference:', reference);
@@ -184,7 +193,28 @@ const MapScreen = props => {
 
     return () => reference.off('value', listener);
   }, [rideId]);
+  const requestCancel = async () =>{
+    const url =  `auth/customer/ride_update/${rideId}`
+    const response = await Post(url , {status : 'cancel'}, apiHeader(token))
+    console.log("🚀 ~ requestCancel ~ response:", response?.data)
+    if(response != undefined){
+      setIsVisible(true)
+      // Alert.alert('Request canceled due to timeout')
 
+    }
+  }
+
+  // useEffect(()=> {
+  //   rideId != '' &&
+  //   setTimeout(() => {// Cancel request after 15 minutes
+  //     requestCancel()
+  //     // console.log('Request canceled due to timeout');
+  //   },
+  //   5000
+  //   // 600000 
+  //   //  900000
+  //   ); 
+  // },[rideId])
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
   return (
@@ -277,7 +307,7 @@ const MapScreen = props => {
           borderRadius={moderateScale(30, 0.3)}
           textColor={Color.white}
           textTransform={'none'}
-          disabled={rideId != '' ? true : false}
+          // disabled={rideId == '' || fromrideScreen ? false : true}
           text={
             isLoading ? (
               <ActivityIndicator size={'small'} color={Color.white} />
@@ -311,6 +341,7 @@ const MapScreen = props => {
         onpressAccept={() => navigation.goBack()}
         onPressCancel={() => navigationService.navigate('Home')}
       />
+      <CancelRide modalVisible={isVisible} setModalVisible={setIsVisible}/>
       {/* </ImageBackground> */}
     </SafeAreaView>
   );

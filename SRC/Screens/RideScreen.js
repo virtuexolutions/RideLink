@@ -116,7 +116,7 @@ const RideScreen = ({ route }) => {
     );
     setIsLoading(false);
     if (response != undefined) {
-      navigationService.navigate('MapScreen', { ridedata: data });
+      navigationService.navigate('MapScreen', {ridedata: data ,fromrideScreen :true});
     }
   };
 
@@ -358,8 +358,8 @@ const RideScreen = ({ route }) => {
                             backgroundColor: 'red',
                           }}
                           onPress={() => {
-                            console.log('chl ja bhai ---------------------');
-                            // rideCancel();
+                            // console.log('chl ja bhai ---------------------');
+                            rideCancel();
                           }}>
                           <CustomText
                             onPress={() => {
