@@ -98,8 +98,17 @@ const RequestModal = ({
               </CustomText>
             </View>
             <View>
-              <CustomText style={styles.text}>{time}</CustomText>
-              <CustomText style={styles.text}>{distance} km</CustomText>
+              <CustomText
+                style={[
+                  styles.text,
+                  {
+                    // marginRight :moderateScale(50 ,0.3),
+                    width: '80%',
+                  },
+                ]}>
+                {time} time
+              </CustomText>
+              <CustomText style={[styles.text]}>{distance} km</CustomText>
             </View>
           </View>
           <View style={styles.seatView}>

@@ -9,15 +9,17 @@ import CustomText from './CustomText'
 import CustomButton from './CustomButton'
 import navigationService from '../navigationService'
 
-const CancelRide = () => {
+const CancelRide = (modalvisibe , setModalVisible) => {
+  console.log("🚀 ~ CancelRide ~ modal==========================visibe:", modalvisibe)
   return (
     <Modal
     swipeDirection="up"
     transparent
-    visible={modal_visibe}
+    visible={modalvisibe}
     style={{
       justifyContent: 'center',
       alignItems: 'center',
+      // backgroundColor :'red'
     }}>
     <View
       style={{
@@ -45,7 +47,7 @@ const CancelRide = () => {
           }}>
           <CustomImage
             style={{width: '100%', height: '100%'}}
-            source={require('../Assets/Images/sad_face.png')}
+            // source={require('../Assets/Images/sad_face.png')}
           />
         </View>
         <CustomText
