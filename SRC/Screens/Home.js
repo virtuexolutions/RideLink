@@ -1,6 +1,6 @@
-import {useIsFocused} from '@react-navigation/native';
-import {ScrollView} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { ScrollView } from 'native-base';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 
 import Geolocation from 'react-native-geolocation-service';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import { Get, Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
@@ -29,17 +29,15 @@ import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {getDatabase, onChildAdded, ref} from '@react-native-firebase/database';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import { getDatabase, onChildAdded, ref } from '@react-native-firebase/database';
 import database from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ Home ~ token:", token)
-  const {user_type} = useSelector(state => state.authReducer);
-
+  const { user_type } = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
-
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
   const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +86,7 @@ const Home = () => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error('error from home screen ' ,error);
+      console.error('error from home screen ', error);
     }
   };
 
@@ -125,33 +123,52 @@ const Home = () => {
   };
 
   const rideRequestList = async () => {
-    const url = 'auth/rider/ride-request-list ';
+    const url = 'auth/rider/ride-request-list';
     setIsLoading(true);
-    const response = await Get(url, token);
-
-    setIsLoading(false);
-    if (response != undefined) {
-      setRequestList(response?.data?.ride_info);
-      setIsLoading(false);
+    try {
+      const response = await Get(url, token);
+      if (response?.data?.ride_info) {
+        setRequestList(response.data.ride_info);
+      } else {
+        setRequestList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching ride requests:", error);
     }
+    setIsLoading(false);
   };
+
+
+  // const listenForNewRequests = () => {
+  //   const rideRequestsRef = database().ref('/');
+  //   rideRequestsRef.limitToLast(1).on('child_added', snapshot => {
+  //     if (snapshot.exists()) {
+  //       const newRideRequest = snapshot.val();
+  //       rideRequestList();
+  //     }
+  //   });
+
+  //   return () => rideRequestsRef.off();
+  // };
+
+
+  // useEffect(() => {
+  // }, []);
 
   useEffect(() => {
     if (user_type == 'Rider') {
       const db = getDatabase();
       const requestsRef = ref(db, 'requests');
       const unsubscribe = onChildAdded(requestsRef, snapshot => {
-        // console.log('New request added:', snapshot.val());
         rideRequestList();
       });
       return () => unsubscribe();
     }
-  }, [isFocused]);
+  }, []);
 
   useEffect(() => {
     if (user_type === 'Rider') {
       updateLocation();
-      rideRequestList();
     }
     userRequestHistory();
   }, [currentPosition]);
@@ -262,7 +279,7 @@ const Home = () => {
               ) : (
                 <View style={styles.second_Image}>
                   <CustomImage
-                    style={{height: '100%', width: '100%'}}
+                    style={{ height: '100%', width: '100%' }}
                     source={require('../Assets/Images/ridelink.png')}
                   />
                 </View>
@@ -294,9 +311,9 @@ const Home = () => {
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item?.id}
                 data={requestList}
-                contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
-                style={{marginBottom: moderateScale(20, 0.6)}}
-                renderItem={({item}) => {
+                contentContainerStyle={{ marginBottom: moderateScale(100, 0.6) }}
+                style={{ marginBottom: moderateScale(20, 0.6) }}
+                renderItem={({ item }) => {
                   return (
                     <Userbox
                       data={item}
@@ -324,7 +341,7 @@ const Home = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                renderItem={({item}) => {
+                renderItem={({ item }) => {
                   return <DeliveryBox data={item} />
                 }}
               />
@@ -385,10 +402,10 @@ const Home = () => {
                     no data found
                   </CustomText>
                 }
-                style={{paddingBottom: moderateScale(150, 0.6)}}
-                contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+                style={{ paddingBottom: moderateScale(150, 0.6) }}
+                contentContainerStyle={{ gap: moderateScale(10, 0.6) }}
                 data={histry_list}
-                renderItem={({item}) => {
+                renderItem={({ item }) => {
                   return (
                     <Userbox
                       data={item}

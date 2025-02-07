@@ -1,29 +1,30 @@
-import {Icon} from 'native-base';
-import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import { Icon } from 'native-base';
+import React, { useEffect, useRef, useState } from 'react';
+import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import {customMapStyle} from '../Utillity/mapstyle';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { customMapStyle } from '../Utillity/mapstyle';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import {useIsFocused} from '@react-navigation/native';
-import {object} from 'yup';
+import { useIsFocused } from '@react-navigation/native';
+import { object } from 'yup';
 
-const RideScreen = ({route}) => {
-  const {data, type} = route.params;
-  console.log('🚀 ~ RideScreen ~ data:', data?.ride_id);
+const RideScreen = ({ route }) => {
+  console.log("🚀 ~ RideScreen ~ route:", route)
+  const { data, type } = route?.params;
+  console.log('🚀 ~ RideScreen ~ data:', data);
   const rideData = route?.params?.data;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
@@ -31,7 +32,7 @@ const RideScreen = ({route}) => {
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ RideScreen ~ token:", token)
   const [additionalTime, setAdditionalTime] = useState(false);
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [timePicker, setTimepicker] = useState(false);
@@ -47,9 +48,10 @@ const RideScreen = ({route}) => {
     lng: parseFloat(data?.ride_info?.pickup_location_lng),
   };
   const destination = {
-    lat: parseFloat(data?.ride_info?.rider?.lat),
-    lng: parseFloat(data?.ride_info?.rider?.lng),
+    lat: data?.ride_info?.rider?.lat || parseFloat(data?.pickup_location_lat),
+    lng: data?.ride_info?.rider?.lng || parseFloat(data?.pickup_location_lng),
   };
+  console.log("🚀 ~ RideScreen ~ destination:", destination)
 
   useEffect(() => {
     getCurrentLocation();
@@ -106,7 +108,7 @@ const RideScreen = ({route}) => {
   const rideCancel = async () => {
     const url = `auth/customer/ride_update/${data?.ride_id}`;
     setIsLoading(true);
-    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
+    const response = await Post(url, { status: 'cancel' }, apiHeader(token));
 
     console.log(
       '🚀 ~ rideRquestCancel ~ response ======================= = == = > > > > >> > > >>:',
@@ -114,7 +116,7 @@ const RideScreen = ({route}) => {
     );
     setIsLoading(false);
     if (response != undefined) {
-      navigationService.navigate('MapScreen', {ridedata: data});
+      navigationService.navigate('MapScreen', { ridedata: data });
     }
   };
 
@@ -151,14 +153,14 @@ const RideScreen = ({route}) => {
           additionalTime
             ? 'Wait For Additional Time'
             : user_type === 'Rider'
-            ? 'Navigation to Pickup'
-            : 'Waiting Pickup'
+              ? 'Navigation to Pickup'
+              : 'Waiting Pickup'
         }
       />
       <View style={styles.main_view}>
         <MapView
           provider={PROVIDER_GOOGLE}
-          // customMapStyle={customMapStyle}
+          customMapStyle={customMapStyle}
           ref={mapRef}
           style={styles.map}
           initialRegion={{
@@ -167,16 +169,14 @@ const RideScreen = ({route}) => {
             latitudeDelta: 0.0522,
             longitudeDelta: 0.0521,
           }}>
-          {Object.keys(origin)?.length > 0 && (
-            <Marker coordinate={origin} pinColor={Color.red} />
+          {Object.keys(type === 'details' ? origin : currentPosition)?.length > 0 && (
+            <Marker coordinate={type === 'details' ? origin : currentPosition} pinColor={Color.red} />
           )}
-
           <MapViewDirections
             apikey={'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'}
-            // origin={origin}
             origin={{
-              longitude: origin?.lng,
-              latitude: origin?.lat,
+              latitude: type === 'details' ? currentPosition?.latitude : origin?.lat,
+              longitude: type === 'details' ? currentPosition?.longitude : origin?.lng
             }}
             destination={{
               latitude: destination?.lat,
@@ -282,7 +282,7 @@ const RideScreen = ({route}) => {
                         },
                       ]}>
                       <View
-                        style={[styles.row_view, {justifyContent: 'center'}]}>
+                        style={[styles.row_view, { justifyContent: 'center' }]}>
                         <CustomText style={styles.text_view}>
                           Waiting PickUp
                         </CustomText>
@@ -291,7 +291,7 @@ const RideScreen = ({route}) => {
                           as={Entypo}
                           size={moderateScale(18, 0.6)}
                           color={Color.veryLightGray}
-                          style={{position: 'absolute', right: 0}}
+                          style={{ position: 'absolute', right: 0 }}
                         />
                       </View>
                       <View style={styles.location_text_view}>
@@ -300,7 +300,7 @@ const RideScreen = ({route}) => {
                           as={FontAwesome5}
                           size={moderateScale(14, 0.6)}
                           color={Color.veryLightGray}
-                          style={{left: 5}}
+                          style={{ left: 5 }}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
                           {rideData?.ride_info?.location_from}
@@ -309,14 +309,14 @@ const RideScreen = ({route}) => {
                       <View
                         style={[
                           styles.location_text_view,
-                          {marginTop: moderateScale(10, 0.6)},
+                          { marginTop: moderateScale(10, 0.6) },
                         ]}>
                         <Icon
                           name="map-marker-alt"
                           as={FontAwesome5}
                           size={moderateScale(14, 0.6)}
                           color={Color.veryLightGray}
-                          style={{left: 5}}
+                          style={{ left: 5 }}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
                           {rideData?.ride_info?.location_to}
@@ -325,13 +325,13 @@ const RideScreen = ({route}) => {
                       <View
                         style={[
                           styles.row_view,
-                          {marginTop: moderateScale(10, 0.6)},
+                          { marginTop: moderateScale(10, 0.6) },
                         ]}>
                         <TouchableOpacity
                           // onPress={() => setAdditionalTime(true)}
                           style={[
                             styles.row_view,
-                            {justifyContent: 'flex-start'},
+                            { justifyContent: 'flex-start' },
                           ]}>
                           <Icon
                             name="plus"
@@ -414,7 +414,7 @@ const RideScreen = ({route}) => {
                         borderWidth={1}
                         borderColor={Color.blue}
                         textTransform={'capitalize'}
-                        style={{bottom: 60}}
+                        style={{ bottom: 60 }}
                         isBold
                         onPress={() => setStartWaiting(true)}
                       />
@@ -436,7 +436,7 @@ const RideScreen = ({route}) => {
                     bgColor={Color.darkBlue}
                     textTransform={'capitalize'}
                     isBold
-                    // onPress={() => setAdditionalTime(true)}
+                  // onPress={() => setAdditionalTime(true)}
                   />
                 )}
               </>
