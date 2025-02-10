@@ -35,7 +35,7 @@ import database from '@react-native-firebase/database';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ Home ~ token:", token)
+  console.log("🚀 ~ Home ~ sstoken:", token)
   const { user_type } = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
@@ -43,10 +43,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [requestList, setRequestList] = useState([]);
   const [modal_visible, setModalVisible] = useState(false);
-  const [currentPosition, setCurrentPosition] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
+  const [currentPosition, setCurrentPosition] = useState({});
   const [historyLoading, setHistoryLoading] = useState(false);
   const [histry_list, setHistoryList] = useState([]);
 
@@ -72,7 +69,7 @@ const Home = () => {
     if (user_type === 'Rider') {
       getCurrentLocation();
     }
-  }, []);
+  }, [isFocused]);
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
@@ -123,11 +120,12 @@ const Home = () => {
   };
 
   const rideRequestList = async () => {
+    console.log('function chal rha ha')
     const url = 'auth/rider/ride-request-list';
     setIsLoading(true);
     try {
       const response = await Get(url, token);
-      console.log("🚀 ~ rideRequestList ~ response:", response?.data)
+      console.log("🚀 ~ rideRequestLissst ~ response:", response?.data)
       if (response?.data?.ride_info) {
         setRequestList(response.data.ride_info?.reverse());
       } else {
@@ -159,8 +157,9 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (user_type === 'Rider') {
+    if (user_type === 'Rider' && Object.keys(currentPosition).length > 0) {
       updateLocation();
+      rideRequestList()
     }
     userRequestHistory();
   }, [currentPosition]);
@@ -171,6 +170,7 @@ const Home = () => {
       lat: currentPosition?.latitude,
       lng: currentPosition?.longitude,
     };
+    console.log("🚀 ~ updateLocation ~ body:", body)
     const response = await Post(url, body, apiHeader(token));
     if (response != undefined) {
       Platform.OS == 'android'

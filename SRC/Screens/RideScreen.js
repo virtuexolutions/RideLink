@@ -1,6 +1,6 @@
 import { Icon } from 'native-base';
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StyleSheet, TouchableOpacity, View, VirtualizedList } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -28,7 +28,6 @@ const RideScreen = ({ route }) => {
   const rideData = route?.params?.data;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
-
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ RideScreen ~ token:", token)
   const [additionalTime, setAdditionalTime] = useState(false);
@@ -41,17 +40,17 @@ const RideScreen = ({ route }) => {
     latitude: 0,
     longitude: 0,
   });
+  console.log("🚀 ~ RideScreen ~ currentPosition:", currentPosition)
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
   const origin = {
-    lat: parseFloat(data?.ride_info?.pickup_location_lat),
-    lng: parseFloat(data?.ride_info?.pickup_location_lng),
+    lat: type === 'details' ? currentPosition?.latitude : parseFloat(data?.ride_info?.pickup_location_lat),
+    lng: type === 'details' ? currentPosition?.longitude : parseFloat(data?.ride_info?.pickup_location_lng),
   };
   const destination = {
-    lat: data?.ride_info?.rider?.lat || parseFloat(data?.pickup_location_lat),
-    lng: data?.ride_info?.rider?.lng || parseFloat(data?.pickup_location_lng),
+    lat: type === 'details' ? parseFloat(data?.pickup_location_lat) : parseFloat(data?.ride_info?.rider?.lat),
+    lng: type === 'details' ? parseFloat(data?.pickup_location_lng) : parseFloat(data?.ride_info?.rider?.lng),
   };
-  console.log("🚀 ~ RideScreen ~ destination:", destination)
 
   useEffect(() => {
     getCurrentLocation();
@@ -116,7 +115,7 @@ const RideScreen = ({ route }) => {
     );
     setIsLoading(false);
     if (response != undefined) {
-      navigationService.navigate('MapScreen', {ridedata: data ,fromrideScreen :true});
+      navigationService.navigate('MapScreen', { ridedata: data, fromrideScreen: true });
     }
   };
 
@@ -145,6 +144,13 @@ const RideScreen = ({ route }) => {
     mapRef.current?.animateToRegion(reigion, 1000);
   }, [currentPosition]);
 
+
+
+  console.log('Current Position:', currentPosition);
+  console.log('Origin:', origin);
+  console.log('Destination:', destination);
+
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -159,56 +165,53 @@ const RideScreen = ({ route }) => {
       />
       <View style={styles.main_view}>
         <MapView
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={customMapStyle}
-          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: parseFloat(currentPosition?.latitude),
             longitude: parseFloat(currentPosition?.longitude),
             latitudeDelta: 0.0522,
             longitudeDelta: 0.0521,
-          }}>
-          {Object.keys(type === 'details' ? origin : currentPosition)?.length > 0 && (
-            <Marker coordinate={type === 'details' ? origin : currentPosition} pinColor={Color.red} />
-          )}
+          }}
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={customMapStyle}
+        >
+          <Marker coordinate={{
+            latitude: origin?.lat,
+            longitude: origin?.lng
+          }} pinColor={Color.black} />
           <MapViewDirections
             apikey={'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'}
-            origin={{
-              latitude: type === 'details' ? currentPosition?.latitude : origin?.lat,
-              longitude: type === 'details' ? currentPosition?.longitude : origin?.lng
-            }}
+            origin={
+              {
+                latitude: origin?.lat,
+                longitude: origin?.lng
+              }
+            }
             destination={{
               latitude: destination?.lat,
-              longitude: destination?.lng,
+              longitude: destination?.lng
             }}
             strokeColor={Color.themeBlack}
             strokeWidth={6}
-            // optimizeWaypoints={false}
-            onStart={params => {
-              console.log(
-                `Started =======eee================ ==========ssssssssss======= sssssssssssss routing between "${params?.origin}" and "${params?.destination}"`,
-              );
-            }}
-            onError={error => {
-              console.log(
-                'map vview rrrrrrrrrrrrrrrrr direction er ------- orrrrrrrrrrrrrr',
-                error,
-              );
-            }}
-            tappable={true}
+            onError={error => console.log('MapViewDirections Error:', error)}
             onReady={result => {
-              mapRef.current.fitToCoordinates(result.coordinates, {
-                edgePadding: {
-                  right: 50,
-                  left: 50,
-                  top: 300,
-                  bottom: 100,
-                },
-              });
+              if (mapRef.current) {
+                mapRef.current.fitToCoordinates(result.coordinates, {
+                  edgePadding: {
+                    right: 50,
+                    left: 50,
+                    top: 300,
+                    bottom: 100,
+                  },
+                });
+              }
             }}
           />
-          <Marker coordinate={destination} pinColor={Color.red} />
+          <Marker pinColor={Color.black} coordinate={{
+            latitude: destination?.lat,
+            longitude: destination?.lng
+          }} />
         </MapView>
         {user_type === 'Rider' && start_waiting === true ? (
           <>
@@ -253,7 +256,8 @@ const RideScreen = ({ route }) => {
                   styles.waiting_card,
                   {
                     height: windowHeight * 0.15,
-                    bottom: 5,
+                    bottom: 100,
+                    position: 'absolute',
                     alignItems: 'center',
                     justifyContent: 'center',
                   },
@@ -268,7 +272,7 @@ const RideScreen = ({ route }) => {
                   <View
                     style={{
                       position: 'absolute',
-                      bottom: 80,
+                      bottom: 100,
                       alignSelf: 'center',
                     }}>
                     <View
@@ -421,50 +425,47 @@ const RideScreen = ({ route }) => {
                     )}
                   </View>
                 ) : (
-                  <CustomButton
-                    style={{
-                      position: 'absolute',
-                      bottom: 100,
-                    }}
-                    text={'Arrive'}
-                    fontSize={moderateScale(14, 0.3)}
-                    textColor={Color.white}
-                    borderRadius={moderateScale(30, 0.3)}
-                    width={windowWidth * 0.85}
-                    marginTop={moderateScale(10, 0.3)}
-                    height={windowHeight * 0.07}
-                    bgColor={Color.darkBlue}
-                    textTransform={'capitalize'}
-                    isBold
-                  // onPress={() => setAdditionalTime(true)}
-                  />
+                  <>
+                    <CustomButton
+                      style={{
+                        position: 'absolute',
+                        bottom: 170,
+                      }}
+                      text={'Start navigation to pickup'}
+                      fontSize={moderateScale(14, 0.3)}
+                      textColor={Color.white}
+                      borderRadius={moderateScale(30, 0.3)}
+                      width={windowWidth * 0.85}
+                      marginTop={moderateScale(10, 0.3)}
+                      height={windowHeight * 0.07}
+                      bgColor={Color.darkBlue}
+                      textTransform={'capitalize'}
+                      isBold
+                      onPress={() => setAdditionalTime(true)}
+                    />
+                    <CustomButton
+                      style={{
+                        position: 'absolute',
+                        bottom: 100,
+                      }}
+                      text={'Arrive'}
+                      fontSize={moderateScale(14, 0.3)}
+                      textColor={Color.white}
+                      borderRadius={moderateScale(30, 0.3)}
+                      width={windowWidth * 0.85}
+                      marginTop={moderateScale(10, 0.3)}
+                      height={windowHeight * 0.07}
+                      bgColor={Color.darkBlue}
+                      textTransform={'capitalize'}
+                      isBold
+                    // onPress={() => setAdditionalTime(true)}
+                    />
+                  </>
                 )}
               </>
             )}
           </>
         )}
-        {/* <RNDateTimePicker mode="time" value={value} onChange={handleChange} />;
-        <View style={styles.container}>
-          <DateTimePickerModal
-            isDarkModeEnabled={true}
-            // pickerComponentStyleIOS={{}}
-            // timePickerModeAndroid="false"
-            isVisible={timePicker}
-            mode="time" // Use 'time' mode for time picking
-            onConfirm={handleConfirm}
-            // onCancel={hidePicker}
-            customHeaderIOS={{
-              backgroundColor: 'red',
-            }}
-            pickerComponentStyleIOS={{
-              datePickerIOS: styles.pickerComponentStyleIOS, // Custom styles for iOS picker
-              datePicker: styles.datePickerCommon, // Common styles for both platforms
-              dateInput: styles.dateInput, // Optional input styling
-            }}
-            // onCancel={hideTimePicker}
-          />
-          {selectedTime && <Text>Selected Time: {selectedTime}</Text>}
-        </View> */}
       </View>
     </SafeAreaView>
   );
