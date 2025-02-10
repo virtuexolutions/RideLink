@@ -227,7 +227,6 @@ const Header = props => {
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
           />
-
           <View
             style={{
               height: windowHeight * 0.018,

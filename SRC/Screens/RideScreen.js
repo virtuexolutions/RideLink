@@ -20,6 +20,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { useIsFocused } from '@react-navigation/native';
 import { object } from 'yup';
+import AdditionalTimeModal from '../Components/AdditionalTimeModal';
 
 const RideScreen = ({ route }) => {
   console.log("🚀 ~ RideScreen ~ route:", route)
@@ -31,6 +32,8 @@ const RideScreen = ({ route }) => {
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ RideScreen ~ token:", token)
   const [additionalTime, setAdditionalTime] = useState(false);
+  const [additionalTimeModal, setAdditionalTimeModal] = useState(false)
+  const [time, setTime] = useState(0)
   const { user_type } = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -429,9 +432,9 @@ const RideScreen = ({ route }) => {
                     <CustomButton
                       style={{
                         position: 'absolute',
-                        bottom: 170,
+                        bottom: 100,
                       }}
-                      text={'Start navigation to pickup'}
+                      text={'Add your Arrived Time'}
                       fontSize={moderateScale(14, 0.3)}
                       textColor={Color.white}
                       borderRadius={moderateScale(30, 0.3)}
@@ -443,7 +446,7 @@ const RideScreen = ({ route }) => {
                       isBold
                       onPress={() => setAdditionalTime(true)}
                     />
-                    <CustomButton
+                    {/* <CustomButton
                       style={{
                         position: 'absolute',
                         bottom: 100,
@@ -459,7 +462,7 @@ const RideScreen = ({ route }) => {
                       textTransform={'capitalize'}
                       isBold
                     // onPress={() => setAdditionalTime(true)}
-                    />
+                    /> */}
                   </>
                 )}
               </>
@@ -467,6 +470,7 @@ const RideScreen = ({ route }) => {
           </>
         )}
       </View>
+      <AdditionalTimeModal modalvisibe={additionalTime} setTime={setTime} setModalVisible={setAdditionalTimeModal} />
     </SafeAreaView>
   );
 };
