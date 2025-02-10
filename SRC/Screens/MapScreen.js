@@ -172,12 +172,8 @@ const MapScreen = props => {
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
-      if (rideStatus?.toLocaleLowerCase() != 'accept') {
-        Alert.alert(
-          'Waiting',
-          'Please wait here for rider to find your Request',
-        );
-      }
+      setRideStatus(response?.data?.data?.status);
+      Alert.alert('Waiting', 'Please wait here for rider to find your Request');
     }
   };
 
@@ -208,17 +204,12 @@ const MapScreen = props => {
   };
 
   useEffect(() => {
-    rideId != '' &&
-      setTimeout(
-        () => {
-          // Cancel request after 15 minutes
-          requestCancel();
-          // console.log('Request canceled due to timeout');
-        },
-        // 5000
-        // 600000
-        900000,
-      );
+    rideId == '' &&
+      rideStatus.toLocaleLowerCase == 'pending' &&
+      setTimeout(() => {
+        requestCancel();
+        console.log('Request canceled due to timeout');
+      }, 900000);
   }, [rideId]);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
@@ -336,6 +327,7 @@ const MapScreen = props => {
         onPressAccept={() =>
           navigationService.navigate('RideScreen', {
             data: rideupdatedData,
+            type: '',
           })
         }
       />

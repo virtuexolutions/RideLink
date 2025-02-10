@@ -60,6 +60,7 @@ const RequestModal = ({
       getTravelTime();
     }
   }, [riderDistination]);
+  console.log('==================================0 jdhfjkahsjkd0 01' , data?.ride_info?.rider?.photo)
   return (
     <Modal
       isVisible={isVisible}

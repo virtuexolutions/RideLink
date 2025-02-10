@@ -22,9 +22,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { object } from 'yup';
 
 const RideScreen = ({ route }) => {
-  console.log("🚀 ~ RideScreen ~ route:", route)
   const { data, type } = route?.params;
-  console.log('🚀 ~ RideScreen ~ data:', data);
+  console.log('🚀 ~ RideScreen ~ data:',data?.ride_info?.pickup_location_lat ,  data?.ride_info?.pickup_location_lng);
   const rideData = route?.params?.data;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
@@ -51,6 +50,7 @@ const RideScreen = ({ route }) => {
     lat: type === 'details' ? parseFloat(data?.pickup_location_lat) : parseFloat(data?.ride_info?.rider?.lat),
     lng: type === 'details' ? parseFloat(data?.pickup_location_lng) : parseFloat(data?.ride_info?.rider?.lng),
   };
+  console.log("🚀 ~ RideScreen ~ destination:", destination)
 
   useEffect(() => {
     getCurrentLocation();
