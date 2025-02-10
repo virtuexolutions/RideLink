@@ -110,7 +110,9 @@ const Header = props => {
                 <Icon
                   // style={styles.menu}
                   name={'menu'}
-                  as={Feather}
+                  as={Feather
+                    
+                  }
                   size={moderateScale(21, 0.3)}
                   color={Color.white}
                   // onPress={() => {

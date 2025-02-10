@@ -1,7 +1,7 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {isValidCoordinate} from 'geolib';
-import {Icon} from 'native-base';
-import React, {useEffect, useRef, useState} from 'react';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { isValidCoordinate } from 'geolib';
+import { Icon } from 'native-base';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,18 +10,18 @@ import {
   View,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import Pulse from 'react-native-pulse';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import { Get, Post } from '../Axios/AxiosInterceptorFunction';
 import DeclineModal from '../Components/DeclineModal';
 import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 import database, {
   firebase,
@@ -36,9 +36,12 @@ const MapScreen = props => {
   const ridedata = props?.route?.params?.ridedata;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const nearestcab = props?.route?.params?.isEnabled;
-  const fromrideScreen =props?.route?.params?.fromrideScreen;
+  const fromrideScreen = props?.route?.params?.fromrideScreen;
+  const { user_type } = useSelector(state => state.authReducer);
+  console.log("🚀 ~ user_type:", user_type)
 
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ token:", token, user_type)
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -51,7 +54,7 @@ const MapScreen = props => {
   console.log("🚀 ~ rideId:", rideId)
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [isVisible ,setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   console.log("🚀 ~ isVisible ===================================== canccel modal===============:", isVisible)
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
@@ -162,6 +165,7 @@ const MapScreen = props => {
     }
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
+    console.log("🚀 ~ requestforRide ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
@@ -193,11 +197,11 @@ const MapScreen = props => {
 
     return () => reference.off('value', listener);
   }, [rideId]);
-  const requestCancel = async () =>{
-    const url =  `auth/customer/ride_update/${rideId}`
-    const response = await Post(url , {status : 'cancel'}, apiHeader(token))
+  const requestCancel = async () => {
+    const url = `auth/customer/ride_update/${rideId}`
+    const response = await Post(url, { status: 'cancel' }, apiHeader(token))
     console.log("🚀 ~ requestCancel ~ response:", response?.data)
-    if(response != undefined){
+    if (response != undefined) {
       setIsVisible(true)
       // Alert.alert('Request canceled due to timeout')
 
@@ -233,16 +237,16 @@ const MapScreen = props => {
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}
-        // initialCamera={{
-        //   center: {
-        //     latitude: currentPosition?.latitude || 0,
-        //     longitude: currentPosition?.longitude || 0,
-        //   },
-        //   pitch: 0,
-        //   zoom: 18,
-        //   heading: 0,
-        //   altitude: 1000,
-        // }}
+      // initialCamera={{
+      //   center: {
+      //     latitude: currentPosition?.latitude || 0,
+      //     longitude: currentPosition?.longitude || 0,
+      //   },
+      //   pitch: 0,
+      //   zoom: 18,
+      //   heading: 0,
+      //   altitude: 1000,
+      // }}
       ></MapView>
 
       <Pulse
@@ -262,10 +266,10 @@ const MapScreen = props => {
           as={FontAwesome5}
           size={moderateScale(30, 0.6)}
           color={Color.white}
-          style={{left: 5}}
+          style={{ left: 5 }}
         />
       </View>
-      <View style={{position: 'absolute', bottom: 20}}>
+      <View style={{ position: 'absolute', bottom: 20 }}>
         {/* <AskLocation
           main_view_style={{height: windowHeight * 0.17}}
           heading={'Waiting For Replies'}
@@ -331,7 +335,7 @@ const MapScreen = props => {
         onPressAccept={() =>
           navigationService.navigate('RideScreen', {
             data: rideupdatedData,
-    
+
           })
         }
       />
@@ -341,7 +345,7 @@ const MapScreen = props => {
         onpressAccept={() => navigation.goBack()}
         onPressCancel={() => navigationService.navigate('Home')}
       />
-      <CancelRide modalVisible={isVisible} setModalVisible={setIsVisible}/>
+      <CancelRide modalVisible={isVisible} setModalVisible={setIsVisible} />
       {/* </ImageBackground> */}
     </SafeAreaView>
   );

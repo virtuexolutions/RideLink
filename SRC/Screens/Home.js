@@ -30,7 +30,7 @@ import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
 import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import { getDatabase, onChildAdded, ref } from '@react-native-firebase/database';
+import { getDatabase, onChildAdded, onValue, ref } from '@react-native-firebase/database';
 import database from '@react-native-firebase/database';
 
 const Home = () => {
@@ -127,40 +127,32 @@ const Home = () => {
     setIsLoading(true);
     try {
       const response = await Get(url, token);
+      console.log("🚀 ~ rideRequestList ~ response:", response?.data)
       if (response?.data?.ride_info) {
-        setRequestList(response.data.ride_info);
+        setRequestList(response.data.ride_info?.reverse());
       } else {
         setRequestList([]);
       }
     } catch (error) {
-      console.error("Error fetching ride requests:", error);
+      console.error("Error festching ride requests:", error);
     }
     setIsLoading(false);
   };
 
 
-  // const listenForNewRequests = () => {
-  //   const rideRequestsRef = database().ref('/');
-  //   rideRequestsRef.limitToLast(1).on('child_added', snapshot => {
-  //     if (snapshot.exists()) {
-  //       const newRideRequest = snapshot.val();
-  //       rideRequestList();
-  //     }
-  //   });
-
-  //   return () => rideRequestsRef.off();
-  // };
-
-
-  // useEffect(() => {
-  // }, []);
-
   useEffect(() => {
-    if (user_type == 'Rider') {
+    if (user_type === 'Rider') {
       const db = getDatabase();
       const requestsRef = ref(db, 'requests');
-      const unsubscribe = onChildAdded(requestsRef, snapshot => {
-        rideRequestList();
+      const unsubscribe = onValue(requestsRef, snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const allRequests = Object.keys(data).map(key => ({
+            id: key,
+            ...data[key],
+          }));
+          rideRequestList()
+        }
       });
       return () => unsubscribe();
     }
