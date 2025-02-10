@@ -340,12 +340,12 @@ const RideScreen = ({ route }) => {
                             size={moderateScale(10, 0.6)}
                           />
                           <CustomText
-                            onPress={() => {
-                              console.log(
-                                'here is add additional time button ================',
-                                rideData?.ride_info?.payment_method,
-                              );
-                            }}
+                            // onPress={() => {
+                            //   console.log(
+                            //     'here is add additional time button ================',
+                            //     rideData?.ride_info?.payment_method,
+                            //   );
+                            // }}
                             // onPress={() => {
                             //   setTimepicker(true);
                             // }}
