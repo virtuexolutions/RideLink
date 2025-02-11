@@ -21,16 +21,14 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { useIsFocused } from '@react-navigation/native';
 import { object } from 'yup';
 import AdditionalTimeModal from '../Components/AdditionalTimeModal';
+import { getDistance, isValidCoordinate } from 'geolib';
 
 const RideScreen = ({ route }) => {
-  console.log("🚀 ~ RideScreen ~ route:", route)
   const { data, type } = route?.params;
-  console.log('🚀 ~ RideScreen ~ data:', data);
   const rideData = route?.params?.data;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ RideScreen ~ token:", token)
   const [additionalTime, setAdditionalTime] = useState(false);
   const [additionalTimeModal, setAdditionalTimeModal] = useState(false)
   const [time, setTime] = useState(0)
@@ -43,7 +41,8 @@ const RideScreen = ({ route }) => {
     latitude: 0,
     longitude: 0,
   });
-  console.log("🚀 ~ RideScreen ~ currentPosition:", currentPosition)
+  const [fare, setFare] = useState(0);
+  const [distance, setDistance] = useState(0);
 
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
   const origin = {
@@ -54,6 +53,43 @@ const RideScreen = ({ route }) => {
     lat: type === 'details' ? parseFloat(data?.pickup_location_lat) : parseFloat(data?.ride_info?.rider?.lat),
     lng: type === 'details' ? parseFloat(data?.pickup_location_lng) : parseFloat(data?.ride_info?.rider?.lng),
   };
+
+
+  useEffect(() => {
+    if (currentPosition && data?.pickup_location_lat != null) {
+      const dropLocation = {
+        latitude: parseFloat(data?.pickup_location_lat),
+        longitude: parseFloat(data?.pickup_location_lng)
+      }
+      const checkDistanceBetween = getDistance(currentPosition, dropLocation);
+      let km = Math.round(checkDistanceBetween / 1000);
+      const getTravelTime = async () => {
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        try {
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${currentPosition?.latitude},${currentPosition?.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          if (data.status === 'OK') {
+            const distanceMatrix = data.rows[0].elements[0];
+            const travelTime = distanceMatrix.duration.text;
+            console.log(travelTime, 'travelTime');
+            return setTime(travelTime);
+          } else {
+            console.error('Error fetching travel time:', data.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      getTravelTime();
+    }
+  }, [currentPosition]);
+
+
 
   useEffect(() => {
     getCurrentLocation();
@@ -111,11 +147,6 @@ const RideScreen = ({ route }) => {
     const url = `auth/customer/ride_update/${data?.ride_id}`;
     setIsLoading(true);
     const response = await Post(url, { status: 'cancel' }, apiHeader(token));
-
-    console.log(
-      '🚀 ~ rideRquestCancel ~ response ======================= = == = > > > > >> > > >>:',
-      response?.data,
-    );
     setIsLoading(false);
     if (response != undefined) {
       navigationService.navigate('MapScreen', { ridedata: data, fromrideScreen: true });
@@ -146,12 +177,6 @@ const RideScreen = ({ route }) => {
     };
     mapRef.current?.animateToRegion(reigion, 1000);
   }, [currentPosition]);
-
-
-
-  console.log('Current Position:', currentPosition);
-  console.log('Origin:', origin);
-  console.log('Destination:', destination);
 
 
   return (

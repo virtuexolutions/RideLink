@@ -18,6 +18,7 @@ import navigationService from '../navigationService';
 import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import { baseUrl, imageUrl } from '../Config';
 import Geolocation from 'react-native-geolocation-service';
+import { getDistance } from 'geolib';
 
 const RideRequest = ({ route }) => {
   const { type, data } = route.params;
@@ -37,6 +38,10 @@ const RideRequest = ({ route }) => {
     latitude: 0,
     longitude: 0,
   });
+  const [fare, setFare] = useState(0);
+  const [distance, setDistance] = useState(0);
+  const [time, setTime] = useState(0)
+  console.log("🚀 ~ RideRequest ~ time:", time)
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -118,6 +123,7 @@ const RideRequest = ({ route }) => {
       status: status,
       lat: currentPosition?.latitude,
       lng: currentPosition?.longitude,
+      rider_arrived_time: time,
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -130,6 +136,43 @@ const RideRequest = ({ route }) => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log('yahaaa a rha ha')
+    if (currentPosition && data?.pickup_location_lat != null) {
+      const dropLocation = {
+        latitude: parseFloat(data?.pickup_location_lat),
+        longitude: parseFloat(data?.pickup_location_lng)
+      }
+      const checkDistanceBetween = getDistance(currentPosition, dropLocation);
+      let km = Math.round(checkDistanceBetween / 1000);
+      const distanceInMiles = km / 1.60934;
+      setDistance(km);
+      const getTravelTime = async () => {
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        try {
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${currentPosition?.latitude},${currentPosition?.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          if (data.status === 'OK') {
+            const distanceMatrix = data.rows[0].elements[0];
+            const travelTime = distanceMatrix.duration.text;
+            return setTime(travelTime);
+          } else {
+            console.error('Error fetching travel time:', data.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      getTravelTime();
+    }
+  }, [currentPosition]);
+
 
   return (
     <SafeAreaView style={styles.safe_are}>
@@ -455,7 +498,7 @@ const RideRequest = ({ route }) => {
                   textTransform={'capitalize'}
                   elevation
                   loader={loading}
-                  onPress={() => onPressSendRequest('accept')}
+                  onPress={() => time && onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
                   onPress={() => {
