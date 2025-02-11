@@ -20,6 +20,7 @@ const RequestModal = ({
   onPressAccept,
   onPressDecline,
 }) => {
+  console.log("🚀 ~ data:", data)
   const [time, setTime] = useState('');
   const [distance, setDistance] = useState('');
   const riderOrigin = {
@@ -60,7 +61,6 @@ const RequestModal = ({
       getTravelTime();
     }
   }, [riderDistination]);
-  console.log('==================================0 jdhfjkahsjkd0 01' , data?.ride_info?.rider?.photo)
   return (
     <Modal
       isVisible={isVisible}
