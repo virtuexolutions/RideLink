@@ -1,27 +1,27 @@
-import { Icon } from 'native-base';
-import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import {Icon} from 'native-base';
+import React, {useEffect, useRef, useState} from 'react';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import navigationService from '../navigationService';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import { baseUrl, imageUrl } from '../Config';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {baseUrl, imageUrl} from '../Config';
 import Geolocation from 'react-native-geolocation-service';
+import {getDistance} from 'geolib';
 
-const RideRequest = ({ route }) => {
-  const { type, data } = route.params;
-  console.log("🚀 ~ RideRequest ~ data:", data)
+const RideRequest = ({route}) => {
+  const {type, data} = route.params;
   const mapRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -37,6 +37,10 @@ const RideRequest = ({ route }) => {
     latitude: 0,
     longitude: 0,
   });
+  const [fare, setFare] = useState(0);
+  const [distance, setDistance] = useState(0);
+  const [time, setTime] = useState(0);
+ 
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -108,7 +112,10 @@ const RideRequest = ({ route }) => {
         console.log('No address found');
       }
     } catch (error) {
-      console.error('getAddressFromCoordinates from conrdinatesssssssssssss', error);
+      console.error(
+        'getAddressFromCoordinates from conrdinatesssssssssssss',
+        error,
+      );
     }
   };
 
@@ -118,18 +125,55 @@ const RideRequest = ({ route }) => {
       status: status,
       lat: currentPosition?.latitude,
       lng: currentPosition?.longitude,
+      rider_arrived_time: time,
     };
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
-    console.log("🚀 ~ RideRequest ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       navigationService.navigate('PassengerDetails', {
         type: '',
         data: data,
+        rider_arrived_time: response?.data?.ride_info?.rider_arrived_time,
       });
     }
   };
+
+  useEffect(() => {
+    console.log('yahaaa a rha ha');
+    if (currentPosition && data?.pickup_location_lat != null) {
+      const dropLocation = {
+        latitude: parseFloat(data?.pickup_location_lat),
+        longitude: parseFloat(data?.pickup_location_lng),
+      };
+      const checkDistanceBetween = getDistance(currentPosition, dropLocation);
+      let km = Math.round(checkDistanceBetween / 1000);
+      const distanceInMiles = km / 1.60934;
+      setDistance(km);
+      const getTravelTime = async () => {
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        try {
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${currentPosition?.latitude},${currentPosition?.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          if (data.status === 'OK') {
+            const distanceMatrix = data.rows[0].elements[0];
+            const travelTime = distanceMatrix.duration.text;
+            return setTime(travelTime);
+          } else {
+            console.error('Error fetching travel time:', data.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      getTravelTime();
+    }
+  }, [currentPosition]);
 
   return (
     <SafeAreaView style={styles.safe_are}>
@@ -147,7 +191,7 @@ const RideRequest = ({ route }) => {
           }}>
           <Marker
             coordinate={origin}
-            style={{ width: 15, height: 10 }}
+            style={{width: 15, height: 10}}
             pinColor={Color.red}></Marker>
           <MapViewDirections
             origin={origin}
@@ -158,7 +202,7 @@ const RideRequest = ({ route }) => {
           />
           <Marker
             coordinate={destination}
-            style={{ width: 15, height: 10 }}
+            style={{width: 15, height: 10}}
             pinColor={Color.green}
           />
         </MapView>
@@ -183,7 +227,7 @@ const RideRequest = ({ route }) => {
                           dropofflocation={'Neville Street Salem, Colorado'}
                           isButton
                           iscomplete
-                          style={{ marginBottom: moderateScale(20, 0.6) }}
+                          style={{marginBottom: moderateScale(20, 0.6)}}
                         />
                         <CustomButton
                           text={'End Trip'}
@@ -219,11 +263,11 @@ const RideRequest = ({ route }) => {
                             elevation
                             isBold
                             onPress={() => setDone(true)}
-                          // onPress={() =>
-                          //   navigationService.navigate('PassengerDetails', {
-                          //     type: '',
-                          //   })
-                          // }
+                            // onPress={() =>
+                            //   navigationService.navigate('PassengerDetails', {
+                            //     type: '',
+                            //   })
+                            // }
                           />
                         )}
                         <CustomButton
@@ -251,11 +295,11 @@ const RideRequest = ({ route }) => {
                           }}
                           borderWidth={1.5}
                           borderColor={Color.darkBlue}
-                        // onPress={() =>
-                        //   navigationService.navigate('PassengerDetails', {
-                        //     type: '',
-                        //   })
-                        // }
+                          // onPress={() =>
+                          //   navigationService.navigate('PassengerDetails', {
+                          //     type: '',
+                          //   })
+                          // }
                         />
                       </>
                     )}
@@ -274,11 +318,11 @@ const RideRequest = ({ route }) => {
                     isBold
                     marginTop={moderateScale(50, 0.6)}
                     onPress={() => setDropOff(true)}
-                  // onPress={() =>
-                  //   navigationService.navigate('PassengerDetails', {
-                  //     type: '',
-                  //   })
-                  // }
+                    // onPress={() =>
+                    //   navigationService.navigate('PassengerDetails', {
+                    //     type: '',
+                    //   })
+                    // }
                   />
                 )}
               </>
@@ -296,11 +340,11 @@ const RideRequest = ({ route }) => {
                   elevation
                   isBold
                   onPress={() => setStartnavigation(true)}
-                // onPress={() =>
-                //   navigationService.navigate('PassengerDetails', {
-                //     type: '',
-                //   })
-                // }
+                  // onPress={() =>
+                  //   navigationService.navigate('PassengerDetails', {
+                  //     type: '',
+                  //   })
+                  // }
                 />
                 <CustomButton
                   text={'Traffic Update'}
@@ -316,11 +360,11 @@ const RideRequest = ({ route }) => {
                   borderColor={Color.darkBlue}
                   marginTop={moderateScale(10, 0.6)}
                   isBold
-                // onPress={() =>
-                //   navigationService.navigate('PassengerDetails', {
-                //     type: '',
-                //   })
-                // }
+                  // onPress={() =>
+                  //   navigationService.navigate('PassengerDetails', {
+                  //     type: '',
+                  //   })
+                  // }
                 />
               </>
             )}
@@ -338,10 +382,10 @@ const RideRequest = ({ route }) => {
               <View style={styles.image_view}>
                 <CustomImage
                   style={styles.image}
-                  source={{ uri: imageUrl + data?.user?.photo }}
+                  source={{uri: imageUrl + data?.user?.photo}}
                 />
               </View>
-              <View style={{ width: '80%' }}>
+              <View style={{width: '80%'}}>
                 <CustomText style={styles.name}>{data?.user?.name}</CustomText>
                 <View
                   style={{
@@ -373,7 +417,7 @@ const RideRequest = ({ route }) => {
                       size={moderateScale(16, 0.6)}
                       color={Color.darkBlue}
                     />
-                    <View style={{ alignItems: 'flex-start' }}>
+                    <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={[styles.text1]}>
                         pickup from
                       </CustomText>
@@ -391,7 +435,7 @@ const RideRequest = ({ route }) => {
                         color: Color.veryLightGray,
                         top: 30,
                         marginLeft: moderateScale(-8, 0.6),
-                        transform: [{ rotate: '-90deg' }],
+                        transform: [{rotate: '-90deg'}],
                       },
                     ]}>
                     ------
@@ -407,7 +451,7 @@ const RideRequest = ({ route }) => {
                       size={moderateScale(16, 0.6)}
                       color={Color.darkBlue}
                     />
-                    <View style={{ alignItems: 'flex-start' }}>
+                    <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={styles.text1}>
                         {'DropOff Location'}
                       </CustomText>
@@ -455,7 +499,7 @@ const RideRequest = ({ route }) => {
                   textTransform={'capitalize'}
                   elevation
                   loader={loading}
-                  onPress={() => onPressSendRequest('accept')}
+                  onPress={() => time && onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
                   onPress={() => {

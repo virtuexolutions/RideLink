@@ -1,6 +1,6 @@
-import { useIsFocused } from '@react-navigation/native';
-import { ScrollView } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import {ScrollView} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 
 import Geolocation from 'react-native-geolocation-service';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Get, Post } from '../Axios/AxiosInterceptorFunction';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
@@ -29,14 +29,20 @@ import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import { getDatabase, onChildAdded, onValue, ref } from '@react-native-firebase/database';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {
+  getDatabase,
+  onChildAdded,
+  onValue,
+  ref,
+} from '@react-native-firebase/database';
 import database from '@react-native-firebase/database';
+import CountdownTimer from '../Components/CountdownTimer';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ Home ~ sstoken:", token)
-  const { user_type } = useSelector(state => state.authReducer);
+  console.log('🚀 ~ Home ~ sstoken:', token);
+  const {user_type} = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
@@ -120,23 +126,21 @@ const Home = () => {
   };
 
   const rideRequestList = async () => {
-    console.log('function chal rha ha')
+    console.log('function chal rha ha');
     const url = 'auth/rider/ride-request-list';
     setIsLoading(true);
     try {
       const response = await Get(url, token);
-      console.log("🚀 ~ rideRequestLissst ~ response:", response?.data)
       if (response?.data?.ride_info) {
         setRequestList(response.data.ride_info?.reverse());
       } else {
         setRequestList([]);
       }
     } catch (error) {
-      console.error("Error festching ride requests:", error);
+      console.error('Error festching ride requests:', error);
     }
     setIsLoading(false);
   };
-
 
   useEffect(() => {
     if (user_type === 'Rider') {
@@ -149,7 +153,7 @@ const Home = () => {
             id: key,
             ...data[key],
           }));
-          rideRequestList()
+          rideRequestList();
         }
       });
       return () => unsubscribe();
@@ -159,7 +163,7 @@ const Home = () => {
   useEffect(() => {
     if (user_type === 'Rider' && Object.keys(currentPosition).length > 0) {
       updateLocation();
-      rideRequestList()
+      rideRequestList();
     }
     userRequestHistory();
   }, [currentPosition]);
@@ -170,7 +174,7 @@ const Home = () => {
       lat: currentPosition?.latitude,
       lng: currentPosition?.longitude,
     };
-    console.log("🚀 ~ updateLocation ~ body:", body)
+    console.log('🚀 ~ updateLocation ~ body:', body);
     const response = await Post(url, body, apiHeader(token));
     if (response != undefined) {
       Platform.OS == 'android'
@@ -212,6 +216,7 @@ const Home = () => {
         as={Feather}
         color={Color.grey}
       />
+
       <View style={styles.main_Container}>
         <View style={styles.ridelink_Box}>
           <ImageBackground
@@ -271,7 +276,7 @@ const Home = () => {
               ) : (
                 <View style={styles.second_Image}>
                   <CustomImage
-                    style={{ height: '100%', width: '100%' }}
+                    style={{height: '100%', width: '100%'}}
                     source={require('../Assets/Images/ridelink.png')}
                   />
                 </View>
@@ -303,9 +308,9 @@ const Home = () => {
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item?.id}
                 data={requestList}
-                contentContainerStyle={{ marginBottom: moderateScale(100, 0.6) }}
-                style={{ marginBottom: moderateScale(20, 0.6) }}
-                renderItem={({ item }) => {
+                contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
+                style={{marginBottom: moderateScale(20, 0.6)}}
+                renderItem={({item}) => {
                   return (
                     <Userbox
                       data={item}
@@ -333,8 +338,8 @@ const Home = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                renderItem={({ item }) => {
-                  return <DeliveryBox data={item} />
+                renderItem={({item}) => {
+                  return <DeliveryBox data={item} />;
                 }}
               />
             </View>
@@ -394,15 +399,11 @@ const Home = () => {
                     no data found
                   </CustomText>
                 }
-                style={{ paddingBottom: moderateScale(150, 0.6) }}
-                contentContainerStyle={{ gap: moderateScale(10, 0.6) }}
+                style={{paddingBottom: moderateScale(150, 0.6)}}
+                contentContainerStyle={{gap: moderateScale(10, 0.6)}}
                 data={histry_list}
-                renderItem={({ item }) => {
-                  return (
-                    <Userbox
-                      data={item}
-                    />
-                  );
+                renderItem={({item}) => {
+                  return <Userbox data={item} />;
                 }}
               />
             )}

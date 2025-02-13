@@ -34,6 +34,10 @@ import CancelRide from '../Components/CancelRide';
 const MapScreen = props => {
   const mapRef = useRef();
   const ridedata = props?.route?.params?.ridedata;
+  console.log(
+    '🚀 ~ ridedata?.multiplePickups====================:',
+    ridedata?.multiplePickups,
+  );
   const paymentMethod = props?.route?.params?.paymentMethod;
   const nearestcab = props?.route?.params?.isEnabled;
   const fromrideScreen = props?.route?.params?.fromrideScreen;
@@ -144,7 +148,6 @@ const MapScreen = props => {
 
   const requestforRide = async () => {
     const formData = new FormData();
-    const url = 'auth/bookride';
     const body = {
       location_from: ridedata?.pickupLocation?.name,
       location_to: ridedata?.dropoffLocation?.name,
@@ -160,15 +163,21 @@ const MapScreen = props => {
       time: ridedata?.time,
     };
     ridedata?.multiplePickups?.forEach((item, index) => {
-      formData.append(`pickup[${index}][pickup_lat]`, item?.lat);
-      formData.append(`pickup[${index}][pickup_lng]`, item?.lng);
+      console.log('🚀 ~ ridedata?.multiplePickups?.forEach ~ item:', item);
+      formData.append(`pickup[${index}][lat]`, item?.lat);
+      formData.append(`pickup[${index}][lng]`, item?.lng);
     });
     for (let key in body) {
       formData.append(key, body[key]);
     }
+// return console.log('-------------------------------------- > ',formData)
+    const url = 'auth/bookride';
     setIsLoading(true);
-    const response = await Post(url, body, apiHeader(token));
-    console.log('🚀 ~ requestforRide ~ response:', response?.data);
+    const response = await Post(url, formData, apiHeader(token));
+    console.log(
+      '🚀 ~ --------------------898888888888888888888888 requestforRide ~ response:',
+      response?.data,
+    );
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);

@@ -20,7 +20,6 @@ const RequestModal = ({
   onPressAccept,
   onPressDecline,
 }) => {
-  console.log("🚀 ~ data:", data)
   const [time, setTime] = useState('');
   const [distance, setDistance] = useState('');
   const riderOrigin = {

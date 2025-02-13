@@ -19,7 +19,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const PassengerDetails = ({ route }) => {
   const { type, data } = route.params;
-  console.log("🚀 ~ PassengerDetails ~ data:", data)
+  const rider_arrived_time = route?.params?.rider_arrived_time
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const isFocused = useIsFocused()
   const [paymentMethod, setPaymentMethod] = useState('Card');
@@ -313,6 +313,7 @@ const PassengerDetails = ({ route }) => {
                       navigationService.navigate('RideScreen', {
                         data: data,
                         type: 'details',
+                        rider_arrived_time:rider_arrived_time,
                       });
                     }
                   } else {
