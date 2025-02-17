@@ -29,11 +29,6 @@ const PaymentScreen = props => {
       type: 'Card',
     });
 
-    return console.log(
-      '🚀 ~ strpieToken======================== ~ responsetoken:',
-      JSON.stringify(responsetoken ,null,2),
-    );
-
     if (responsetoken != undefined) {
       setStripeToken(responsetoken?.token?.id);
       setLoading(false);
@@ -108,6 +103,7 @@ const PaymentScreen = props => {
             borderRadius={moderateScale(25, 0.6)}
             fontSize={moderateScale(14, 0.3)}
             textTransform={'uppercase'}
+            bgColor={'white'}
             // isGradient={true}
             isBold
             disabled={loading}

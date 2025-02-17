@@ -40,7 +40,7 @@ const RideRequest = ({route}) => {
   const [fare, setFare] = useState(0);
   const [distance, setDistance] = useState(0);
   const [time, setTime] = useState(0);
- 
+
   const origin = {
     latitude: parseFloat(data?.pickup_location_lat),
     longitude: parseFloat(data?.pickup_location_lng),
@@ -140,7 +140,6 @@ const RideRequest = ({route}) => {
   };
 
   useEffect(() => {
-    console.log('yahaaa a rha ha');
     if (currentPosition && data?.pickup_location_lat != null) {
       const dropLocation = {
         latitude: parseFloat(data?.pickup_location_lat),
@@ -327,46 +326,47 @@ const RideRequest = ({route}) => {
                 )}
               </>
             ) : (
-              <>
-                <CustomButton
-                  text={'START NAVIGATION'}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.white}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.9}
-                  height={windowHeight * 0.075}
-                  bgColor={Color.darkBlue}
-                  textTransform={'capitalize'}
-                  elevation
-                  isBold
-                  onPress={() => setStartnavigation(true)}
-                  // onPress={() =>
-                  //   navigationService.navigate('PassengerDetails', {
-                  //     type: '',
-                  //   })
-                  // }
-                />
-                <CustomButton
-                  text={'Traffic Update'}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.black}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.9}
-                  height={windowHeight * 0.075}
-                  bgColor={Color.white}
-                  textTransform={'capitalize'}
-                  elevation
-                  borderWidth={1.5}
-                  borderColor={Color.darkBlue}
-                  marginTop={moderateScale(10, 0.6)}
-                  isBold
-                  // onPress={() =>
-                  //   navigationService.navigate('PassengerDetails', {
-                  //     type: '',
-                  //   })
-                  // }
-                />
-              </>
+              // <>
+              //   <CustomButton
+              //     text={'START NAVIGATION'}
+              //     fontSize={moderateScale(14, 0.3)}
+              //     textColor={Color.white}
+              //     borderRadius={moderateScale(30, 0.3)}
+              //     width={windowWidth * 0.9}
+              //     height={windowHeight * 0.075}
+              //     bgColor={Color.darkBlue}
+              //     textTransform={'capitalize'}
+              //     elevation
+              //     isBold
+              //     onPress={() => setStartnavigation(true)}
+              //     // onPress={() =>
+              //     //   navigationService.navigate('PassengerDetails', {
+              //     //     type: '',
+              //     //   })
+              //     // }
+              //   />
+              //   <CustomButton
+              //     text={'Traffic Update'}
+              //     fontSize={moderateScale(14, 0.3)}
+              //     textColor={Color.black}
+              //     borderRadius={moderateScale(30, 0.3)}
+              //     width={windowWidth * 0.9}
+              //     height={windowHeight * 0.075}
+              //     bgColor={Color.white}
+              //     textTransform={'capitalize'}
+              //     elevation
+              //     borderWidth={1.5}
+              //     borderColor={Color.darkBlue}
+              //     marginTop={moderateScale(10, 0.6)}
+              //     isBold
+              //     // onPress={() =>
+              //     //   navigationService.navigate('PassengerDetails', {
+              //     //     type: '',
+              //     //   })
+              //     // }
+              //   />
+              // </>
+              <></>
             )}
           </>
         ) : (
@@ -503,7 +503,8 @@ const RideRequest = ({route}) => {
                 />
                 <TouchableOpacity
                   onPress={() => {
-                    onPressSendRequest('reject');
+                    // navigationService.navigate('ChooseDeclineReasonScreen')
+                    // onPressSendRequest('reject');
                     setDecline(true);
                   }}
                   style={styles.icon_view}>

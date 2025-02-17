@@ -41,7 +41,6 @@ import CountdownTimer from '../Components/CountdownTimer';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ Home ~ sstoken:', token);
   const {user_type} = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
@@ -126,7 +125,6 @@ const Home = () => {
   };
 
   const rideRequestList = async () => {
-    console.log('function chal rha ha');
     const url = 'auth/rider/ride-request-list';
     setIsLoading(true);
     try {

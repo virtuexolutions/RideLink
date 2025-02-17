@@ -136,16 +136,6 @@ const MapScreen = props => {
     }
   };
 
-  const origin = {
-    latitude: parseFloat(ridedata?.pickupLocation?.lat),
-    longitude: parseFloat(ridedata?.pickupLocation?.lng),
-  };
-
-  const destination = {
-    latitude: parseFloat(ridedata?.dropoffLocation?.lng),
-    longitude: parseFloat(ridedata?.dropoffLocation?.lng),
-  };
-
   const requestforRide = async () => {
     const formData = new FormData();
     const body = {
@@ -170,14 +160,9 @@ const MapScreen = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
-// return console.log('-------------------------------------- > ',formData)
     const url = 'auth/bookride';
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-    console.log(
-      '🚀 ~ --------------------898888888888888888888888 requestforRide ~ response:',
-      response?.data,
-    );
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
@@ -188,7 +173,6 @@ const MapScreen = props => {
 
   useEffect(() => {
     const reference = database().ref(`/requests/${rideId}`);
-    console.log('🚀 ~ useEffect ~ reference:', reference);
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -202,33 +186,10 @@ const MapScreen = props => {
 
     return () => reference.off('value', listener);
   }, [rideId]);
-  const requestCancel = async () => {
-    const url = `auth/customer/ride_update/${rideId}`;
-    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
-    console.log('🚀 ~ requestCancel ~ response:', response?.data);
-    if (response != undefined) {
-      setIsVisible(true);
-      // Alert.alert('Request canceled due to timeout')
-    }
-  };
-
-  useEffect(() => {
-    rideId == '' &&
-      rideStatus.toLocaleLowerCase == 'pending' &&
-      setTimeout(() => {
-        requestCancel();
-        console.log('Request canceled due to timeout');
-      }, 900000);
-  }, [rideId]);
-  const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
   return (
     <SafeAreaView style={[styles.safe_are, styles.background_view]}>
       <MapView
-        scrollEnabled={false} // Disable scrolling
-        zoomEnabled={false} // Disable zooming
-        rotateEnabled={false} // Disable rotation
-        pitchEnabled={false}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}

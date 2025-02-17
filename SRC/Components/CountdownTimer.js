@@ -7,14 +7,13 @@ import CustomText from './CustomText';
 
 const CountdownTimer = ({initialTime, onComplete, addTime}) => {
   const extractMinutes = timeString => {
-    const minutes = parseInt(timeString, 10); // Extracts number
-    return isNaN(minutes) ? 0 : minutes; // Prevent NaN issues
+    const minutes = parseInt(timeString, 10);
+    return isNaN(minutes) ? 0 : minutes;
   };
-  console.log('🚀 ~ CountdownTimer ~ initialTime:', initialTime);
   const [timeLeft, setTimeLeft] = useState(extractMinutes(initialTime) * 60);
   useEffect(() => {
     if (timeLeft <= 0) {
-      onComplete && onComplete(initialTime); // Call function wd;;lf;lasdhen timer ends
+      onComplete && onComplete(initialTime);
       return;
     }
 

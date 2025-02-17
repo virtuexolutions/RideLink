@@ -1,4 +1,10 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useState} from 'react';
 import Header from '../Components/Header';
 import {Icon} from 'native-base';
@@ -10,7 +16,11 @@ import {moderateScale} from 'react-native-size-matters';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 import {Post} from '../Axios/AxiosInterceptorFunction';
-const ChooseDeclineReasonScreen = () => {
+import {useSelector} from 'react-redux';
+
+const ChooseDeclineReasonScreen = ({}) => {
+  const {user_type} = useSelector(state => state.authReducer);
+  console.log('🚀 ~ ChooseDeclineReasonScreen ~ user_type:', user_type);
   const array = [
     {id: 1, reason: 'Price too High', checked: true},
     {id: 2, reason: 'Long Wait Time', checked: true},
@@ -23,30 +33,59 @@ const ChooseDeclineReasonScreen = () => {
     {id: 9, reason: 'Route Concerns', checked: true},
   ];
   const [isLoading, setIsLoading] = useState(false);
+  const [reason, setReason] = useState({});
+  console.log(
+    '🚀 ~ ChooseDeclineReasonScreen ~ reason:',
+    reason?.some(data => data?.id),
+  );
 
-  const DeclineReason = async () => {
-    const url = '';
-    const body = {};
+  const rideCancel = async () => {
+    const body = {
+      ride_id: 1,
+      status: 'cancel',
+      reason: reason?.reason,
+    };
+    const url = `auth/customer/ride_update/${data?.ride_id}`;
     setIsLoading(true);
-    const response = await Post(url, body, apiHeader(token));
+    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
     setIsLoading(false);
     if (response != undefined) {
+      user_type == 'Rider'
+        ? navigationService.navigate('Home')
+        : navigationService.navigate('MapScreen', {
+            ridedata: data,
+            fromrideScreen: true,
+          });
     }
   };
 
   return (
     <SafeAreaView>
-      <Header headerColor={'transparent'} title={'Chooose Decline Reason'} />
+      <Header
+        headerColor={'transparent'}
+        title={'Chooose Decline Reason'}
+        showBack={true}
+      />
       <View style={styles.mainView}>
-        {array.map((item, index) => {
+        {array?.map((item, index) => {
           return (
-            <View style={styles.reasons}>
+            <TouchableOpacity
+              onPress={() => {
+                setReason(item);
+              }}
+              style={[
+                styles.reasons,
+                {
+                  backgroundColor:
+                    reason?.id == item?.id ? 'red' : 'transparent',
+                },
+              ]}>
               <CustomText
                 style={{color: Color.grey, fontSize: moderateScale(12, 0.2)}}>
                 {item.reason}
               </CustomText>
               <Icon name={'check'} as={AntDesign} />
-            </View>
+            </TouchableOpacity>
           );
         })}
         <CustomButton
@@ -61,9 +100,10 @@ const ChooseDeclineReasonScreen = () => {
           isBold
           marginTop={moderateScale(32, 0.3)}
           onPress={() => {
-            navigationService.navigate('RecieptScreen', {
-              type: 'fromDecline',
-            });
+            rideCancel();
+            // navigationService.navigate('RecieptScreen', {
+            //   type: 'fromDecline',
+            // });
           }}
         />
       </View>

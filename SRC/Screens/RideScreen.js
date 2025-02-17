@@ -2,6 +2,7 @@ import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
+  Linking,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -26,7 +27,7 @@ import {customMapStyle} from '../Utillity/mapstyle';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {object} from 'yup';
 import AdditionalTimeModal from '../Components/AdditionalTimeModal';
 import {getDistance, isValidCoordinate} from 'geolib';
@@ -34,13 +35,16 @@ import {getDistance, isValidCoordinate} from 'geolib';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {mode} from 'native-base/lib/typescript/theme/tools';
 import CountdownTimer from '../Components/CountdownTimer';
+import {firebase} from '@react-native-firebase/messaging';
 
 const RideScreen = ({route}) => {
   const {data, type} = route?.params;
   const rideData = route?.params?.data;
+  console.log('🚀 ~ rideData:', rideData);
   const rider_arrived_time = route?.params?.rider_arrived_time;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
+  const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [additionalTimeModal, setAdditionalTimeModal] = useState(false);
@@ -48,18 +52,16 @@ const RideScreen = ({route}) => {
   const [addTime, setAddTime] = useState(0);
   const [time, setTime] = useState(0);
   const {user_type} = useSelector(state => state.authReducer);
-  const [start_waiting, setStartWaiting] = useState(null);
+  const [start_waiting, setStartWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [arrive, setArrive] = useState(false);
-  console.log('🚀 ~ arrive:', arrive);
-  const [selectedTime, setSelectedTime] = useState('');
+  const [passengerArrive, setPassengerArrive] = useState(false);
   const [fare, setFare] = useState(0);
   const [distance, setDistance] = useState(0);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
-
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
   const origin = {
     lat:
@@ -71,7 +73,6 @@ const RideScreen = ({route}) => {
         ? currentPosition?.longitude
         : parseFloat(data?.ride_info?.pickup_location_lng),
   };
-  console.log('🚀 ~ RideScreen ~ origin:', origin);
   const destination = {
     lat:
       type === 'details'
@@ -103,7 +104,6 @@ const RideScreen = ({route}) => {
           if (data.status === 'OK') {
             const distanceMatrix = data.rows[0].elements[0];
             const travelTime = distanceMatrix.duration.text;
-            console.log(travelTime, 'travelTime');
             return setTime(travelTime);
           } else {
             console.error('Error fetching travel time:', data.status);
@@ -120,7 +120,22 @@ const RideScreen = ({route}) => {
   useEffect(() => {
     getCurrentLocation();
   }, [isFocused]);
-  const checkLocation = async () => {
+  const onPressStartNavigation = async () => {
+    // updateStatus('OnGoing');
+    // setStartNavigation(true);
+    const pickup = {
+      latitude: parseFloat(data?.pickup_location_lat),
+      longitude: parseFloat(data?.pickup_location_lng),
+    };
+    const dropoff = {
+      latitude: parseFloat(data?.dropoff_location_lat),
+      longitude: parseFloat(data?.dropoff_location_lng),
+    };
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${pickup?.latitude},${pickup?.longitude}&destination=${dropoff?.latitude},${dropoff?.longitude}&travelmode=driving`;
+    // Linking.openURL(url).catch(err => console.error('An error occurred', err));
+  };
+
+  useEffect(() => {
     const watchId = Geolocation.watchPosition(
       position => {
         const {latitude, longitude} = position.coords;
@@ -157,7 +172,7 @@ const RideScreen = ({route}) => {
     return () => {
       Geolocation.clearWatch(watchId);
     };
-  };
+  }, [isFocused]);
 
   const getCurrentLocation = async () => {
     try {
@@ -204,19 +219,6 @@ const RideScreen = ({route}) => {
       }
     } catch (error) {
       console.error('--------------------------------- error', error);
-    }
-  };
-
-  const rideCancel = async () => {
-    const url = `auth/customer/ride_update/${data?.ride_id}`;
-    setIsLoading(true);
-    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
-    setIsLoading(false);
-    if (response != undefined) {
-      navigationService.navigate('MapScreen', {
-        ridedata: data,
-        fromrideScreen: true,
-      });
     }
   };
 
@@ -296,10 +298,16 @@ const RideScreen = ({route}) => {
           />
         </MapView>
 
-        {user_type === 'Rider' && start_waiting === true ? (
-          <>
-            {/* <CustomButton
-              text={'+ ADD ADDITIONAL TIME'}
+        {user_type === 'Rider' && passengerArrive === true ? (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              height: windowHeight * 0.2,
+              width: windowWidth,
+            }}>
+            <CustomButton
+              text={'DRIVE'}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.white}
               borderRadius={moderateScale(30, 0.3)}
@@ -307,30 +315,19 @@ const RideScreen = ({route}) => {
               marginTop={moderateScale(10, 0.3)}
               height={windowHeight * 0.07}
               bgColor={Color.darkBlue}
-              textTransform={'capitalize'}
-              isBold
-              onPress={() => setAdditionalTime(true)}
-            /> */}
-            <CustomButton
-              text={'DRIVE'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={Color.black}
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.85}
-              marginTop={moderateScale(10, 0.3)}
-              height={windowHeight * 0.07}
-              bgColor={Color.white}
               borderWidth={1.5}
               borderColor={Color.darkBlue}
               textTransform={'capitalize'}
               isBold
-              onPress={() =>
-                navigationService.navigate('PassengerDetails', {
-                  type: 'passangerIdentity',
-                })
-              }
+              onPress={() => {
+                console.log('trying to navigate tracknng screen ');
+                const url = `https://www.google.com/maps/dir/?api=1&origin=${currentPosition?.latitude},${currentPosition?.longitude}&destination=${destination?.lat},${destination?.lng}&travelmode=driving`;
+                Linking.openURL(url).catch(err =>
+                  console.error('An error occurred', err),
+                );
+              }}
             />
-          </>
+          </View>
         ) : (
           <>
             {additionalTime ? (
@@ -422,7 +419,7 @@ const RideScreen = ({route}) => {
                           styles.row_view,
                           {marginTop: moderateScale(10, 0.6)},
                         ]}>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                           // onPress={() => setAdditionalTime(true)}
                           style={[
                             styles.row_view,
@@ -436,22 +433,24 @@ const RideScreen = ({route}) => {
                           />
                           <CustomText
                             onPress={() => {
-                              additionalTimeModal(true);
+                              setAdditionalTimeModal(true);
                             }}
                             style={styles.text2}>
                             ADD ADDITIONAL TIME
                           </CustomText>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <TouchableOpacity
-                          style={{
-                            backgroundColor: 'red',
-                          }}
+                          style={{}}
                           onPress={() => {
-                            rideCancel();
+                            navigationService.navigate(
+                              'ChooseDeclineReasonScreen',
+                              {data: rideData},
+                            );
+                            // rideCancel();
                           }}>
                           <CustomText
                             onPress={() => {
-                              rideCancel();
+                              // rideCancel();
                             }}
                             style={styles.text2}>
                             CANCEL RIDE
@@ -484,24 +483,12 @@ const RideScreen = ({route}) => {
                       width: windowWidth,
                       height: windowHeight * 0.2,
                       position: 'absolute',
-                      // top :0
                       bottom: 0,
                     }}>
-                    {!isriderArrive ? (
-                      <CountdownTimer
-                        initialTime={1}
-                        // initialTime={parseInt(time, 10)}
-                        onComplete={initialValue => {
-                          checkLocation();
-                        }}
-                      />
-                    ) : isriderArrive ? (
+                    {isriderArrive && !arrive ? (
                       <CustomButton
                         onPress={() => {
                           setArrive(true);
-                          console.log(
-                            '------------------------------------ pohnch gya hu mai  ',
-                          );
                         }}
                         text={'ARRIVE LOCATION'}
                         fontSize={moderateScale(14, 0.3)}
@@ -514,35 +501,13 @@ const RideScreen = ({route}) => {
                         textTransform={'capitalize'}
                         isBold
                       />
-                    ) : arrive ? (
-                      <CustomButton
-                        text={'arrive '}
-                        fontSize={moderateScale(14, 0.3)}
-                        textColor={Color.black}
-                        borderRadius={moderateScale(30, 0.3)}
-                        width={windowWidth * 0.85}
-                        height={windowHeight * 0.07}
-                        bgColor={Color.white}
-                        borderWidth={1}
-                        borderColor={Color.blue}
-                        textTransform={'capitalize'}
-                        style={{bottom: 60}}
-                        isBold
-                        onPress={
-                          () =>
-                            console.log(
-                              'hhhhhhhhhhhhhhhhhhhhhhhuuuuuuuuuuuuuu djhajkfshjksdhf jkahsdfjh',
-                            )
-                          //  setStartWaiting(true)
-                        }
-                      />
-                    ) : (
+                    ) : start_waiting == false ? (
                       <CustomButton
                         style={{
                           position: 'absolute',
                           bottom: 100,
                         }}
-                        text={'stat waiting'}
+                        text={'start waiting'}
                         fontSize={moderateScale(14, 0.3)}
                         textColor={Color.white}
                         borderRadius={moderateScale(30, 0.3)}
@@ -552,7 +517,25 @@ const RideScreen = ({route}) => {
                         bgColor={Color.darkBlue}
                         textTransform={'capitalize'}
                         isBold
-                        // onPress={() => setAdditionalTime(true)}
+                        onPress={() => {
+                          setStartWaiting(true);
+                        }}
+                      />
+                    ) : (
+                      <CustomButton
+                        text={'arrive '}
+                        fontSize={moderateScale(14, 0.3)}
+                        textColor={Color.white}
+                        borderRadius={moderateScale(30, 0.3)}
+                        width={windowWidth * 0.85}
+                        height={windowHeight * 0.07}
+                        bgColor={Color.darkBlue}
+                        borderWidth={1}
+                        borderColor={Color.blue}
+                        textTransform={'capitalize'}
+                        // style={{bottom: 60}}
+                        isBold
+                        onPress={() => setPassengerArrive(true)}
                       />
                     )}
                   </View>
@@ -624,7 +607,7 @@ const styles = StyleSheet.create({
   row_view: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   location_text_view: {
     flexDirection: 'row',
@@ -646,25 +629,5 @@ const styles = StyleSheet.create({
     color: Color.black,
     marginLeft: moderateScale(5, 0.6),
     fontWeight: '600',
-  },
-  time: {
-    fontSize: moderateScale(35, 0.6),
-    color: Color.black,
-    textAlign: 'center',
-  },
-  pickerComponentStyleIOS: {
-    backgroundColor: '#f0f0f0', // Light background
-    borderRadius: 10, // Rounded edges
-  },
-  datePickerCommon: {
-    backgroundColor: 'red',
-    width: '80%', // Common picker width
-  },
-  dateInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: '#fff',
   },
 });

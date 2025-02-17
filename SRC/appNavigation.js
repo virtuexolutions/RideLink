@@ -96,7 +96,6 @@ const AppNavigator = () => {
             component={ReferFriendScreen}
           /> */}
 
-          {/* <RootNav.Screen name="RideRequest" component={RideRequest} /> */}
           <RootNav.Screen name="MyWallet" component={MyWallet} />
 
           <RootNav.Screen
@@ -251,7 +250,10 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
       <DrawerNavigation.Screen name="History" component={History} />
       <DrawerNavigation.Screen name="AddYourCar" component={AddYourCar} />
-      <DrawerNavigation.Screen name="ReferFriendScreen" component={ReferFriendScreen} />
+      <DrawerNavigation.Screen
+        name="ReferFriendScreen"
+        component={ReferFriendScreen}
+      />
 
       <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />
 

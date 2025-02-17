@@ -6,6 +6,7 @@ import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import CustomText from './CustomText';
 import CustomButton from './CustomButton';
+import {firebase} from '@react-native-firebase/messaging';
 
 const AdditionalTimeModal = ({
   modalvisibe,
@@ -13,6 +14,22 @@ const AdditionalTimeModal = ({
   setModalVisible,
   setAdditionalTime,
 }) => {
+  // const sendtime = async (rideId, userWaitTime, userId, riderId) => {
+  //   try {
+  //     const rideRef = doc(db, 'requests', rideId);
+  //     await setDoc(rideRef, {
+  //       userWaitTime: userWaitTime,
+  //       riderWaitTime: null, // Rider's wait time will be updated later
+  //       status: 'waiting',
+  //       userId: userId,
+  //       riderId: riderId,
+  //     });
+  //     console.log('User wait time sent!');
+  //   } catch (e) {
+  //     console.error('Error sending wait time: ', e);
+  //   }
+  // };
+
   return (
     <Modal
       swipeDirection="up"
@@ -59,6 +76,7 @@ const AdditionalTimeModal = ({
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <CustomButton
               onPress={() => {
+                // sendtime(5)
                 setTime(5);
                 setAdditionalTime(true);
                 setModalVisible(false);
@@ -79,9 +97,10 @@ const AdditionalTimeModal = ({
             <CustomButton
               text={'10 Min'}
               onPress={() => {
-                setTime(10);
-                setAdditionalTime(true);
-                setModalVisible(false);
+                sendtime(10);
+                // setTime(10);
+                // setAdditionalTime(true);
+                // setModalVisible(false);
               }}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.black}

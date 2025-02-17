@@ -160,7 +160,7 @@ const SendTripRecieptScreen = ({route}) => {
               </View>
             </>
           )}
-          <View style={styles.configView}>
+          {/* <View style={styles.configView}>
             <View style={styles.configDetailView}>
               <View style={styles.configDetail}>
                 <Icon
@@ -256,7 +256,7 @@ const SendTripRecieptScreen = ({route}) => {
                 // extreme
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={styles.expensesContainer}>
             <View style={styles.amountView}>
@@ -479,6 +479,8 @@ const styles = StyleSheet.create({
   },
   expensesContainer: {
     width: windowWidth * 0.9,
+    marginVertical: moderateScale(15, 0.6),
+
     // backgroundColor:'green',
   },
   amountView: {
