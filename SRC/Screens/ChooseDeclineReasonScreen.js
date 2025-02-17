@@ -1,61 +1,60 @@
 import {
+  ActivityIndicator,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Header from '../Components/Header';
-import {Icon} from 'native-base';
+import { Icon } from 'native-base';
 // import { Header } from 'react-native/Libraries/NewAppScreen'
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import CustomText from '../Components/CustomText';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale} from 'react-native-size-matters';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import { moderateScale } from 'react-native-size-matters';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import {useSelector} from 'react-redux';
+import { Post } from '../Axios/AxiosInterceptorFunction';
+import { useSelector } from 'react-redux';
+import Color from '../Assets/Utilities/Color';
 
-const ChooseDeclineReasonScreen = ({}) => {
-  const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ ChooseDeclineReasonScreen ~ user_type:', user_type);
+const ChooseDeclineReasonScreen = (prop) => {
+  const data = prop?.route?.params?.data
+  const { user_type } = useSelector(state => state.authReducer);
+  const token = useSelector(state => state.authReducer.token)
   const array = [
-    {id: 1, reason: 'Price too High', checked: true},
-    {id: 2, reason: 'Long Wait Time', checked: true},
-    {id: 3, reason: 'Poor Vehicle Condition', checked: true},
-    {id: 4, reason: 'Safety Concerns', checked: true},
-    {id: 5, reason: 'Inconvenient Payment Options', checked: true},
-    {id: 6, reason: 'Negative Past Experience', checked: true},
-    {id: 7, reason: 'Preference for Ride-Hailing Apps', checked: true},
-    {id: 8, reason: 'Unfamiliarity with the Service', checked: true},
-    {id: 9, reason: 'Route Concerns', checked: true},
+    { id: 1, reason: 'Price too High', checked: true },
+    { id: 2, reason: 'Long Wait Time', checked: true },
+    { id: 3, reason: 'Poor Vehicle Condition', checked: true },
+    { id: 4, reason: 'Safety Concerns', checked: true },
+    { id: 5, reason: 'Inconvenient Payment Options', checked: true },
+    { id: 6, reason: 'Negative Past Experience', checked: true },
+    { id: 7, reason: 'Preference for Ride-Hailing Apps', checked: true },
+    { id: 8, reason: 'Unfamiliarity with the Service', checked: true },
+    { id: 9, reason: 'Route Concerns', checked: true },
   ];
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState({});
-  console.log(
-    '🚀 ~ ChooseDeclineReasonScreen ~ reason:',
-    reason?.some(data => data?.id),
-  );
 
   const rideCancel = async () => {
     const body = {
-      ride_id: 1,
       status: 'cancel',
       reason: reason?.reason,
     };
-    const url = `auth/customer/ride_update/${data?.ride_id}`;
-    setIsLoading(true);
-    const response = await Post(url, {status: 'cancel'}, apiHeader(token));
-    setIsLoading(false);
+    const url = `auth/ride_cancel/${data?.id}`;
+    // setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    // setIsLoading(false);
+    return console.log("🚀 ~ rideCancel ~ response:", response?.data)
     if (response != undefined) {
       user_type == 'Rider'
         ? navigationService.navigate('Home')
         : navigationService.navigate('MapScreen', {
-            ridedata: data,
-            fromrideScreen: true,
-          });
+          ridedata: data,
+          fromrideScreen: true,
+        });
     }
   };
 
@@ -75,21 +74,18 @@ const ChooseDeclineReasonScreen = ({}) => {
               }}
               style={[
                 styles.reasons,
-                {
-                  backgroundColor:
-                    reason?.id == item?.id ? 'red' : 'transparent',
-                },
+
               ]}>
               <CustomText
-                style={{color: Color.grey, fontSize: moderateScale(12, 0.2)}}>
-                {item.reason}
+                style={{ color: Color.grey, fontSize: moderateScale(12, 0.2)}}>
+                {item?.reason}
               </CustomText>
-              <Icon name={'check'} as={AntDesign} />
+              <Icon color={reason?.id == item?.id ? Color.blue : Color.mediumGray} name={'check'} as={Entypo} />
             </TouchableOpacity>
           );
         })}
         <CustomButton
-          text={'Submit'}
+          text={isLoading ? <ActivityIndicator size={'small'} color={Color.white} /> : 'Submit'}
           fontSize={moderateScale(15, 0.3)}
           textColor={Color.white}
           borderColor={Color.white}
