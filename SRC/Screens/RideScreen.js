@@ -1,5 +1,5 @@
-import { Icon } from 'native-base';
-import React, { useEffect, useRef, useState } from 'react';
+import {Icon} from 'native-base';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Linking,
@@ -11,34 +11,35 @@ import {
   VirtualizedList,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { customMapStyle } from '../Utillity/mapstyle';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import {customMapStyle} from '../Utillity/mapstyle';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { object } from 'yup';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {object} from 'yup';
 import AdditionalTimeModal from '../Components/AdditionalTimeModal';
-import { getDistance, isValidCoordinate } from 'geolib';
+import {getDistance, isValidCoordinate} from 'geolib';
 
-import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-import { mode } from 'native-base/lib/typescript/theme/tools';
+import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
+import {mode} from 'native-base/lib/typescript/theme/tools';
 import CountdownTimer from '../Components/CountdownTimer';
-import { firebase } from '@react-native-firebase/messaging';
+import {firebase} from '@react-native-firebase/messaging';
+import {getDatabase} from '@react-native-firebase/database';
 
-const RideScreen = ({ route }) => {
-  const { data, type } = route?.params;
+const RideScreen = ({route}) => {
+  const {data, type} = route?.params;
   const rideData = route?.params?.data;
   const rider_arrived_time = route?.params?.rider_arrived_time;
   const isFocused = useIsFocused();
@@ -50,7 +51,7 @@ const RideScreen = ({ route }) => {
   const [isriderArrive, setIsRiderArrived] = useState(false);
   const [addTime, setAddTime] = useState(0);
   const [time, setTime] = useState(0);
-  const { user_type } = useSelector(state => state.authReducer);
+  const {user_type} = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [arrive, setArrive] = useState(false);
@@ -119,25 +120,11 @@ const RideScreen = ({ route }) => {
   useEffect(() => {
     getCurrentLocation();
   }, [isFocused]);
-  const onPressStartNavigation = async () => {
-    // updateStatus('OnGoing');
-    // setStartNavigation(true);
-    const pickup = {
-      latitude: parseFloat(data?.pickup_location_lat),
-      longitude: parseFloat(data?.pickup_location_lng),
-    };
-    const dropoff = {
-      latitude: parseFloat(data?.dropoff_location_lat),
-      longitude: parseFloat(data?.dropoff_location_lng),
-    };
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${pickup?.latitude},${pickup?.longitude}&destination=${dropoff?.latitude},${dropoff?.longitude}&travelmode=driving`;
-    // Linking.openURL(url).catch(err => console.error('An error occurred', err));
-  };
 
   useEffect(() => {
     const watchId = Geolocation.watchPosition(
       position => {
-        const { latitude, longitude } = position.coords;
+        const {latitude, longitude} = position.coords;
         setCurrentPosition(prevLocation => ({
           ...prevLocation,
           latitude,
@@ -147,7 +134,7 @@ const RideScreen = ({ route }) => {
           Math.abs(lat1 - lat2) < threshold &&
           Math.abs(lon1 - lon2) < threshold;
         if (isLocationClose(37.4219983, -122.084, 37.4219983, -122.084)) {
-          // if (isLocationClose(latitude, origin?.lat, longitude, origin?.lng)) {
+          // if (isLocationClose(latitude, !isriderArrive ? origin?.lat : destination?.lat, longitude,!isriderArrive ?  origin?.lng : destination?.lng)) {
           console.log(
             'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
             latitude,
@@ -155,10 +142,8 @@ const RideScreen = ({ route }) => {
             longitude,
             origin.lng,
           );
+
           setIsRiderArrived(true);
-        } else {
-          console.log('location  are not sameeeeeeeeeeeeeeeeeeeeeeeeeee');
-          setAdditionalTimeModal(true);
         }
       },
       error => console.log('Error getting location:', error),
@@ -221,60 +206,63 @@ const RideScreen = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    const reigion = {
-      latitude: parseFloat(currentPosition?.latitude),
-      longitude: parseFloat(currentPosition?.longitude),
-      latitudeDelta: 0.0522,
-      longitudeDelta: 0.0521,
-    };
-    mapRef.current?.animateToRegion(reigion, 1000);
-  }, [currentPosition]);
+  // useEffect(() => {
+  //   const reigion = {
+  //     latitude: parseFloat(currentPosition?.latitude),
+  //     longitude: parseFloat(currentPosition?.longitude),
+  //     latitudeDelta: 0.0522,
+  //     longitudeDelta: 0.0521,
+  //   };
+  //   mapRef.current?.animateToRegion(reigion, 1000);
+  // }, [currentPosition]);
 
-  
-  useEffect(() => {
-    console.log('------------------- from fire base useEffect --------------------------------')
-    const ref = database().ref('requests');
-    ref.on('value', snapshot => {
-      if (snapshot.exists()) {
-        const { latitude, longitude } = snapshot.val();
+  // const getDistanceFromLatLonInMeters = (lat1, lon1, lat2, lon2) => {
+  //   const R = 6371e3; // Radius of the earth in meters
+  //   const φ1 = (lat1 * Math.PI) / 180;
+  //   const φ2 = (lat2 * Math.PI) / 180;
+  //   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  //   const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-        // Calculate distance
-        const distance = getDistanceFromLatLonInMeters(
-          latitude,
-          longitude,
-          destination?.latitude,
-          destination?.longitude
-        );
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ', latitude,
-          longitude,
-          destination?.latitude,
-          destination?.longitude)
-        if (distance < 50) {
-          Alert.alert('Arrived!', 'You have reached your destination.', [
-            { text: 'OK', onPress: () => navigation.navigate('DestinationScreen') },
-          ]);
-        }
-      }
-    });
+  //   const a =
+  //     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+  //     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return () => ref.off();
-  }, [isFocused]);
+  //   return R * c;
+  // };
+  // useEffect(() => {
+  //   console.log(
+  //     '------------------- from fire base useEffect --------------------------------',
+  //   );
+  //   const ref = getDatabase().ref('requests');
+  //   ref.on('value', snapshot => {
+  //     if (snapshot.exists()) {
+  //       const {latitude, longitude} = snapshot.val();
+  //       const distance = getDistanceFromLatLonInMeters(
+  //         37.4219983,
+  //         -122.084,
+  //         37.4219983,
+  //         -122.084,
+  //       );
 
-  const getDistanceFromLatLonInMeters = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // Radius of the earth in meters
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+  //       if (distance < 50) {
+  //         Alert.alert('Arrived!', 'You have reached your destination.', [
+  //           {
+  //             text: 'OK',
+  //             onPress: () =>
+  //               navigation.navigate('RideRequest', {
+  //                 type: 'fromIdentity',
+  //                 data: {name: 'saddd', age: 18},
+  //               }),
+  //           },
+  //         ]);
+  //       }
+  //     }
+  //   });
 
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //   return () => ref.off();
+  // }, [isFocused]);
 
-    return R * c;
-  };
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -283,8 +271,8 @@ const RideScreen = ({ route }) => {
           additionalTime
             ? 'Wait For Additional Time'
             : user_type === 'Rider'
-              ? 'Navigation to Pickup'
-              : 'Waiting Pickup'
+            ? 'Navigation to Pickup'
+            : 'Waiting Pickup'
         }
       />
       <View style={styles.main_view}>
@@ -417,7 +405,7 @@ const RideScreen = ({ route }) => {
                         },
                       ]}>
                       <View
-                        style={[styles.row_view, { justifyContent: 'center' }]}>
+                        style={[styles.row_view, {justifyContent: 'center'}]}>
                         <CustomText style={styles.text_view}>
                           Waiting PickUp
                         </CustomText>
@@ -426,7 +414,7 @@ const RideScreen = ({ route }) => {
                           as={Entypo}
                           size={moderateScale(18, 0.6)}
                           color={Color.veryLightGray}
-                          style={{ position: 'absolute', right: 0 }}
+                          style={{position: 'absolute', right: 0}}
                         />
                       </View>
                       <View style={styles.location_text_view}>
@@ -435,7 +423,7 @@ const RideScreen = ({ route }) => {
                           as={FontAwesome5}
                           size={moderateScale(14, 0.6)}
                           color={Color.veryLightGray}
-                          style={{ left: 5 }}
+                          style={{left: 5}}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
                           {rideData?.ride_info?.location_from}
@@ -444,14 +432,14 @@ const RideScreen = ({ route }) => {
                       <View
                         style={[
                           styles.location_text_view,
-                          { marginTop: moderateScale(10, 0.6) },
+                          {marginTop: moderateScale(10, 0.6)},
                         ]}>
                         <Icon
                           name="map-marker-alt"
                           as={FontAwesome5}
                           size={moderateScale(14, 0.6)}
                           color={Color.veryLightGray}
-                          style={{ left: 5 }}
+                          style={{left: 5}}
                         />
                         <CustomText numberOfLines={1} style={styles.text}>
                           {rideData?.ride_info?.location_to}
@@ -460,7 +448,7 @@ const RideScreen = ({ route }) => {
                       <View
                         style={[
                           styles.row_view,
-                          { marginTop: moderateScale(10, 0.6) },
+                          {marginTop: moderateScale(10, 0.6)},
                         ]}>
                         {/* <TouchableOpacity
                           // onPress={() => setAdditionalTime(true)}
@@ -487,14 +475,14 @@ const RideScreen = ({ route }) => {
                           onPress={() => {
                             navigationService.navigate(
                               'ChooseDeclineReasonScreen',
-                              { data: rideData },
+                              {data: rideData},
                             );
                           }}>
                           <CustomText
                             onPress={() => {
                               navigationService.navigate(
                                 'ChooseDeclineReasonScreen',
-                                { data: rideData },
+                                {data: rideData},
                               );
                             }}
                             style={styles.text2}>
