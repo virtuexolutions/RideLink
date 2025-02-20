@@ -31,7 +31,7 @@ const TextInputWithTitle = props => {
               fontSize: moderateScale(12, 0.3),
               // marginBottom: moderateScale(5, 0.3),
               width: windowWidth * props.viewWidth,
-              paddingHorizontal:moderateScale(20,.6),
+              paddingHorizontal: moderateScale(20, 0.6),
               marginTop: props.marginTop
                 ? props.marginTop
                 : moderateScale(10, 0.3),
@@ -112,7 +112,7 @@ const TextInputWithTitle = props => {
                   props.color && !props.disable
                     ? props.color
                     : Color.veryLightGray,
-                fontSize: moderateScale(18, 0.6),
+                fontSize: moderateScale(16, 0.6),
                 // paddingLeft: Dimensions.get("window").width * 0.0175,
               },
               props.numberOfLines > 1 && {
@@ -187,7 +187,7 @@ const TextInputWithTitle = props => {
               <Icon
                 name={showPassword ? 'eye' : 'eye-slash'}
                 as={FontAwesome}
-                color={Color.white}
+                color={Color.black}
                 size={moderateScale(18, 0.3)}
               />
             </TouchableOpacity>

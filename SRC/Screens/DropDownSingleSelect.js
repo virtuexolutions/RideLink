@@ -186,7 +186,7 @@ const styles = ScaledSheet.create({
     position: 'relative',
     backgroundColor: Color.themeInputText,
     height: height * 0.03,
-    borderBottomWidth: moderateScale(1, 0.3),
+    // borderBottomWidth: moderateScale(1, 0.3),
     borderColor: 'lightgrey',
     marginTop: moderateScale(6, 0.3),
     // borderRadius: moderateScale(20, 0.3),

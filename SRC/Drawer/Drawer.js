@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
@@ -8,38 +8,96 @@ import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import navigationService from '../navigationService';
+import {useDispatch, useSelector} from 'react-redux';
+import {setUserLogOut} from '../Store/slices/common';
+import {setUserLogoutAuth, SetUserRole} from '../Store/slices/auth-slice';
+import {setUserToken} from '../Store/slices/auth';
+// import ReferFriendModal from '../Screens/ReferFriendScreen'
 
-const Drawer = () => {
+const Drawer = React.memo(() => {
+  const dispatch = useDispatch();
+  const {user_type} = useSelector(state => state.authReducer);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
   const adminData = [
     {
+      id: 1,
       name: 'Inbox',
       onPress: () => {
         navigation.navigate('HomeScreen');
       },
     },
     {
+      id: 2,
       name: 'Refer Friends',
       onPress: () => {
-        navigation.navigate('PaymentHistory');
+        // setIsModalVisible(true);
+        navigation.navigate('ReferFriendScreen');
       },
     },
     {
+      id: 3,
       name: 'Oppurtunities',
       onPress: () => {
         navigation.navigate('MyJourneys');
       },
     },
+    user_type == 'Customer'
+      ? {
+          id: 4,
+          name: 'wallet',
+          onPress: () => {
+            navigation.navigate('MyWallet');
+          },
+        }
+      : {
+          id: 4,
+          name: 'Earnings',
+          onPress: () => {
+            navigation.navigate('Earningsscreen');
+          },
+        },
     {
-      name: 'Earnings',
+      id: 4,
+      name: 'History',
       onPress: () => {
-        navigation.navigate('MyWallet');
+        navigation.navigate('History');
       },
     },
     {
+      id: 4,
+      name: 'Update vehicle',
+      onPress: () => {
+        navigation.navigate('AddYourCar');
+      },
+    },
+
+    {
+      id: 5,
       name: 'Accounts ',
       onPress: () => {
-        // navigation.navigate('HomeScreen');
+        navigation.navigate('Profile');
+      },
+    },
+    {
+      id: 6,
+      name: 'Change password ',
+      onPress: () => {
+        navigation.navigate('ChangePassword');
+      },
+    },
+    {
+      id: 6,
+      name: 'privacy policy ',
+      onPress: () => {
+        navigation.navigate('PrivacyPolicy');
+      },
+    },
+    {
+      id: 6,
+      name: 'terms & conditions',
+      onPress: () => {
+        navigation.navigate('TermsAndConditions');
       },
     },
   ];
@@ -87,10 +145,12 @@ const Drawer = () => {
           {adminData.map((item, index) => (
             <>
               <TouchableOpacity
+                key={item.id}
+                onPress={item.onPress}
                 style={{
                   width: windowWidth * 0.7,
                   borderColor: Color.black,
-                  margin: moderateScale(13, 0.3),
+                  margin: moderateScale(10, 0.3),
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -108,6 +168,9 @@ const Drawer = () => {
         </View>
         <View style={styles.end_view}>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('HelpAndSupport');
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
@@ -125,6 +188,9 @@ const Drawer = () => {
             </CustomText>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('LearningCenter');
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
@@ -142,6 +208,11 @@ const Drawer = () => {
             </CustomText>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              dispatch(setUserToken(''));
+              dispatch(SetUserRole(''));
+              dispatch(setUserLogOut());
+            }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
@@ -162,7 +233,7 @@ const Drawer = () => {
       </View>
     </ScreenBoiler>
   );
-};
+});
 
 export default Drawer;
 

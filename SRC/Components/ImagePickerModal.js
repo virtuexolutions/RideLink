@@ -22,6 +22,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import CustomText from '../Components/CustomText';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
+import {color} from 'native-base/lib/typescript/theme/styled-system';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const requestCameraPermission = async () => {
   try {
@@ -53,34 +55,34 @@ const ImagePickerModal = props => {
       quailty: 0.9,
       saveToPhotos: true,
     };
-   
-    launchImageLibrary(options, response => {
-            if (Platform.OS === 'ios') {
-              setShow(false);
-            }
-            if (response.didCancel) {
-            } else if (response.error) {
-            } else if (response.customButton) {
-              alert(response.customButton);
-            } else {
-              setFileObject &&
-                setFileObject({
-                  uri: response?.assets[0]?.uri,
-                  type: response?.assets[0]?.type,
-                  name: response?.assets[0]?.fileName,
-                });
 
-              setMultiImages &&
-                setMultiImages(x => [
-                  ...x,
-                  {
-                    uri: response?.assets[0]?.uri,
-                    type: response?.assets[0]?.type,
-                    name: response?.assets[0]?.fileName,
-                  },
-                ]);
-            }
+    launchImageLibrary(options, response => {
+      if (Platform.OS === 'ios') {
+        setShow(false);
+      }
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+        alert(response.customButton);
+      } else {
+        setFileObject &&
+          setFileObject({
+            uri: response?.assets[0]?.uri,
+            type: response?.assets[0]?.type,
+            name: response?.assets[0]?.fileName,
           });
+
+        setMultiImages &&
+          setMultiImages(x => [
+            ...x,
+            {
+              uri: response?.assets[0]?.uri,
+              type: response?.assets[0]?.type,
+              name: response?.assets[0]?.fileName,
+            },
+          ]);
+      }
+    });
     // }
   };
 
@@ -101,9 +103,7 @@ const ImagePickerModal = props => {
     launchCamera(options, response => {
       if (Platform.OS == 'ios') {
         setShow(false);
-      }
-      
-      else {
+      } else {
         setFileObject &&
           setFileObject({
             uri: response?.assets[0]?.uri,
@@ -173,21 +173,29 @@ const ImagePickerModal = props => {
               openCamera();
             }}
             style={styles.modalContentBtn}>
-            {/* <Icon
+            <Icon
               name={'camera'}
               as={FontAwesome5}
               size={moderateScale(25, 0.3)}
               style={{
                 color: Color.white,
               }}
-            /> */}
+            />
             <CustomText style={styles.modalBtnText}>Camera</CustomText>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           onPress={() => setShow(false)}
           style={styles.modalCancelBtn}>
-          <CustomText style={styles.modalBtnText}>Cancel</CustomText>
+          <CustomText
+            style={[
+              styles.modalBtnText,
+              {
+                color: Color.white,
+              },
+            ]}>
+            Cancel
+          </CustomText>
         </TouchableOpacity>
       </View>
       {/* <View
@@ -271,7 +279,7 @@ const styles = ScaledSheet.create({
     borderTopWidth: 2,
   },
   modalContentBtn: {
-    backgroundColor: Color.themeColor,
+    backgroundColor: Color.themeBlack,
     alignItems: 'center',
     paddingHorizontal: windowWidth * 0.08,
     paddingVertical: windowHeight * 0.02,
@@ -283,7 +291,7 @@ const styles = ScaledSheet.create({
     fontSize: moderateScale(12, 0.3),
   },
   modalCancelBtn: {
-    backgroundColor: Color.themeColor2,
+    backgroundColor: Color.themeBlack,
     paddingVertical: windowHeight * 0.008,
     width: windowWidth * 0.2,
     alignItems: 'center',

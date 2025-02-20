@@ -10,11 +10,16 @@ import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import {position} from 'native-base/lib/typescript/theme/styled-system';
 import CustomText from './CustomText';
+import navigationService from '../navigationService';
 
 const DeliveryBox = ({data}) => {
   const [focused, setFocused] = useState('');
   return (
     <TouchableOpacity
+      disabled={data?.title == 'Ride' ? false : true}
+      onPress={() => {
+        navigationService.navigate('RequestScreen');
+      }}
       style={[
         styles.box,
         {
@@ -33,6 +38,10 @@ const DeliveryBox = ({data}) => {
           },
         ]}>
         <CustomImage
+          onPress={() => {
+            data?.name == 'Ride';
+            navigationService.navigate('RequestScreen');
+          }}
           style={{height: '100%', width: '100%', resizeMode: 'contain'}}
           source={data.image}
         />

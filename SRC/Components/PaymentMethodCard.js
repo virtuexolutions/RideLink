@@ -8,6 +8,7 @@ import CustomImage from './CustomImage';
 import CustomButton from './CustomButton';
 import {Icon} from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { baseUrl } from '../Config';
 
 const PaymentMethodCard = ({
   isuserCard,
@@ -19,10 +20,14 @@ const PaymentMethodCard = ({
   style,
   iscomplete,
   btn_text,
+  fare,
+  setPaymentMethod,
+  paymentMethod,
+  setIsEnabled,
+  isEnabled,
 }) => {
   const [isPaymentCom, setPaymentCom] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [isEnabled, setIsEnabled] = useState(false);
+  // const [paymentMethod, setPaymentMethod] = useState('Card');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
@@ -31,7 +36,9 @@ const PaymentMethodCard = ({
         <View>
           <View style={styles.profile_view}>
             <View style={styles.image_view}>
-              <CustomImage style={styles.image} source={image} />
+              {/* <CustomImage style={styles.image} source={require('../Assets/Images/ridelink.png')}
+              /> */}
+              <CustomImage style={styles.image} source={{uri:`${baseUrl}/${image}`}} />
             </View>
             <CustomText
               isBold
@@ -77,7 +84,7 @@ const PaymentMethodCard = ({
                   <CustomText isBold style={[styles.text1]}>
                     PickUp
                   </CustomText>
-                  <CustomText style={[styles.text1]}>
+                  <CustomText numberOfLines={1} style={[styles.text1]}>
                     {pickuplocation}
                   </CustomText>
                 </View>
@@ -113,7 +120,7 @@ const PaymentMethodCard = ({
                   <CustomText isBold style={[styles.text1]}>
                     DropOff
                   </CustomText>
-                  <CustomText style={[styles.text1]}>
+                  <CustomText numberOfLines={1} style={[styles.text1]}>
                     {dropofflocation}
                   </CustomText>
                 </View>
@@ -123,7 +130,9 @@ const PaymentMethodCard = ({
         </View>
       ) : (
         <>
-          <CustomText style={styles.price}>$50</CustomText>
+          <CustomText style={styles.price}>
+            <CustomText style={{
+            }}>Fare : </CustomText>{`$${fare}`}</CustomText>
           <CustomText style={styles.text}>Payment Method</CustomText>
           <View style={styles.payment_view}>
             <View style={styles.payment_subview}>
@@ -187,6 +196,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: moderateScale(12, 0.6),
+    // backgroundColor :'red',
     fontWeight: '700',
     width: windowWidth * 0.8,
     height: moderateScale(22, 0.6),
@@ -240,10 +250,13 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.15,
     width: windowWidth * 0.15,
     borderRadius: windowHeight,
+    // backgroundColor :'green' ,
+    overflow :'hidden', 
   },
   image: {
     width: '100%',
     height: '100%',
+    // backgroundColor :'red'
   },
   profile_view: {
     flexDirection: 'row',

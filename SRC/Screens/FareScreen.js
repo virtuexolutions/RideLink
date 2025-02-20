@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import {moderateScale} from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
@@ -18,8 +18,11 @@ import {Icon} from 'native-base';
 import navigationService from '../navigationService';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import Header from '../Components/Header';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
 
-const FareScreen = () => {
+const FareScreen = props => {
+  const ridedata = props?.route?.params?.rideData;
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -27,11 +30,19 @@ const FareScreen = () => {
 
   return (
     <SafeAreaView style={styles.safearea_view}>
-      <Header title={'Offer your Fare'} />
+      <Header showBack={true} title={'Offer your Fare'} />
       <View style={styles.main_view}>
         {isPaymentCom === true ? (
           <>
-            <AskLocation heading={'Where are you Going?'} isIcon islocation />
+            <AskLocation
+              pickupLocation={ridedata?.pickupLocation}
+              dropLocation={ridedata?.dropoffLocation}
+              pickupLocationName={ridedata?.dropoffLocation?.name}
+              dropLocationName={ridedata?.pickupLocation?.name}
+              heading={'Where are you Going?'}
+              isIcon
+              islocation
+            />
             <TouchableOpacity style={styles.map_view}>
               <View style={styles.map_icon_view}>
                 <Icon
@@ -47,7 +58,13 @@ const FareScreen = () => {
           </>
         ) : (
           <>
-            <PaymentMethodCard />
+            <PaymentMethodCard
+              fare={ridedata?.fare}
+              setIsEnabled={setIsEnabled}
+              isEnabled={isEnabled}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+            />
             <View style={styles.search_conatiner}>
               <CustomText style={[styles.des, {marginTop: 0}]}>
                 Searching For You On The Map
@@ -56,6 +73,7 @@ const FareScreen = () => {
                 SearchStyle={{
                   width: windowWidth * 0.85,
                   height: windowHeight * 0.05,
+                  borderWidth: 0.7,
                 }}
                 placeholderName={null}
                 isLeftIcon={true}
@@ -79,7 +97,11 @@ const FareScreen = () => {
             isBold
             onPress={() => {
               if (isPaymentCom === true) {
-                navigationService.navigate('MapScreen');
+                navigationService.navigate('MapScreen', {
+                  ridedata,
+                  paymentMethod: paymentMethod,
+                  isEnabled: isEnabled,
+                });
               } else {
                 setPaymentCom(true);
               }
@@ -113,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(20, 0.6),
     borderRadius: moderateScale(15, 0.6),
     borderWidth: 0.2,
-    borderColor: Color.blue,
+    borderColor: Color.themeBlack,
     paddingVertical: moderateScale(15, 0.6),
     paddingHorizontal: moderateScale(15, 0.6),
   },

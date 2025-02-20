@@ -7,6 +7,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -16,18 +17,41 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 
 import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Formik} from 'formik';
+import {forgotpasswordSchema} from '../Constant/schema';
 
 const VerifyEmail = props => {
   const dispatch = useDispatch();
   const navigationN = useNavigation();
-  const [password, setPassword] = useState('');
-  const [ConfirmPass, setConfirmPass] = useState('');
   const {user_type} = useSelector(state => state.authReducer);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendOTP = async values => {
+    console.log('asdhkasdjagsdjags');
+    const url = 'password/email';
+
+    setIsLoading(true);
+    const response = await Post(url, {email: values.email}, apiHeader());
+    setIsLoading(false);
+    console.log('response data =========================>', response?.data);
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(`OTP sent to ${values.email}`, ToastAndroid.SHORT)
+        : alert(`OTP sent to ${values.email}`);
+      // fromForgot
+      //   ?
+      navigationN.navigate('VerifyNumber',{email : values.email});
+      // : navigationService.navigate('VerifyNumber', {
+      //     email: `${email}`,
+      //   });
+    }
+  };
 
   return (
     <>
@@ -62,41 +86,60 @@ const VerifyEmail = props => {
             Forgot your password ? don't worry, jsut take a simple step and
             create your new password!
           </CustomText>
-
-          <View style={styles.text_input}>
-            <TextInputWithTitle
-              title={'Email  *'}
-              titleText={'New Password'}
-              placeholder={'Email'}
-              setText={setConfirmPass}
-              value={ConfirmPass}
-              secureText={true}
-              viewHeight={0.06}
-              viewWidth={0.8}
-              inputWidth={0.75}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={'#000'}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-            />
-            <CustomButton
-              text={'submit'}
-              textColor={Color.white}
-              width={windowWidth * 0.8}
-              height={windowHeight * 0.06}
-              marginTop={moderateScale(20, 0.3)}
-              onPress={() => {
-                navigationN.navigate('VerifyNumber');
-              }}
-              borderRadius={30}
-              bgColor={
-                user_type === 'driver' ? Color.darkBlue : Color.themeBlack
-              }
-            />
-          </View>
+          <Formik
+            initialValues={{
+              email: '',
+            }}
+            validationSchema={forgotpasswordSchema}
+            onSubmit={sendOTP}>
+            {({values, handleChange, handleSubmit, touched, errors}) => {
+              console.log(
+                '🚀 ~ VerifyEmail ~ errors:',
+                errors.email,
+                '======================= uuuuuuu',
+              );
+              return (
+                <View style={styles.text_input}>
+                  <TextInputWithTitle
+                    title={'Email  *'}
+                    placeholder={'Email'}
+                    setText={handleChange('email')}
+                    value={values.email}
+                    viewHeight={0.06}
+                    viewWidth={0.8}
+                    inputWidth={0.75}
+                    border={1}
+                    borderRadius={moderateScale(30, 0.3)}
+                    borderColor={'#000'}
+                    backgroundColor={Color.white}
+                    marginTop={moderateScale(10, 0.3)}
+                    color={Color.black}
+                    placeholderColor={Color.veryLightGray}
+                  />
+                  {touched.email && errors.email && (
+                    <CustomText textAlign={'left'} style={styles.schemaText}>
+                      {errors.email}
+                    </CustomText>
+                  )}
+                  <CustomButton
+                    text={isLoading ? <ActivityIndicator size={'small'} color={Color.white}/>:'submit'}
+                    textColor={Color.white}
+                    width={windowWidth * 0.8}
+                    height={windowHeight * 0.06}
+                    marginTop={moderateScale(20, 0.3)}
+                    onPress={
+                      handleSubmit
+                      // navigationN.navigate('VerifyNumber');
+                    }
+                    borderRadius={30}
+                    bgColor={
+                      user_type === 'Rider' ? Color.darkBlue : Color.themeBlack
+                    }
+                  />
+                </View>
+              );
+            }}
+          </Formik>
         </KeyboardAwareScrollView>
       </View>
     </>
@@ -141,6 +184,7 @@ const styles = ScaledSheet.create({
     height: windowHeight * 0.25,
     borderRadius: 20,
     paddingTop: windowHeight * 0.03,
+    paddingHorizontal: moderateScale(30, 0.6),
   },
   container: {
     paddingBottom: moderateScale(20, 0.3),
@@ -148,6 +192,12 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: windowHeight,
+  },
+  schemaText: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.red,
+    // backgroundColor: 'green',
+    alignSelf: 'flex-start',
   },
 });
 

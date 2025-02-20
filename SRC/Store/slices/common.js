@@ -13,7 +13,10 @@ const initialState = {
   sellerProducts: [],
   sellerService: [],
   selectedRole: '',
-  category:[]
+  category: [],
+  location: '',
+  pickupLocatin: {},
+  dropoffLocation: {},
 };
 
 const CommonSlice = createSlice({
@@ -24,13 +27,19 @@ const CommonSlice = createSlice({
       state.categoryProperties = action?.payload;
       // console.log("reduxxxx", state.categoryProperties);
     },
+    setPickupLocation(state, action) {
+      state.pickupLocatin = action.payload;
+    },
+    setDropoffLocation(state, action) {
+      state.dropoffLocation = action.payload;
+    },
     setUserData(state, action) {
       state.userData = action?.payload;
       // state.userData = action?.payload?.userData;
     },
     setUserLogOut(state, action) {
       state.userData = {};
-      // console.log("🚀 ~ setUserLogOut ~ userData:", userData)
+      console.log('🚀 ~ setUserLogOut ~ userData:', state.userData);
     },
     setServiceCategories(state, action) {
       state.categories = action?.payload;
@@ -47,7 +56,7 @@ const CommonSlice = createSlice({
 
     AddToCart(state, action) {
       const itemId = action.payload.id;
-      console.log("🚀 ~ AddToCart ~ action.payload:", action.payload)
+      console.log('🚀 ~ AddToCart ~ action.payload:', action.payload);
 
       state.cart.push({date: moment(), ...action.payload});
     },
@@ -153,7 +162,6 @@ const CommonSlice = createSlice({
     },
 
     deleteProducts(state, action) {
-
       console.log(
         '🚀 ~ file: common.js:147 ~ deleteProducts ~ action:',
         action.payload,
@@ -204,6 +212,10 @@ const CommonSlice = createSlice({
         item => item.serviceOwner.id != action.payload.serviceOwner.id,
       );
     },
+    setLoaction(state, action) {
+      state.location = action.payload;
+      console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
+    },
   },
 });
 
@@ -230,7 +242,9 @@ export const {
   deleteService,
   deleteProducts,
   Order,
-
+  setLoaction,
+  setPickupLocation,
+  setDropoffLocation,
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

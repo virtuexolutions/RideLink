@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import CustomText from './CustomText';
@@ -7,14 +7,41 @@ import {Icon} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {moderateScale} from 'react-native-size-matters';
+import SearchLocationModal from './SearchLocationModal';
+import {position} from 'native-base/lib/typescript/theme/styled-system';
+import AskLocationComponent from './AskLocationComponent';
 
 const AskLocation = ({
+  setCurrentPosition,
+  currentPosition,
+  address,
+  setAddress,
   islocation,
   isIcon,
   main_view_style,
   heading,
   renderView,
+  setPickupLocation,
+  setIsModalVisible,
+  setDropLocation,
+  isModalVisible,
+  setLocationType,
+  locationType,
+  dropLocation,
+  pickupLocation,
+  onPress,
+  onPressCurrentLocation,
+  fromfareScreen,
+  pickupLocationName,
+  dropLocationName,
+  setMultipleLocation,
+  multipleLocation,
+  onUpdateLocation,
+  additionalLocation,
+  setAdditionalLocation,
+  fromrequest,
 }) => {
+  const [addLocation, setAddLocation] = useState(false);
   return (
     <View style={[styles.location_View, main_view_style]}>
       <View style={styles.location_subview}>
@@ -30,6 +57,20 @@ const AskLocation = ({
           </View>
         )}
       </View>
+      {fromrequest && (
+        <CustomText
+          onPress={() => {
+            setAddLocation(true);
+          }}
+          isBold
+          style={{
+            fontSize: moderateScale(10, 0.6),
+            top: 10,
+            left: 235,
+          }}>
+          add multiple location
+        </CustomText>
+      )}
       {renderView}
       {islocation && (
         <View style={styles.seatView}>
@@ -46,14 +87,37 @@ const AskLocation = ({
                 color={Color.yellow}
               />
               <CustomText
+                numberOfLines={1}
                 style={[
                   styles.text1,
                   {
                     paddingBottom: moderateScale(10, 0.6),
+                    fontSize: moderateScale(10, 0.6),
+                    width: windowWidth * 0.7,
+                    textAlign: 'left',
                   },
                 ]}>
-                {'284 Long Street Gainesville'}
+                {pickupLocationName
+                  ? pickupLocationName
+                  : pickupLocation?.name || 'I’m going from ....'}
               </CustomText>
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  right: -10,
+                  marginTop: moderateScale(10, 0.6),
+                }}>
+                <Icon
+                  onPress={() => {
+                    setLocationType('pickup');
+                    setIsModalVisible(true);
+                  }}
+                  name="plus"
+                  as={FontAwesome}
+                  size={moderateScale(12, 0.6)}
+                  color={Color.black}
+                />
+              </TouchableOpacity>
             </View>
             <CustomText
               isBold
@@ -62,7 +126,7 @@ const AskLocation = ({
                 {
                   position: 'absolute',
                   color: 'black',
-                  top: 25,
+                  top: 29,
                   marginLeft: moderateScale(-5, 0.6),
                   transform: [{rotate: '-90deg'}],
                 },
@@ -88,8 +152,19 @@ const AskLocation = ({
                 size={moderateScale(16, 0.6)}
                 color={Color.red}
               />
-              <CustomText style={styles.text1}>
-                {'I’m going to ....'}
+              <CustomText
+                numberOfLines={1}
+                style={[
+                  styles.text1,
+                  {
+                    fontSize: moderateScale(10, 0.6),
+                    width: windowWidth * 0.7,
+                    textAlign: 'left',
+                  },
+                ]}>
+                {dropLocationName
+                  ? dropLocationName
+                  : dropLocation?.name || 'I’m going to ....'}
               </CustomText>
               <TouchableOpacity
                 style={{
@@ -98,6 +173,10 @@ const AskLocation = ({
                   marginTop: moderateScale(10, 0.6),
                 }}>
                 <Icon
+                  onPress={() => {
+                    setLocationType('dropoff');
+                    setIsModalVisible(true);
+                  }}
                   name="plus"
                   as={FontAwesome}
                   size={moderateScale(12, 0.6)}
@@ -108,6 +187,29 @@ const AskLocation = ({
           </View>
         </View>
       )}
+      <SearchLocationModal
+        onPressonPressCurrentLocation={onPressCurrentLocation}
+        setcurrentPossition={setCurrentPosition}
+        currentPosition={currentPosition}
+        setAddress={setAddress}
+        address={address}
+        locationType={locationType}
+        setLocationType={setLocationType}
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        setPickupLocation={setPickupLocation}
+        setdropOffLocation={setDropLocation}
+        setAdditionalLocation={setAdditionalLocation}
+        additionalLocation={additionalLocation}
+        addLocation={addLocation}
+      />
+      <AskLocationComponent
+        visible={addLocation}
+        setIsVisible={setAddLocation}
+        onUpdateLocation={onUpdateLocation}
+        multipleLocation={multipleLocation}
+        setMultipleLocation={setMultipleLocation}
+      />
     </View>
   );
 };

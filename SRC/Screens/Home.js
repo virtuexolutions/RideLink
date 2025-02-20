@@ -1,34 +1,57 @@
+import {useIsFocused} from '@react-navigation/native';
+import {ScrollView} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   FlatList,
-  Image,
+  I18nManager,
   ImageBackground,
+  Platform,
+  RefreshControl,
   SafeAreaView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
+  ToastAndroid,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale, s} from 'react-native-size-matters';
-import Header from '../Components/Header';
+
+import Geolocation from 'react-native-geolocation-service';
+import {moderateScale} from 'react-native-size-matters';
+import Feather from 'react-native-vector-icons/Feather';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import SearchbarComponent from '../Components/SearchbarComponent';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
-
 import DeliveryBox from '../Components/DeliveryBox';
-import CustomButton from '../Components/CustomButton';
+import Header from '../Components/Header';
+import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Icon, ScrollView} from 'native-base';
 import navigationService from '../navigationService';
-import {useSelector} from 'react-redux';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {
+  getDatabase,
+  onChildAdded,
+  onValue,
+  ref,
+} from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
+import CountdownTimer from '../Components/CountdownTimer';
 
 const Home = () => {
-  const [activebutton, setactivebutton] = useState('current');
+  const token = useSelector(state => state.authReducer.token);
   const {user_type} = useSelector(state => state.authReducer);
+  const isFocused = useIsFocused();
+  const [refreshing, setRefreshing] = useState(false);
+  const [activebutton, setactivebutton] = useState('current');
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestList, setRequestList] = useState([]);
+  const [modal_visible, setModalVisible] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState({});
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [histry_list, setHistoryList] = useState([]);
+
   const deliveryList = [
     {
       id: 1,
@@ -46,75 +69,139 @@ const Home = () => {
       title: 'Pets',
     },
   ];
-  const userBox = [
-    {
-      id: 1,
-      image: require('../Assets/Images/headerPhoto.png'),
-      userID: 'Y3I4USQ2',
-      subtext: 'Natalya Undergrowth',
-      time: '07:30am',
-      fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester',
-    },
-    {
-      id: 2,
-      image: require('../Assets/Images/headerPhoto.png'),
-      userID: 'Y3I4USQ2',
-      subtext: 'Natalya Undergrowth',
-      time: '07:30am',
-      fromLocation: 'Mississippi, Jackson',
-      toLocation: 'New Hampshire, Manchester',
-    },
-  ];
 
-  const user_list = [
-    {
-      id: 1,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_Image.png'),
-    },
-    {
-      id: 2,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image2.png'),
-    },
-    {
-      id: 3,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image3.png'),
-    },
-    {
-      id: 4,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image4.png'),
-    },
-    {
-      id: 5,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_Image.png'),
-    },
-    {
-      id: 6,
-      name: 'Dominic Ement',
-      location: 'Mercedes (ET YL421)',
-      date: '17 March 2022',
-      image: require('../Assets/Images/user_image2.png'),
-    },
-  ];
+  useEffect(() => {
+    if (user_type === 'Rider') {
+      getCurrentLocation();
+    }
+  }, [isFocused]);
+
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error('error from home screen ', error);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
+  const rideRequestList = async () => {
+    const url = 'auth/rider/ride-request-list';
+    setIsLoading(true);
+    try {
+      const response = await Get(url, token);
+      if (response?.data?.ride_info) {
+        setRequestList(response.data.ride_info?.reverse());
+      } else {
+        setRequestList([]);
+      }
+    } catch (error) {
+      console.error('Error festching ride requests:', error);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (user_type === 'Rider') {
+      const db = getDatabase();
+      const requestsRef = ref(db, 'requests');
+      const unsubscribe = onValue(requestsRef, snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const allRequests = Object.keys(data).map(key => ({
+            id: key,
+            ...data[key],
+          }));
+          rideRequestList();
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user_type === 'Rider' && Object.keys(currentPosition).length > 0) {
+      updateLocation();
+      rideRequestList();
+    }
+    userRequestHistory();
+  }, [currentPosition]);
+
+  const updateLocation = async () => {
+    const url = 'auth/rider/update-location';
+    const body = {
+      lat: currentPosition?.latitude,
+      lng: currentPosition?.longitude,
+    };
+    console.log('🚀 ~ updateLocation ~ body:', body);
+    const response = await Post(url, body, apiHeader(token));
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('You are online now', ToastAndroid.SHORT)
+        : Alert.alert('You are online now');
+    }
+  };
+
+  const userRequestHistory = async () => {
+    const url = `auth/customer/ride_list?type=${activebutton}`;
+    setHistoryLoading(truee);
+    const response = await Get(url, token);
+    setHistoryLoading(false);
+    if (response != undefined) {
+      setHistoryList(response?.data);
+    }
+  };
+
+  // const onRefresh = React.useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //     // rideRequestList()
+  //   }, 2000);
+  // }, []);
 
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header title={user_type === 'driver' ? 'Driver Online' : ''} />
+      <Header title={user_type === 'Rider' ? 'Driver Online' : ''} />
       <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
@@ -127,6 +214,7 @@ const Home = () => {
         as={Feather}
         color={Color.grey}
       />
+
       <View style={styles.main_Container}>
         <View style={styles.ridelink_Box}>
           <ImageBackground
@@ -134,7 +222,6 @@ const Home = () => {
             imageStyle={{
               height: '100%',
               width: '100%',
-              borderRadius: moderateScale(17, 0.6),
             }}
             source={require('../Assets/Images/bgcimage.png')}>
             <View
@@ -145,7 +232,7 @@ const Home = () => {
               }}>
               <View
                 style={{
-                  marginTop: moderateScale(100, 0.6),
+                  marginTop: windowHeight * 0.12,
                   paddingLeft: moderateScale(10, 0.6),
                 }}>
                 <CustomText
@@ -166,7 +253,7 @@ const Home = () => {
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
-              {user_type === 'driver' ? (
+              {user_type === 'Rider' ? (
                 <CustomButton
                   text={'Explore'}
                   fontSize={moderateScale(14, 0.3)}
@@ -196,41 +283,46 @@ const Home = () => {
           </ImageBackground>
         </View>
 
-        {user_type === 'driver' ? (
+        {user_type === 'Rider' ? (
           <ScrollView showsVerticalScrollIndicator={false}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              keyExtractor={item => item?.id}
-              data={user_list}
-              contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
-              style={{marginBottom: moderateScale(20, 0.6)}}
-              renderItem={({item}) => {
-                return (
-                  <TouchableOpacity
-                    style={styles.card}
-                    onPress={() => navigationService.navigate('RideRequest', {type : ''})}>
-                    <View style={styles.image_view}>
-                      <CustomImage source={item.image} style={styles.image} />
-                    </View>
-                    <View style={styles.text_view}>
-                      <CustomText style={styles.text}>{item.name}</CustomText>
-                      <CustomText style={styles.location}>
-                        {item.location}
-                      </CustomText>
-                      <CustomText style={styles.date}>{item.date}</CustomText>
-                    </View>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="right"
-                        as={AntDesign}
-                        size={moderateScale(14, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+            {isLoading ? (
+              <ActivityIndicator
+                style={styles.indicatorStyle}
+                size="small"
+                color={Color.black}
+              />
+            ) : (
+              <FlatList
+                ListEmptyComponent={
+                  <CustomText
+                    style={{
+                      textAlign: 'center',
+                      fontSize: moderateScale(11, 0.6),
+                      color: Color.red,
+                    }}>
+                    no data found
+                  </CustomText>
+                }
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item?.id}
+                data={requestList}
+                contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
+                style={{marginBottom: moderateScale(20, 0.6)}}
+                renderItem={({item}) => {
+                  return (
+                    <Userbox
+                      data={item}
+                      onPressDetails={() =>
+                        navigationService.navigate('RideRequest', {
+                          type: '',
+                          data: item,
+                        })
+                      }
+                    />
+                  );
+                }}
+              />
+            )}
           </ScrollView>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -261,10 +353,9 @@ const Home = () => {
                 }
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.42}
-                //   marginTop={moderateScale(10,.3)}
-                height={windowHeight * 0.06}
+                height={windowHeight * 0.053}
                 bgColor={
-                  activebutton === 'current' ? Color.btn_Color : Color.white
+                  activebutton === 'current' ? Color.btn_Color : 'transparent'
                 }
                 textTransform={'capitalize'}
               />
@@ -280,27 +371,40 @@ const Home = () => {
                 borderRadius={moderateScale(30, 0.3)}
                 width={windowWidth * 0.42}
                 //   marginTop={moderateScale(10,.3)}
-                height={windowHeight * 0.06}
+                height={windowHeight * 0.055}
                 bgColor={
-                  activebutton === 'history' ? Color.btn_Color : Color.lightGrey
+                  activebutton === 'history' ? Color.btn_Color : 'transparent'
                 }
                 textTransform={'capitalize'}
               />
             </View>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              style={{paddingBottom: moderateScale(150, 0.6)}}
-              contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-              data={userBox}
-              renderItem={({item}) => {
-                return (
-                  <Userbox
-                    data={item}
-                    onPress={() => navigationService.navigate('RequestScreen')}
-                  />
-                );
-              }}
-            />
+            {historyLoading ? (
+              <ActivityIndicator
+                style={styles.indicatorStyle}
+                size="small"
+                color={Color.black}
+              />
+            ) : (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                  <CustomText
+                    style={{
+                      textAlign: 'center',
+                      fontSize: moderateScale(11, 0.6),
+                      color: Color.red,
+                    }}>
+                    no data found
+                  </CustomText>
+                }
+                style={{paddingBottom: moderateScale(150, 0.6)}}
+                contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+                data={histry_list}
+                renderItem={({item}) => {
+                  return <Userbox data={item} />;
+                }}
+              />
+            )}
           </ScrollView>
         )}
       </View>
@@ -314,29 +418,33 @@ const styles = StyleSheet.create({
   safe_area: {
     width: windowWidth,
     height: windowHeight,
-    bac: Color.white,
+    backgroundColor: Color.white,
+  },
+  indicatorStyle: {
+    paddingRight: 5,
+    paddingLeft: I18nManager.isRTL ? 5 : 0,
+    marginTop: moderateScale(20, 0.6),
   },
   main_Container: {
     height: windowHeight,
     width: windowWidth,
     backgroundColor: Color.white,
-    // backgroundColor:"red",
     paddingHorizontal: moderateScale(20, 0.6),
     paddingVertical: moderateScale(10, 0.6),
   },
   ridelink_Box: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.255,
-    // backgroundColor:'red',
+    height: windowHeight * 0.25,
     alignSelf: 'center',
     borderRadius: moderateScale(17, 0.6),
-    borderWidth: 1.8,
+    borderWidth: 1,
     borderColor: Color.boxgrey,
+    marginVertical: moderateScale(10, 0.6),
   },
   link_Image: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.25,
-    borderRadius: moderateScale(17, 0.6),
+    height: '100%',
+    // borderRadius: moderateScale(17, 0.6),
     alignSelf: 'center',
   },
   second_Image: {
@@ -346,11 +454,7 @@ const styles = StyleSheet.create({
     top: moderateScale(15, 0.6),
   },
   container_Style: {
-    // marginTop:moderateScale(10,0.6),
     paddingVertical: moderateScale(40, 0.6),
-    // marginLeft:moderateScale(10,0.6),
-    // backgroundColor:'green',
-    // height:windowHeight *0.15
   },
   button_Box: {
     width: windowWidth * 0.88,

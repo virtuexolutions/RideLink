@@ -1,118 +1,157 @@
+import {useNavigation} from '@react-navigation/native';
+import {Formik} from 'formik';
+import {Icon} from 'native-base';
 import React, {useState} from 'react';
-import * as Animatable from 'react-native-animatable';
-import Color from '../Assets/Utilities/Color';
-import CustomImage from '../Components/CustomImage';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import ScreenBoiler from '../Components/ScreenBoiler';
-
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
-  View,
+  ToastAndroid,
   TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
+  View,
 } from 'react-native';
-import CustomText from '../Components/CustomText';
-import CustomButton from '../Components/CustomButton';
-import TextInputWithTitle from '../Components/TextInputWithTitle';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import CountryPicker, {DARK_THEME} from 'react-native-country-picker-modal';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-
-import navigationService from '../navigationService';
-import {useDispatch} from 'react-redux';
-
-import {Icon} from 'native-base';
-import ImagePickerModal from '../Components/ImagePickerModal';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import { useNavigation } from '@react-navigation/native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import {useDispatch, useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import CustomButton from '../Components/CustomButton';
+import CustomImage from '../Components/CustomImage';
+import ImagePickerModal from '../Components/ImagePickerModal';
+import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {setUserData} from '../Store/slices/common';
+import CustomText from '../Components/CustomText';
+
 const Profile = () => {
-  const navigation = useNavigation()
-  const [isLoading, setIsLoading] = useState(false);
-  const [username, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [showNumberModal, setShowNumberModal] = useState(false);
-  console.log(
-    '🚀 ~ file: Signup.js:48 ~ Signup ~ showNumberModal:',
-    showNumberModal,
+  const navigation = useNavigation();
+  const {user_type} = useSelector(state => state.authReducer);
+  const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ Profile ~ token:', token);
+  const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ Profile ~ userData:', userData);
+  console.log('🚀 ~ Profile ~ user_type:', user_type);
+  const [username, setUserName] = useState(
+    userData?.name ? userData?.name : '',
   );
-  const [countryCode, setCountryCode] = useState('US');
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState(userData?.email ? userData?.email : '');
+  const [phone, setPhone] = useState(userData?.phone ? userData?.phone : '');
+  const [isLoading, setIsLoading] = useState(false);
   const [imagePicker, setImagePicker] = useState(false);
-  console.log('🚀 ~ file: Signup.js:50 ~ Signup ~ imagePicker:', imagePicker);
   const [image, setImage] = useState({});
+  console.log('🚀 ~ Profile ~ image:', image);
 
-  const [country, setCountry] = useState({
-    callingCode: ['1'],
-    cca2: 'US',
-    currency: ['USD'],
-    flag: 'flag-us',
-    name: 'United States',
-    region: 'Americas',
-    subregion: 'North America',
-  });
-  const [withCallingCode, setWithCallingCode] = useState(true);
-  const [withFilter, setFilter] = useState(true);
-  const [phone, setPhone] = useState('');
+  // const profileUpdate = async () => {
+  //   const url = 'auth/profile';
+  //   const formData = new FormData();
+  //   // formData.append('photo', image);
+  //   // formData.append('name', username);
+  //   // formData.append('phone', phone);
+  //   setIsLoading(true);
+  //  return console.log(
+  //     '🚀 ~ profileUpdate ~ formData:',
+  //     JSON.stringify(formData, null, 2),
+  //   );
+  //   const response = await Post(url, formData, apiHeader(token));
+  //   setIsLoading(false);
+  //   if (response?.data != undefined) {
+  //     dispatch(setUserData(response?.data));
+  //     navigation.navigate('Home');
+  //   }
+  // };
+  const profileUpdate = async () => {
+    const formData = new FormData();
+    const body = {
+      name: username,
+      phone: phone,
+    };
 
-  const onSelect = country => {
-    setCountryCode(country.cca2);
-    setCountry(country);
+    for (let key in body) {
+      formData?.append(key, body[key]);
+    }
+    if (Object.keys(image).length > 0) formData.append('photo', image);
+    const url = 'auth/profile';
+    setIsLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('profile updated Successfully', ToastAndroid.SHORT)
+        : alert('profile updated Successfully');
+      console.log('🚀 ~ profileUpdate ~ response:', response?.data?.user_info);
+      navigation.navigate('HomeScreen');
+    }
+    dispatch(setUserData(response?.data?.user_info));
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={()=>{
-        navigation.goBack()
-      }}
-        style={styles.back}>
-        <Icon
-          name="arrowleft"
-          as={AntDesign}
-          style={styles.icon2}
-          color={Color.white}
-          size={moderateScale(20, 0.3)}
-          onPress={()=>{
-            navigation.goBack()
+      <View
+        style={{
+          flexDirection: 'row',
+          width: windowWidth,
+          backgroundColor: 'white',
+          paddingHorizontal: moderateScale(10, 0.6),
+          paddingTop: moderateScale(5, 0.6),
+        }}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            navigation.goBack();
           }}
-        />
-      </TouchableOpacity>
-      {/* <ImageBackground
+          style={styles.back}>
+          <Icon
+            name="arrowleft"
+            as={AntDesign}
+            style={styles.icon2}
+            color={Color.white}
+            size={moderateScale(20, 0.3)}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </TouchableOpacity>
+        <CustomText
           style={{
-            width: windowWidth,
-            minHeight: windowHeight,
-            paddingBottom: moderateScale(40, 0.6),
-            justifyContent: 'center',
-            // backgroundColor:'red',
-            // height: windowHeight*0.8,
-            alignItems: 'center',
+            fontSize: moderateScale(18, 0.6),
+            color: Color.black,
+            width: windowWidth * 0.8,
+            textAlign: 'center',
+            paddingTop: moderateScale(8, 0.6),
+          }}>
+          account
+        </CustomText>
+      </View>
+      <View style={styles.main}>
+        {/* <Formik
+          validationSchema={editProfileSchema}
+          initialValues={{
+            email: userData?.email ? userData?.email : '',
+            phone: userData?.phone ? userData?.phone : '',
+            username: userData?.name ? userData?.name : '',
           }}
-          source={require('../Assets/Images/setting_Bg.png')}> */}
-          
-
-          <View
-            style={{
-           
-              height: windowHeight * 0.13,
-              width: windowHeight * 0.13,
-              borderRadius: moderateScale((windowHeight * 0.13) / 2),
-              // overflow : 'hidden'
-            }}>
-            {/* <CustomImage
-              resizeMode="contain"
-              source={require('../Assets/Images/dummyUser1.png')}
+          // onSubmit={profileUpdate}
+        >
+          {({handleChange, handleSubmit, values, errors, touched}) => {
+            return ( */}
+        <View style={styles.fields_box}>
+          <View style={styles.image}>
+            <CustomImage
+              resizeMode="cover"
+              source={
+                image?.uri
+                  ? {uri: image?.uri}
+                  : require('../Assets/Images/riderphoto.png')
+              }
               style={{
                 width: '100%',
                 height: '100%',
-                backgroundColor: 'blue',
-
                 borderRadius: moderateScale((windowHeight * 0.13) / 2),
               }}
-            /> */}
-
+            />
             <TouchableOpacity
               activeOpacity={0.6}
               style={styles.edit}
@@ -131,158 +170,114 @@ const Profile = () => {
               />
             </TouchableOpacity>
           </View>
-          <View
-            style={{
-              gap: 18,
-              // paddingVertical: moderateScale(30, 0.3),
-              alignItems: 'center',
-              // justifyContent: 'center',
-              marginTop: moderateScale(20, 0.3),
-            }}>
-            <TextInputWithTitle
-              iconName={'user-circle-o'}
-              iconType={FontAwesome}
-              LeftIcon={true}
-              titleText={'Username'}
-              placeholder={'Username'}
-              setText={setUserName}
-              value={username}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
+          <TextInputWithTitle
+            iconName={'user-circle-o'}
+            iconType={FontAwesome}
+            LeftIcon={true}
+            titleText={'Username'}
+            placeholder={'Username'}
+            setText={setUserName}
+            value={username}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            backgroundColor={Color.white}
+            borderColor={Color.lightGrey}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+          />
+          <TextInputWithTitle
+            iconName={'email'}
+            iconType={Fontisto}
+            LeftIcon={true}
+            titleText={'Email'}
+            placeholder={'Email'}
+            setText={setEmail}
+            value={email}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            borderColor={Color.lightGrey}
+            backgroundColor={Color.white}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+            disable
+            // elevation
+          />
 
-            <TextInputWithTitle
-              iconName={'email'}
-              iconType={Fontisto}
-              LeftIcon={true}
-              titleText={'Email'}
-              placeholder={'Email'}
-              setText={setEmail}
-              value={email}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={Color.black}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setShowNumberModal(true);
-                console.log('first');
-              }}
-              activeOpacity={0.9}
-              style={[
-                styles.birthday,
-                {
-                  justifyContent: 'flex-start',
-                  // backgroundColor: 'red',
-                  borderRadius: moderateScale(25, 0.6),
-                },
-              ]}>
-              <CountryPicker
-                {...{
-                  countryCode,
-                  withCallingCode,
-                  onSelect,
-                  withFilter,
-                }}
-                visible={showNumberModal}
-                onClose={() => {
-                  setShowNumberModal(false);
-                }}
-              />
+          <TextInputWithTitle
+            iconName={'phone'}
+            iconType={FontAwesome}
+            LeftIcon={true}
+            titleText={'Phone'}
+            placeholder={'Phone'}
+            setText={setPhone}
+            value={phone}
+            viewHeight={0.06}
+            viewWidth={0.75}
+            inputWidth={0.55}
+            border={1}
+            borderRadius={moderateScale(30, 0.3)}
+            borderColor={Color.lightGrey}
+            backgroundColor={Color.white}
+            marginTop={moderateScale(15, 0.3)}
+            color={Color.black}
+            placeholderColor={Color.veryLightGray}
+            // elevation
+          />
 
-              {country && (
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(15, 0.6),
-                    color: '#5E5E5E',
-                  }}>{`${countryCode}(+${country?.callingCode})`}</CustomText>
-              )}
-
-              <Icon
-                name={'angle-down'}
-                as={FontAwesome}
-                size={moderateScale(20, 0.6)}
-                color={Color.themeDarkGray}
-                onPress={() => {
-                  setShowNumberModal(true);
-                }}
-                style={{
-                  position: 'absolute',
-                  right: moderateScale(5, 0.3),
-                }}
-              />
-            </TouchableOpacity>
-            <TextInputWithTitle
-              iconName={'phone'}
-              iconType={FontAwesome}
-              LeftIcon={true}
-              titleText={'Phone'}
-              placeholder={'Phone'}
-              setText={setPhone}
-              value={phone}
-              viewHeight={0.06}
-              viewWidth={0.75}
-              inputWidth={0.55}
-              border={1}
-              borderRadius={moderateScale(30, 0.3)}
-              borderColor={Color.black}
-              backgroundColor={Color.white}
-              marginTop={moderateScale(10, 0.3)}
-              color={Color.black}
-              placeholderColor={Color.veryLightGray}
-              elevation
-            />
-           
-          
-              <CustomButton
-                onPress={() => navigationService.navigate('LoginScreen')}
-                text={
-                  isLoading ? (
-                    <ActivityIndicator color={Color.white} size={'small'} />
-                  ) : (
-                    'SUBMIT'
-                  )
-                }
-                fontSize={moderateScale(12, 0.3)}
-                textColor={Color.white}
-                borderRadius={moderateScale(30, 0.3)}
-                width={windowWidth * 0.75}
-                height={windowHeight * 0.06}
-                marginTop={moderateScale(20, 0.3)}
-                bgColor={Color.themeColor2}
-                isBold
-                // isGradient
-              />
-          </View>
-        {/* </ImageBackground> */}
-        <ImagePickerModal
-          show={imagePicker}
-          setShow={setImagePicker}
-          setFileObject={setImage}
-        />
+          <CustomButton
+            onPress={() => {
+              profileUpdate();
+            }}
+            text={
+              isLoading ? (
+                <ActivityIndicator color={Color.white} size={'small'} />
+              ) : (
+                'SUBMIT'
+              )
+            }
+            fontSize={moderateScale(12, 0.3)}
+            textColor={Color.white}
+            borderRadius={moderateScale(30, 0.3)}
+            width={windowWidth * 0.75}
+            height={windowHeight * 0.06}
+            marginTop={moderateScale(25, 0.3)}
+            bgColor={user_type == 'Rider' ? Color.darkBlue : Color.themeBlack}
+            isBold
+            // isGradient
+          />
+        </View>
+        {/* );
+          }} */}
+        {/* </Formik> */}
+      </View>
+      <ImagePickerModal
+        show={imagePicker}
+        setShow={setImagePicker}
+        setFileObject={setImage}
+      />
     </ScrollView>
   );
 };
 
 export default Profile;
 const styles = ScaledSheet.create({
+  main: {
+    width: windowWidth,
+    minHeight: windowHeight,
+    paddingBottom: moderateScale(40, 0.6),
+    paddingTop: windowHeight * 0.2,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Color.white,
+  },
   birthday: {
     width: windowWidth * 0.75,
     height: windowHeight * 0.06,
@@ -295,7 +290,7 @@ const styles = ScaledSheet.create({
     paddingHorizontal: moderateScale(10, 0.6),
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: Color.themeColor,
+    shadowColor: Color.themeDarkGray,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -310,7 +305,6 @@ const styles = ScaledSheet.create({
     width: moderateScale(20, 0.3),
     height: moderateScale(20, 0.3),
     position: 'absolute',
-    // top: 110,
     bottom: -2,
     right: 5,
     borderRadius: moderateScale(10, 0.3),
@@ -319,18 +313,45 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
- back : {
+  back: {
     width: moderateScale(35, 0.6),
     height: moderateScale(35, 0.6),
     borderRadius: moderateScale(5, 0.6),
     borderWidth: 0.5,
     borderColor: '#FFFFFF',
-    position: 'absolute',
-    left: moderateScale(10, 0.6),
-    top: moderateScale(10, 0.6),
+    // position: 'absolute',
+    // left: moderateScale(10, 0.6),
+    // top: moderateScale(10, 0.6),
     zIndex: 1,
-    margin :5 ,
-    alignItems : 'center',
-    justifyContent : 'center'
-  }
+    margin: 5,
+    alignItems: 'center',
+    backgroundColor: Color.themeBlack,
+    justifyContent: 'center',
+  },
+  fields_box: {
+    borderWidth: 0.3,
+    borderColor: '#28272369',
+    borderRadius: 20,
+    height: windowHeight * 0.5,
+    width: windowWidth * 0.9,
+    alignItems: 'center',
+    paddingTop: moderateScale(15, 0.6),
+    backgroundColor: Color.white,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  image: {
+    marginTop: moderateScale(10, 0.3),
+    height: windowHeight * 0.12,
+    width: windowHeight * 0.12,
+    borderRadius: moderateScale((windowHeight * 0.13) / 2),
+    borderWidth: 1.5,
+    borderColor: Color.darkGray,
+  },
 });

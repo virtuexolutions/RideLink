@@ -1,19 +1,31 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  ScrollView,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {Formik} from 'formik';
 import {Icon} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {SignupSchema} from '../Constant/schema';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {setUserData} from '../Store/slices/common';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -25,8 +37,36 @@ const Signup = () => {
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
   const [term, setTerm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  console.log('🚀 ~ Signup ~ isLoading:', isLoading);
   const {user_type} = useSelector(state => state.authReducer);
   console.log(user_type, 'userrtypeeeeee');
+
+  const onPressregister = async values => {
+    console.log(values, 'valuyessssssssss');
+    const body = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      phone: values.contact,
+      agree_terms_condition: values.termsAccepted,
+      confirm_password: values.confirmPassword,
+      role: user_type,
+    };
+    console.log('🚀 ~ Signup ~ body:', body);
+    const url = 'register';
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader());
+    console.log('🚀 ~ Signup ~ response:', response?.data);
+    setIsLoading(false);
+    if (response != undefined) {
+      navigation.navigate('AddYourCar');
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
+        : Alert.alert('Sign up successfully');
+      dispatch(setUserData(response?.data?.user_info));
+    }
+  };
 
   return (
     <ScreenBoiler
@@ -61,125 +101,226 @@ const Signup = () => {
         <CustomText isBold style={styles.text}>
           Sign up
         </CustomText>
-
-        <View
-          style={[
-            user_type === 'driver' ? styles.fields_box : styles.input_container,
-          ]}>
-          <TextInputWithTitle
-            title={'name *'}
-            placeholder={'James W. Brown'}
-            setText={setUserName}
-            value={username}
-            viewHeight={user_type === 'driver' ? 0.055 : 0.06}
-            viewWidth={user_type === 'driver' ? 0.82 : 0.85}
-            inputWidth={0.8}
-            border={1}
-            borderRadius={30}
-            backgroundColor={'transparent'}
-            borderColor={Color.lightGrey}
-            marginTop={moderateScale(8, 0.3)}
-            placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
-          />
-          <TextInputWithTitle
-            title={'email Id *'}
-            titleText={'Username'}
-            placeholder={'Email '}
-            setText={setEmail}
-            value={email}
-            viewHeight={user_type === 'driver' ? 0.055 : 0.06}
-            viewWidth={user_type === 'driver' ? 0.82 : 0.85}
-            inputWidth={0.8}
-            border={1}
-            borderRadius={30}
-            backgroundColor={'transparent'}
-            borderColor={Color.lightGrey}
-            marginTop={moderateScale(8, 0.3)}
-            placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
-          />
-          <TextInputWithTitle
-            title={'contact * '}
-            titleText={'Username'}
-            placeholder={'phone number'}
-            setText={setEmail}
-            value={email}
-            viewHeight={user_type === 'driver' ? 0.055 : 0.06}
-            viewWidth={user_type === 'driver' ? 0.82 : 0.85}
-            inputWidth={0.8}
-            border={1}
-            borderRadius={30}
-            backgroundColor={'transparent'}
-            borderColor={Color.lightGrey}
-            marginTop={moderateScale(8, 0.3)}
-            placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
-          />
-          <TextInputWithTitle
-            title={'password *'}
-            placeholder={'password'}
-            setText={setPassword}
-            value={password}
-            viewHeight={user_type === 'driver' ? 0.055 : 0.06}
-            viewWidth={user_type === 'driver' ? 0.82 : 0.85}
-            inputWidth={0.8}
-            border={1}
-            borderRadius={30}
-            backgroundColor={'transparent'}
-            borderColor={Color.lightGrey}
-            marginTop={moderateScale(8, 0.3)}
-            // color={Color.white}
-            placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
-          />
-          <View style={styles.row}>
-            <TouchableOpacity
-              onPress={() => {
-                setTerm(!term);
-              }}
-              style={styles.check_box}>
-              {term && (
-                <Icon
-                  as={Feather}
-                  size={moderateScale(15, 0.6)}
-                  color={Color.themeBlack}
-                  name="check"
+        <Formik
+          initialValues={{
+            name: '',
+            email: '',
+            contact: 0,
+            password: '',
+            termsAccepted: false,
+          }}
+          validationSchema={SignupSchema}
+          // onSubmit={console.log('//////////////////////////')}>
+          onSubmit={onPressregister}>
+          {({
+            values,
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+            setFieldValue,
+          }) => {
+            // console.log('Errors:', errors);
+            return (
+              <View
+                style={[
+                  user_type === 'Rider'
+                    ? styles.fields_box
+                    : styles.input_container,
+                ]}>
+                <TextInputWithTitle
+                  title={'name *'}
+                  placeholder={'James W. Brown'}
+                  setText={handleChange('name')}
+                  value={values.name}
+                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
+                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  inputWidth={0.8}
+                  border={1}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.lightGrey}
+                  marginTop={moderateScale(8, 0.3)}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
                 />
-              )}
-            </TouchableOpacity>
-            <CustomText style={styles.term_text}>
-              By Click You Agree To Our
-              <CustomText
-                style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
-                {' '}
-                terms & conditions{' '}
-              </CustomText>{' '}
-              As Well As Our
-              <CustomText
-                style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
-                {' '}
-                Privacy Policy.
-              </CustomText>
-            </CustomText>
-          </View>
-          <CustomButton
-            text={'sign in '}
-            fontSize={moderateScale(14, 0.3)}
-            textColor={Color.white}
-            borderWidth={1.5}
-            borderColor={user_type === 'driver' ? Color.darkBlue : Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.8}
-            marginTop={moderateScale(10, 0.3)}
-            height={windowHeight * 0.075}
-            bgColor={user_type === 'driver' ? Color.darkBlue : Color.btn_Color}
-            textTransform={'capitalize'}
-            elevation
-            // isBold
-          />
-        </View>
-
+                {touched.name && errors.name && (
+                  <CustomText style={styles.schemaText}>
+                    {errors.name}
+                  </CustomText>
+                )}
+                <TextInputWithTitle
+                  title={'email Id *'}
+                  titleText={'Username'}
+                  placeholder={'Email '}
+                  setText={handleChange('email')}
+                  value={values.email}
+                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
+                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  inputWidth={0.8}
+                  border={1}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.lightGrey}
+                  marginTop={moderateScale(8, 0.3)}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.email && errors.email && (
+                  <CustomText
+                    textAlign={'left'}
+                    style={{
+                      fontSize: moderateScale(10, 0.6),
+                      color: Color.red,
+                      alignSelf: 'flex-start',
+                    }}>
+                    {errors.email}
+                  </CustomText>
+                )}
+                {/* {touched.email && errors.email && (
+                <CustomText style={styles.schemaText}>
+                  {errors.email}
+                </CustomText>
+              )} */}
+                <TextInputWithTitle
+                  title={'contact * '}
+                  titleText={'Username'}
+                  placeholder={'phone number'}
+                  setText={handleChange('contact')}
+                  value={values.contact}
+                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
+                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  inputWidth={0.8}
+                  border={1}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.lightGrey}
+                  marginTop={moderateScale(8, 0.3)}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.contact && errors.contact && (
+                  <CustomText style={styles.schemaText}>
+                    {errors.contact}
+                  </CustomText>
+                )}
+                <TextInputWithTitle
+                  showPassword
+                  title={'password *'}
+                  placeholder={'password'}
+                  setText={handleChange('password')}
+                  value={values.password}
+                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
+                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  inputWidth={0.8}
+                  border={1}
+                  secureText={true}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.lightGrey}
+                  marginTop={moderateScale(8, 0.3)}
+                  // color={Color.white}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.password && errors.password && (
+                  <CustomText style={styles.schemaText}>
+                    {errors.password}
+                  </CustomText>
+                )}
+                <TextInputWithTitle
+                  showPassword
+                  title={'confirm Password *'}
+                  placeholder={'Confirm Password'}
+                  setText={handleChange('confirmPassword')}
+                  value={values.confirmPassword}
+                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
+                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  inputWidth={0.8}
+                  border={1}
+                  secureText={true}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.lightGrey}
+                  marginTop={moderateScale(8, 0.3)}
+                  // color={Color.white}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.password && errors.password && (
+                  <CustomText style={styles.schemaText}>
+                    {errors.password}
+                  </CustomText>
+                )}
+                <View style={styles.row}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setFieldValue('termsAccepted', !values.termsAccepted);
+                    }}
+                    style={styles.check_box}>
+                    {values.termsAccepted && (
+                      <Icon
+                        as={Feather}
+                        size={moderateScale(15, 0.6)}
+                        color={Color.themeBlack}
+                        name="check"
+                      />
+                    )}
+                  </TouchableOpacity>
+                  <CustomText style={styles.term_text}>
+                    By Click You Agree To Our
+                    <CustomText
+                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
+                      {' '}
+                      terms & conditions{' '}
+                    </CustomText>{' '}
+                    As Well As Our
+                    <CustomText
+                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
+                      {' '}
+                      Privacy Policy.
+                    </CustomText>
+                  </CustomText>
+                </View>
+                {touched.termsAccepted && errors.termsAccepted && (
+                  // console.log('=====================' , errors)
+                  <CustomText style={styles.schemaText}>
+                    {errors.termsAccepted}
+                  </CustomText>
+                )}
+                <CustomButton
+                  // onPress={() => {
+                  //   console.log('hell/lllllllllllllllllllllllllll');
+                  // }}
+                  onPress={handleSubmit}
+                  text={
+                    isLoading ? (
+                      <ActivityIndicator color={Color.white} size={'small'} />
+                    ) : (
+                      'sign in '
+                    )
+                  }
+                  fontSize={moderateScale(14, 0.3)}
+                  textColor={Color.white}
+                  borderWidth={1.5}
+                  borderColor={
+                    user_type === 'Rider' ? Color.darkBlue : Color.white
+                  }
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.8}
+                  marginTop={moderateScale(10, 0.3)}
+                  height={windowHeight * 0.075}
+                  bgColor={
+                    user_type === 'Rider' ? Color.darkBlue : Color.btn_Color
+                  }
+                  textTransform={'capitalize'}
+                  elevation
+                  // isBold
+                />
+              </View>
+            );
+          }}
+        </Formik>
         <CustomText style={styles.do_text}>
           Already have an account?
           <CustomText
@@ -217,7 +358,8 @@ const styles = ScaledSheet.create({
     borderWidth: 0.3,
     borderColor: '#28272369',
     borderRadius: 20,
-    height: windowHeight * 0.6,
+    // height: windowHeight * 0.65,
+    paddingVertical: moderateScale(10, 0.6),
     width: windowWidth * 0.9,
     alignItems: 'center',
     paddingTop: moderateScale(15, 0.6),
@@ -229,17 +371,19 @@ const styles = ScaledSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
-
+    paddingHorizontal: moderateScale(20, 0.6),
     elevation: 8,
   },
   input_container: {
     borderWidth: 1,
     borderColor: Color.mediumGray,
     borderRadius: 20,
-    height: windowHeight * 0.65,
+    paddingVertical: moderateScale(10, 0.6),
+    // height: windowHeight * 0.65,
     width: windowWidth * 0.9,
     alignItems: 'center',
     paddingTop: moderateScale(15, 0.6),
+    paddingHorizontal: moderateScale(20, 0.6),
   },
   row: {
     flexDirection: 'row',
@@ -266,6 +410,12 @@ const styles = ScaledSheet.create({
   term_text: {
     paddingHorizontal: moderateScale(5, 0.6),
     fontSize: moderateScale(11, 0.6),
+  },
+  schemaText: {
+    fontSize: moderateScale(10, 0.6),
+    color: 'red',
+    alignSelf: 'flex-start',
+    // backgroundColor: 'red',
   },
 });
 

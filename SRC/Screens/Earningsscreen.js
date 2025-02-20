@@ -26,7 +26,7 @@ const Earningsscreen = () => {
           width: '100%',
         }}
         source={require('../Assets/Images/background.png')}>
-        <Header headerColor={'transparent'} isFilledButton={true} />
+        <Header headerColor={'transparent'}  />
         <View style={styles.orderBox}>
           <View style={styles.riderImage}>
             <CustomImage
@@ -44,8 +44,8 @@ const Earningsscreen = () => {
                 borderRadius: (windowHeight * 0.019) / 2,
                 backgroundColor: '#04FF3F',
                 position: 'absolute',
-                top: moderateScale(50, 0.6),
-                right: moderateScale(45, 0.6),
+                bottom: moderateScale(0, 0.6),
+                left: moderateScale(4, 0.6),
               }}></View>
           </View>
           <View

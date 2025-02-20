@@ -1,50 +1,210 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Header from '../Components/Header';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
+import React, {useEffect, useRef, useState} from 'react';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import navigationService from '../navigationService';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
+import CustomImage from '../Components/CustomImage';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
+import navigationService from '../navigationService';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {baseUrl, imageUrl} from '../Config';
+import Geolocation from 'react-native-geolocation-service';
+import {getDistance} from 'geolib';
 
 const RideRequest = ({route}) => {
-  const {type} = route.params;
-  console.log('🚀 ~ RideRequest ~ type:', type);
+  const {type, data} = route.params;
+  const mapRef = useRef(null);
+  const token = useSelector(state => state.authReducer.token);
+  const userData = useSelector(state => state.commonReducer.userData);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [startNavigation, setStartnavigation] = useState(false);
   const [dropoff, setDropOff] = useState(false);
   const [done, setDone] = useState(false);
   const [arrive, setArrive] = useState(false);
   const [decline, setDecline] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+  const [fare, setFare] = useState(0);
+  const [distance, setDistance] = useState(0);
+  const [time, setTime] = useState(0);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigationService.navigate('PaymentScreen');
-  //   }, 3000);
-  // }, []);
+  const origin = {
+    latitude: parseFloat(data?.pickup_location_lat),
+    longitude: parseFloat(data?.pickup_location_lng),
+  };
+  const destination = {
+    latitude: parseFloat(data?.dropoff_location_lat),
+    longitude: parseFloat(data?.dropoff_location_lng),
+  };
+
+  useEffect(() => {
+    if (data?.pickup_location_lat) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: parseFloat(data?.pickup_location_lat),
+          longitude: parseFloat(data?.pickup_location_lng),
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0521,
+        },
+        1000,
+      );
+    }
+  }, [data]);
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            resolve(coords);
+            getAddressFromCoordinates(
+              position.coords.latitude,
+              position.coords.longitude,
+            );
+          },
+          error => {
+            reject(new Error(error.message));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+          },
+        );
+      });
+      setCurrentPosition(position);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      throw error;
+    }
+  };
+
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const givenaddress = data.results[0].formatted_address;
+        setAddress(givenaddress);
+      } else {
+        console.log('No address found');
+      }
+    } catch (error) {
+      console.error(
+        'getAddressFromCoordinates from conrdinatesssssssssssss',
+        error,
+      );
+    }
+  };
+
+  const onPressSendRequest = async status => {
+    const url = `auth/rider/ride_update/${data?.id}`;
+    const body = {
+      status: status,
+      lat: currentPosition?.latitude,
+      lng: currentPosition?.longitude,
+      rider_arrived_time: time,
+    };
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      navigationService.navigate('PassengerDetails', {
+        type: '',
+        data: data,
+        rider_arrived_time: response?.data?.ride_info?.rider_arrived_time,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (currentPosition && data?.pickup_location_lat != null) {
+      const dropLocation = {
+        latitude: parseFloat(data?.pickup_location_lat),
+        longitude: parseFloat(data?.pickup_location_lng),
+      };
+      const checkDistanceBetween = getDistance(currentPosition, dropLocation);
+      let km = Math.round(checkDistanceBetween / 1000);
+      const distanceInMiles = km / 1.60934;
+      setDistance(km);
+      const getTravelTime = async () => {
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        try {
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${currentPosition?.latitude},${currentPosition?.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          if (data.status === 'OK') {
+            const distanceMatrix = data.rows[0].elements[0];
+            const travelTime = distanceMatrix.duration.text;
+            return setTime(travelTime);
+          } else {
+            console.error('Error fetching travel time:', data.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      getTravelTime();
+    }
+  }, [currentPosition]);
 
   return (
     <SafeAreaView style={styles.safe_are}>
-      <Header title={'Ride Request'} />
+      <Header title={decline ? 'Cancel Ride' : 'Ride Request'} />
       <View style={styles.main_view}>
-        <View style={[styles.map_view]}>
-          <CustomImage
-            source={require('../Assets/Images/map3.png')}
-            styles={styles.image}
+        <MapView
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={{
+            latitude: parseFloat(data?.pickup_location_lat),
+            longitude: parseFloat(data?.pickup_location_lng),
+            latitudeDelta: 0.0522,
+            longitudeDelta: 0.0521,
+          }}>
+          <Marker
+            coordinate={origin}
+            style={{width: 15, height: 10}}
+            pinColor={Color.red}></Marker>
+          <MapViewDirections
+            origin={origin}
+            destination={destination}
+            strokeColor={Color.themeBlack}
+            strokeWidth={10}
+            apikey="AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM"
           />
-        </View>
+          <Marker
+            coordinate={destination}
+            style={{width: 15, height: 10}}
+            pinColor={Color.green}
+          />
+        </MapView>
         {type === 'fromIdentity' ? (
           <>
             {startNavigation ? (
@@ -206,6 +366,7 @@ const RideRequest = ({route}) => {
                   // }
                 />
               </>
+              // <></>
             )}
           </>
         ) : (
@@ -221,11 +382,11 @@ const RideRequest = ({route}) => {
               <View style={styles.image_view}>
                 <CustomImage
                   style={styles.image}
-                  source={require('../Assets/Images/user_image4.png')}
+                  source={{uri: imageUrl + data?.user?.photo}}
                 />
               </View>
               <View style={{width: '80%'}}>
-                <CustomText style={styles.name}>Timothy L. Brown</CustomText>
+                <CustomText style={styles.name}>{data?.user?.name}</CustomText>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -233,7 +394,7 @@ const RideRequest = ({route}) => {
                     justifyContent: 'flex-start',
                   }}>
                   <CustomText style={styles.model} isBold>
-                    Taxi Model :
+                    Car Model :
                   </CustomText>
                   <CustomText style={styles.model}>
                     Toyata Vios (CO21DJ3684)
@@ -258,10 +419,10 @@ const RideRequest = ({route}) => {
                     />
                     <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={[styles.text1]}>
-                        {'284 Long Street Gainesville'}
+                        pickup from
                       </CustomText>
                       <CustomText isBold style={styles.text1}>
-                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                        {data?.location_from}
                       </CustomText>
                     </View>
                   </View>
@@ -292,10 +453,10 @@ const RideRequest = ({route}) => {
                     />
                     <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={styles.text1}>
-                        {'PickUpLocation'}
+                        {'DropOff Location'}
                       </CustomText>
                       <CustomText isBold style={styles.text1}>
-                        {'B456B Hilton Road, N9 Bristol United Kingdom'}
+                        {data?.location_to}
                       </CustomText>
                     </View>
                   </View>
@@ -313,10 +474,11 @@ const RideRequest = ({route}) => {
                 bgColor={Color.darkBlue}
                 textTransform={'capitalize'}
                 elevation
+                loader={loading}
                 marginBottom={moderateScale(40, 0.6)}
                 onPress={() =>
-                  navigationService.navigate('RecieptScreen', {
-                    type: 'fromDecline',
+                  navigationService.navigate('ChooseDeclineReasonScreen', {
+                    data: data,
                   })
                 }
               />
@@ -338,14 +500,15 @@ const RideRequest = ({route}) => {
                   bgColor={Color.darkBlue}
                   textTransform={'capitalize'}
                   elevation
-                  onPress={() =>
-                    navigationService.navigate('PassengerDetails', {
-                      type: '',
-                    })
-                  }
+                  loader={loading}
+                  onPress={() => time && onPressSendRequest('accept')}
                 />
                 <TouchableOpacity
-                  onPress={() => setDecline(true)}
+                  onPress={() => {
+                    // navigationService.navigate('ChooseDeclineReasonScreen')
+                    // onPressSendRequest('reject');
+                    setDecline(true);
+                  }}
                   style={styles.icon_view}>
                   <Icon
                     name="cross"
@@ -393,7 +556,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     fontSize: moderateScale(11, 0.6),
-    textAlign: 'center',
+    // textAlign: 'center',
   },
   waiting_card: {
     width: windowWidth * 0.9,
@@ -473,6 +636,10 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.15,
     width: windowWidth * 0.15,
     borderRadius: windowHeight,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Color.grey,
   },
   image: {
     width: '100%',
