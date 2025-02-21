@@ -31,21 +31,21 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {object} from 'yup';
 import AdditionalTimeModal from '../Components/AdditionalTimeModal';
 import {getDistance, isValidCoordinate} from 'geolib';
-
-import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
-import {mode} from 'native-base/lib/typescript/theme/tools';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import CountdownTimer from '../Components/CountdownTimer';
-import {firebase} from '@react-native-firebase/messaging';
-import {getDatabase} from '@react-native-firebase/database';
+import CustomImage from '../Components/CustomImage';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const RideScreen = ({route}) => {
   const {data, type} = route?.params;
   const rideData = route?.params?.data;
+  console.log('🚀 ~ rideData:', rideData);
   const rider_arrived_time = route?.params?.rider_arrived_time;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
   const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ token:', token);
   const [additionalTime, setAdditionalTime] = useState(false);
   const [additionalTimeModal, setAdditionalTimeModal] = useState(false);
   const [isriderArrive, setIsRiderArrived] = useState(false);
@@ -59,9 +59,12 @@ const RideScreen = ({route}) => {
   const [fare, setFare] = useState(0);
   const [distance, setDistance] = useState(0);
   const [currentPosition, setCurrentPosition] = useState({
-    latitude: 0,
-    longitude: 0,
+    // latitude: 0,
+    // longitude: 0,
+    latitude: 37.43312021,
+    longitude: -122.0876855,
   });
+  console.log('🚀 ~ currentPosition:', currentPosition);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
   const origin = {
     lat:
@@ -75,13 +78,11 @@ const RideScreen = ({route}) => {
   };
   const destination = {
     lat:
-      type === 'details'
-        ? parseFloat(data?.pickup_location_lat)
-        : parseFloat(data?.ride_info?.rider?.lat),
+      type === 'details' ? parseFloat(data?.pickup_location_lat) : 37.43312021,
+    // : parseFloat(data?.ride_info?.rider?.lat),
     lng:
-      type === 'details'
-        ? parseFloat(data?.pickup_location_lng)
-        : parseFloat(data?.ride_info?.rider?.lng),
+      type === 'details' ? parseFloat(data?.pickup_location_lng) : -122.0876855,
+    // : parseFloat(data?.ride_info?.rider?.lng),
   };
 
   useEffect(() => {
@@ -133,7 +134,14 @@ const RideScreen = ({route}) => {
         const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
           Math.abs(lat1 - lat2) < threshold &&
           Math.abs(lon1 - lon2) < threshold;
-        if (isLocationClose(37.4219983, -122.084, 37.4219983, -122.084)) {
+        if (
+          isLocationClose(
+            37.4219983,
+            -122.084,
+            37.43312021060092,
+            -122.08768555488422,
+          )
+        ) {
           // if (isLocationClose(latitude, !isriderArrive ? origin?.lat : destination?.lat, longitude,!isriderArrive ?  origin?.lng : destination?.lng)) {
           console.log(
             'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -206,63 +214,13 @@ const RideScreen = ({route}) => {
     }
   };
 
-  // useEffect(() => {
-  //   const reigion = {
-  //     latitude: parseFloat(currentPosition?.latitude),
-  //     longitude: parseFloat(currentPosition?.longitude),
-  //     latitudeDelta: 0.0522,
-  //     longitudeDelta: 0.0521,
-  //   };
-  //   mapRef.current?.animateToRegion(reigion, 1000);
-  // }, [currentPosition]);
-
-  // const getDistanceFromLatLonInMeters = (lat1, lon1, lat2, lon2) => {
-  //   const R = 6371e3; // Radius of the earth in meters
-  //   const φ1 = (lat1 * Math.PI) / 180;
-  //   const φ2 = (lat2 * Math.PI) / 180;
-  //   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  //   const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-  //   const a =
-  //     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-  //     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  //   return R * c;
-  // };
-  // useEffect(() => {
-  //   console.log(
-  //     '------------------- from fire base useEffect --------------------------------',
-  //   );
-  //   const ref = getDatabase().ref('requests');
-  //   ref.on('value', snapshot => {
-  //     if (snapshot.exists()) {
-  //       const {latitude, longitude} = snapshot.val();
-  //       const distance = getDistanceFromLatLonInMeters(
-  //         37.4219983,
-  //         -122.084,
-  //         37.4219983,
-  //         -122.084,
-  //       );
-
-  //       if (distance < 50) {
-  //         Alert.alert('Arrived!', 'You have reached your destination.', [
-  //           {
-  //             text: 'OK',
-  //             onPress: () =>
-  //               navigation.navigate('RideRequest', {
-  //                 type: 'fromIdentity',
-  //                 data: {name: 'saddd', age: 18},
-  //               }),
-  //           },
-  //         ]);
-  //       }
-  //     }
-  //   });
-
-  //   return () => ref.off();
-  // }, [isFocused]);
-
+  const rideUpdate = async () => {
+    const url = `auth/rider/ride_update/${data?.id}`;
+    const response = await Post(url, body, apiHeader(token));
+    if (response != undefined) {
+      setStartWaiting(true);
+    }
+  };
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -279,8 +237,8 @@ const RideScreen = ({route}) => {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: parseFloat(currentPosition?.latitude),
-            longitude: parseFloat(currentPosition?.longitude),
+            latitude: currentPosition?.latitude,
+            longitude: currentPosition?.longitude,
             latitudeDelta: 0.0522,
             longitudeDelta: 0.0521,
           }}
@@ -328,6 +286,88 @@ const RideScreen = ({route}) => {
             }}
           />
         </MapView>
+        {/* <View
+          style={[
+            styles.latest_ride_view,
+            {
+              top: 20,
+            },
+          ]}>
+          <View style={styles.latest_ride_subView}>
+            <View style={styles.latest_ride_image_view}>
+              <CustomImage
+                // source={{uri: `${baseUrl}/${history?.user?.photo}`}}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'red',
+                  borderRadius: windowWidth,
+                }}
+              />
+            </View>
+            <View
+              style={{
+                marginLeft: moderateScale(10, 0.6),
+                width: windowWidth * 0.5,
+              }}>
+              <CustomText
+                isBold
+                style={{
+                  fontSize: moderateScale(13, 0.6),
+                  color: Color.black,
+                }}>
+            
+                {rideData?.user?.name}
+              </CustomText>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <CustomText
+                  isBold
+                  style={{
+                    fontSize: moderateScale(11, 0.6),
+                    color: Color.black,
+                  }}>
+                  status :
+                </CustomText>
+                <CustomText
+                  style={{
+                    fontSize: moderateScale(11, 0.6),
+                    color: Color.veryLightGray,
+                    marginLeft: moderateScale(8, 0.6),
+                  }}>
+                  {rideData?.status}
+                </CustomText>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: windowWidth * 0.2,
+                height: '100%',
+                paddingHorizontal: moderateScale(10, 0.6),
+                justifyContent: 'space-between',
+              }}>
+              <Icon
+                style={styles.icons}
+                name={'call'}
+                as={Ionicons}
+                size={moderateScale(17, 0.6)}
+                color={'white'}
+              />
+              <Icon
+                onPress={() => {
+                  navigationService.navigate('MessagesScreen', {
+                    data: rideData,
+                  });
+                }}
+                style={styles.icons}
+                name={'message1'}
+                as={AntDesign}
+                size={moderateScale(17, 0.6)}
+                color={'white'}
+              />
+            </View>
+          </View>
+        </View> */}
 
         {user_type === 'Rider' && passengerArrive === true ? (
           <View
@@ -551,6 +591,7 @@ const RideScreen = ({route}) => {
                         textTransform={'capitalize'}
                         isBold
                         onPress={() => {
+                          // rideUpdate();
                           setStartWaiting(true);
                         }}
                       />
@@ -662,5 +703,59 @@ const styles = StyleSheet.create({
     color: Color.black,
     marginLeft: moderateScale(5, 0.6),
     fontWeight: '600',
+  },
+  latest_ride_view: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: Color.white,
+    alignItems: 'center',
+    width: windowWidth * 0.95,
+    marginHorizontal: moderateScale(10, 0.6),
+    height: windowHeight * 0.085,
+    paddingHorizontal: moderateScale(10, 0.6),
+    borderRadius: moderateScale(30, 0.6),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.0,
+    elevation: 24,
+    paddingVertical: moderateScale(8, 0.6),
+  },
+  latest_ride_image_view: {
+    width: moderateScale(50, 0.6),
+    height: moderateScale(50, 0.6),
+    backgroundColor: Color.white,
+    borderRadius: windowWidth,
+  },
+  latest_ride_subView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: 'green ',
+  },
+  text_view2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: windowWidth * 0.8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: moderateScale(10, 0.6),
+  },
+  text1: {
+    fontSize: moderateScale(9, 0.6),
+  },
+  icons: {
+    backgroundColor: Color.darkBlue,
+    height: windowHeight * 0.035,
+    width: windowHeight * 0.035,
+    textAlign: 'center',
+    borderRadius: (windowHeight * 0.035) / 2,
+    paddingTop: moderateScale(5, 0.6),
+    // borderWidth: 0.3,
   },
 });
