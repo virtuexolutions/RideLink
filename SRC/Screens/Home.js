@@ -30,6 +30,7 @@ import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+
 import {
   getDatabase,
   onChildAdded,
@@ -41,6 +42,7 @@ import CountdownTimer from '../Components/CountdownTimer';
 
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ Home ~ token:", token)
   const {user_type} = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
@@ -323,6 +325,164 @@ const Home = () => {
                 }}
               />
             )}
+            {/* {Object.keys(current_ride).length > 0 &&
+              current_ride.status != 'Completed' && (
+                <View
+                  style={[
+                    styles.latest_ride_view,
+                    {
+                      bottom: 20,
+                    },
+                  ]}>
+                  <View style={styles.latest_ride_subView}>
+                    <View style={styles.latest_ride_image_view}>
+                      <CustomImage
+                        source={{uri: `${baseUrl}/${history?.user?.photo}`}}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: windowWidth,
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        marginLeft: moderateScale(10, 0.6),
+                        width: windowWidth * 0.5,
+                      }}>
+                      <CustomText
+                        isBold
+                        style={{
+                          fontSize: moderateScale(16, 0.6),
+                          color: Color.black,
+                        }}>
+                        {current_ride?.user?.name}
+                      </CustomText>
+                      <View
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <CustomText
+                          isBold
+                          style={{
+                            fontSize: moderateScale(11, 0.6),
+                            color: Color.black,
+                          }}>
+                          status :
+                        </CustomText>
+                        <CustomText
+                          style={{
+                            fontSize: moderateScale(11, 0.6),
+                            color: Color.veryLightGray,
+                            marginLeft: moderateScale(8, 0.6),
+                          }}>
+                          {current_ride?.status}
+                        </CustomText>
+                      </View>
+                    </View>
+                    <CustomText
+                      isBold
+                      style={{fontSize: moderateScale(12, 0.6)}}>
+                      Date :
+                    </CustomText>
+                    <CustomText
+                      style={{
+                        fontSize: moderateScale(11, 0.6),
+                        marginLeft: moderateScale(10, 0.6),
+                      }}>
+                      {moment(current_ride?.created_at).format('MM-DD-YYYY')}
+                    </CustomText>
+                  </View>
+                  <View style={styles.text_view2}>
+                    <View>
+                      <View style={{flexDirection: 'row'}}>
+                        <Icon
+                          name="map-pin"
+                          as={Feather}
+                          color={Color.orange}
+                        />
+                        <CustomText
+                          isBold={true}
+                          style={{
+                            fontSize: 13,
+                            paddingHorizontal: moderateScale(5, 0.6),
+                          }}>
+                          pickupLocatoion
+                        </CustomText>
+                        <CustomText
+                          isBold
+                          style={[
+                            styles.text1,
+                            {
+                              position: 'absolute',
+                              color: 'black',
+                              paddingVertical: moderateScale(10, 0.6),
+                              top: 11,
+                              // marginLeft: moderateScale(-3, 0.6),
+                              transform: [{rotate: '-90deg'}],
+                            },
+                          ]}>
+                          - - -
+                        </CustomText>
+                      </View>
+                      <CustomText
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 10,
+                          width: windowWidth * 0.8,
+                          marginLeft: moderateScale(18, 0.6),
+                        }}>
+                        {current_ride?.location_from}
+                      </CustomText>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: moderateScale(7, 0.6),
+                        }}>
+                        <Icon
+                          name="map-pin"
+                          as={Feather}
+                          color={Color.cartheme}
+                        />
+                        <CustomText
+                          isBold={true}
+                          style={{
+                            fontSize: 13,
+                            paddingHorizontal: moderateScale(5, 0.6),
+                          }}>
+                          drop off location
+                        </CustomText>
+                      </View>
+                      <CustomText
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 10,
+                          width: windowWidth * 0.8,
+                          marginLeft: moderateScale(18, 0.6),
+                        }}>
+                        {current_ride?.location_to}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <CustomButton
+                    text={'Track Ride'}
+                    textColor={Color.white}
+                    width={windowWidth * 0.8}
+                    height={windowHeight * 0.06}
+                    marginTop={moderateScale(10, 0.3)}
+                    bgColor={Color.cartheme}
+                    borderColor={Color.white}
+                    borderWidth={1}
+                    borderRadius={moderateScale(30, 0.3)}
+                    isGradient
+                    onPress={() =>
+                      navigationService.navigate('TrackingScreen', {
+                        data: current_ride,
+                        description: current_ride,
+                        ride_id: current_ride?.id,
+                      })
+                    }
+                  />
+                </View>
+              )} */}
           </ScrollView>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -404,7 +564,166 @@ const Home = () => {
                   return <Userbox data={item} />;
                 }}
               />
+              
             )}
+            {/* {Object.keys(current_ride).length > 0 &&
+              current_ride.status != 'Completed' && (
+                <View
+                  style={[
+                    styles.latest_ride_view,
+                    {
+                      bottom: 20,
+                    },
+                  ]}>
+                  <View style={styles.latest_ride_subView}>
+                    <View style={styles.latest_ride_image_view}>
+                      <CustomImage
+                        source={{uri: `${baseUrl}/${history?.user?.photo}`}}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: windowWidth,
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        marginLeft: moderateScale(10, 0.6),
+                        width: windowWidth * 0.5,
+                      }}>
+                      <CustomText
+                        isBold
+                        style={{
+                          fontSize: moderateScale(16, 0.6),
+                          color: Color.black,
+                        }}>
+                        {current_ride?.user?.name}
+                      </CustomText>
+                      <View
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <CustomText
+                          isBold
+                          style={{
+                            fontSize: moderateScale(11, 0.6),
+                            color: Color.black,
+                          }}>
+                          status :
+                        </CustomText>
+                        <CustomText
+                          style={{
+                            fontSize: moderateScale(11, 0.6),
+                            color: Color.veryLightGray,
+                            marginLeft: moderateScale(8, 0.6),
+                          }}>
+                          {current_ride?.status}
+                        </CustomText>
+                      </View>
+                    </View>
+                    <CustomText
+                      isBold
+                      style={{fontSize: moderateScale(12, 0.6)}}>
+                      Date :
+                    </CustomText>
+                    <CustomText
+                      style={{
+                        fontSize: moderateScale(11, 0.6),
+                        marginLeft: moderateScale(10, 0.6),
+                      }}>
+                      {moment(current_ride?.created_at).format('MM-DD-YYYY')}
+                    </CustomText>
+                  </View>
+                  <View style={styles.text_view2}>
+                    <View>
+                      <View style={{flexDirection: 'row'}}>
+                        <Icon
+                          name="map-pin"
+                          as={Feather}
+                          color={Color.orange}
+                        />
+                        <CustomText
+                          isBold={true}
+                          style={{
+                            fontSize: 13,
+                            paddingHorizontal: moderateScale(5, 0.6),
+                          }}>
+                          pickupLocatoion
+                        </CustomText>
+                        <CustomText
+                          isBold
+                          style={[
+                            styles.text1,
+                            {
+                              position: 'absolute',
+                              color: 'black',
+                              paddingVertical: moderateScale(10, 0.6),
+                              top: 11,
+                              // marginLeft: moderateScale(-3, 0.6),
+                              transform: [{rotate: '-90deg'}],
+                            },
+                          ]}>
+                          - - -
+                        </CustomText>
+                      </View>
+                      <CustomText
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 10,
+                          width: windowWidth * 0.8,
+                          marginLeft: moderateScale(18, 0.6),
+                        }}>
+                        {current_ride?.location_from}
+                      </CustomText>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: moderateScale(7, 0.6),
+                        }}>
+                        <Icon
+                          name="map-pin"
+                          as={Feather}
+                          color={Color.cartheme}
+                        />
+                        <CustomText
+                          isBold={true}
+                          style={{
+                            fontSize: 13,
+                            paddingHorizontal: moderateScale(5, 0.6),
+                          }}>
+                          drop off location
+                        </CustomText>
+                      </View>
+                      <CustomText
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 10,
+                          width: windowWidth * 0.8,
+                          marginLeft: moderateScale(18, 0.6),
+                        }}>
+                        {current_ride?.location_to}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <CustomButton
+                    text={'Track Ride'}
+                    textColor={Color.white}
+                    width={windowWidth * 0.8}
+                    height={windowHeight * 0.06}
+                    marginTop={moderateScale(10, 0.3)}
+                    bgColor={Color.cartheme}
+                    borderColor={Color.white}
+                    borderWidth={1}
+                    borderRadius={moderateScale(30, 0.3)}
+                    isGradient
+                    onPress={() =>
+                      navigationService.navigate('TrackingScreen', {
+                        data: current_ride,
+                        description: current_ride,
+                        ride_id: current_ride?.id,
+                      })
+                    }
+                  />
+                </View>
+              )}  */}
           </ScrollView>
         )}
       </View>

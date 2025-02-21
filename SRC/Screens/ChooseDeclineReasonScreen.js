@@ -47,7 +47,7 @@ const ChooseDeclineReasonScreen = (prop) => {
     // setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     // setIsLoading(false);
-    return console.log("🚀 ~ rideCancel ~ response:", response?.data)
+    // return console.log("🚀 ~ rideCancel ~ response:", response?.data)
     if (response != undefined) {
       user_type == 'Rider'
         ? navigationService.navigate('Home')
