@@ -311,6 +311,7 @@ const Home = () => {
                 contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
                 style={{marginBottom: moderateScale(20, 0.6)}}
                 renderItem={({item}) => {
+                  console.log("🚀 ~ Home ~ item:", item)
                   return (
                     <Userbox
                       data={item}

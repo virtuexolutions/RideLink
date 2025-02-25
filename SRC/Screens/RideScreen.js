@@ -35,11 +35,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CountdownTimer from '../Components/CountdownTimer';
 import CustomImage from '../Components/CustomImage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {baseUrl} from '../Config';
 
 const RideScreen = ({route}) => {
   const {data, type} = route?.params;
+  console.log(
+    '🚀 ~ data===========================:',
+    // JSON.stringify(data, null, 2),
+    data,
+  );
   const rideData = route?.params?.data;
-  console.log('🚀 ~ rideData:', rideData);
+  console.log(
+    '🚀 ~ rideData-----------------------------------------:',
+    JSON.stringify(rideData, null, 2),
+    // data?.ride_info?.rider?.photo,
+  );
   const rider_arrived_time = route?.params?.rider_arrived_time;
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
@@ -134,14 +144,7 @@ const RideScreen = ({route}) => {
         const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
           Math.abs(lat1 - lat2) < threshold &&
           Math.abs(lon1 - lon2) < threshold;
-        if (
-          isLocationClose(
-            37.4219983,
-            -122.084,
-            37.43312021060092,
-            -122.08768555488422,
-          )
-        ) {
+        if (isLocationClose(37.4219983, -122.084, 37.4219983, -122.084)) {
           // if (isLocationClose(latitude, !isriderArrive ? origin?.lat : destination?.lat, longitude,!isriderArrive ?  origin?.lng : destination?.lng)) {
           console.log(
             'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -214,13 +217,14 @@ const RideScreen = ({route}) => {
     }
   };
 
-  const rideUpdate = async () => {
+  const rideUpdate = async status => {
     const url = `auth/rider/ride_update/${data?.id}`;
-    const response = await Post(url, body, apiHeader(token));
+    const response = await Post(url, {status: status}, apiHeader(token));
+    console.log('🚀 ~ useEffect ~ response:', response);
     if (response != undefined) {
-      setStartWaiting(true);
     }
   };
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header
@@ -286,7 +290,7 @@ const RideScreen = ({route}) => {
             }}
           />
         </MapView>
-        {/* <View
+        <View
           style={[
             styles.latest_ride_view,
             {
@@ -296,11 +300,16 @@ const RideScreen = ({route}) => {
           <View style={styles.latest_ride_subView}>
             <View style={styles.latest_ride_image_view}>
               <CustomImage
-                // source={{uri: `${baseUrl}/${history?.user?.photo}`}}
+                source={{
+                  uri:
+                    user_type == 'Rider'
+                      ? `${baseUrl}/${rideData?.user?.photo}`
+                      : `${baseUrl}/${data?.ride_info?.rider?.photo}`,
+                }}
                 style={{
                   width: '100%',
                   height: '100%',
-                  backgroundColor: 'red',
+                  // backgroundColor: 'red',
                   borderRadius: windowWidth,
                 }}
               />
@@ -316,8 +325,9 @@ const RideScreen = ({route}) => {
                   fontSize: moderateScale(13, 0.6),
                   color: Color.black,
                 }}>
-            
-                {rideData?.user?.name}
+                {user_type == 'Rider'
+                  ? rideData?.user?.name
+                  : data?.ride_info?.rider?.name}
               </CustomText>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <CustomText
@@ -341,12 +351,25 @@ const RideScreen = ({route}) => {
             <View
               style={{
                 flexDirection: 'row',
-                width: windowWidth * 0.2,
+                width: windowWidth * 0.23,
                 height: '100%',
                 paddingHorizontal: moderateScale(10, 0.6),
                 justifyContent: 'space-between',
               }}>
               <Icon
+                onPress={() => {
+                  console.log(
+                    'heloooooooooooooooooooooooooooooooooooooooooo',
+                    rideData?.ride_info?.rider?.phone,
+                  );
+                  Linking.openURL(
+                    `tel:${
+                      user_type == 'Rider'
+                        ? rideData?.user?.phone
+                        : data?.ride_info?.rider?.phone
+                    }`,
+                  );
+                }}
                 style={styles.icons}
                 name={'call'}
                 as={Ionicons}
@@ -367,7 +390,7 @@ const RideScreen = ({route}) => {
               />
             </View>
           </View>
-        </View> */}
+        </View>
 
         {user_type === 'Rider' && passengerArrive === true ? (
           <View
@@ -391,6 +414,7 @@ const RideScreen = ({route}) => {
               textTransform={'capitalize'}
               isBold
               onPress={() => {
+                rideUpdate('onTheWay');
                 console.log('trying to navigate tracknng screen ');
                 const url = `https://www.google.com/maps/dir/?api=1&origin=${currentPosition?.latitude},${currentPosition?.longitude}&destination=${destination?.lat},${destination?.lng}&travelmode=driving`;
                 Linking.openURL(url).catch(err =>
@@ -562,6 +586,7 @@ const RideScreen = ({route}) => {
                       <CustomButton
                         onPress={() => {
                           setArrive(true);
+                          rideUpdate('arrived');
                         }}
                         text={'ARRIVE LOCATION'}
                         fontSize={moderateScale(14, 0.3)}
@@ -591,13 +616,13 @@ const RideScreen = ({route}) => {
                         textTransform={'capitalize'}
                         isBold
                         onPress={() => {
-                          // rideUpdate();
+                          rideUpdate('waiting');
                           setStartWaiting(true);
                         }}
                       />
                     ) : (
                       <CustomButton
-                        text={'arrive '}
+                        text={'arrive'}
                         fontSize={moderateScale(14, 0.3)}
                         textColor={Color.white}
                         borderRadius={moderateScale(30, 0.3)}

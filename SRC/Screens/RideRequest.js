@@ -419,7 +419,7 @@ const RideRequest = ({route}) => {
                     />
                     <View style={{alignItems: 'flex-start'}}>
                       <CustomText style={[styles.text1]}>
-                        pickup from
+                        {'pickup from'}
                       </CustomText>
                       <CustomText isBold style={styles.text1}>
                         {data?.location_from}
