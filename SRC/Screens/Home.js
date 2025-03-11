@@ -1,6 +1,6 @@
-import {useIsFocused} from '@react-navigation/native';
-import {ScrollView} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { ScrollView } from 'native-base';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 
 import Geolocation from 'react-native-geolocation-service';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import { Get, Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
@@ -29,7 +29,7 @@ import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 
 import {
   getDatabase,
@@ -43,7 +43,7 @@ import CountdownTimer from '../Components/CountdownTimer';
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ Home ~ token:", token)
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [activebutton, setactivebutton] = useState('current');
@@ -131,6 +131,7 @@ const Home = () => {
     setIsLoading(true);
     try {
       const response = await Get(url, token);
+      console.log("🚀 ~ rideRequestList ~ response:", response?.data)
       if (response?.data?.ride_info) {
         setRequestList(response.data.ride_info?.reverse());
       } else {
@@ -203,7 +204,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header title={user_type === 'Rider' ? 'Driver Online' : ''} />
+      <Header title={''} />
       <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
@@ -255,318 +256,99 @@ const Home = () => {
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
-              {user_type === 'Rider' ? (
-                <CustomButton
-                  text={'Explore'}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.btn_Color}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.3}
-                  //   marginTop={moderateScale(10,.3)}
-                  height={windowHeight * 0.05}
-                  bgColor={Color.lightGrey}
-                  textTransform={'capitalize'}
-                  borderWidth={1}
-                  style={{
-                    position: 'absolute',
-                    right: 10,
-                    bottom: 10,
-                  }}
+              <View style={styles.second_Image}>
+                <CustomImage
+                  style={{ height: '100%', width: '100%' }}
+                  source={require('../Assets/Images/ridelink.png')}
                 />
-              ) : (
-                <View style={styles.second_Image}>
-                  <CustomImage
-                    style={{height: '100%', width: '100%'}}
-                    source={require('../Assets/Images/ridelink.png')}
-                  />
-                </View>
-              )}
+              </View>
             </View>
           </ImageBackground>
         </View>
 
-        {user_type === 'Rider' ? (
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {isLoading ? (
-              <ActivityIndicator
-                style={styles.indicatorStyle}
-                size="small"
-                color={Color.black}
-              />
-            ) : (
-              <FlatList
-                ListEmptyComponent={
-                  <CustomText
-                    style={{
-                      textAlign: 'center',
-                      fontSize: moderateScale(11, 0.6),
-                      color: Color.red,
-                    }}>
-                    no data found
-                  </CustomText>
-                }
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item?.id}
-                data={requestList}
-                contentContainerStyle={{marginBottom: moderateScale(100, 0.6)}}
-                style={{marginBottom: moderateScale(20, 0.6)}}
-                renderItem={({item}) => {
-                  return (
-                    <Userbox
-                      data={item}
-                      onPressDetails={() =>
-                        navigationService.navigate('RideRequest', {
-                          type: '',
-                          data: item,
-                        })
-                      }
-                    />
-                  );
-                }}
-              />
-            )}
-            {/* {Object.keys(current_ride).length > 0 &&
-              current_ride.status != 'Completed' && (
-                <View
-                  style={[
-                    styles.latest_ride_view,
-                    {
-                      bottom: 20,
-                    },
-                  ]}>
-                  <View style={styles.latest_ride_subView}>
-                    <View style={styles.latest_ride_image_view}>
-                      <CustomImage
-                        source={{uri: `${baseUrl}/${history?.user?.photo}`}}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: windowWidth,
-                        }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        marginLeft: moderateScale(10, 0.6),
-                        width: windowWidth * 0.5,
-                      }}>
-                      <CustomText
-                        isBold
-                        style={{
-                          fontSize: moderateScale(16, 0.6),
-                          color: Color.black,
-                        }}>
-                        {current_ride?.user?.name}
-                      </CustomText>
-                      <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <CustomText
-                          isBold
-                          style={{
-                            fontSize: moderateScale(11, 0.6),
-                            color: Color.black,
-                          }}>
-                          status :
-                        </CustomText>
-                        <CustomText
-                          style={{
-                            fontSize: moderateScale(11, 0.6),
-                            color: Color.veryLightGray,
-                            marginLeft: moderateScale(8, 0.6),
-                          }}>
-                          {current_ride?.status}
-                        </CustomText>
-                      </View>
-                    </View>
-                    <CustomText
-                      isBold
-                      style={{fontSize: moderateScale(12, 0.6)}}>
-                      Date :
-                    </CustomText>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(11, 0.6),
-                        marginLeft: moderateScale(10, 0.6),
-                      }}>
-                      {moment(current_ride?.created_at).format('MM-DD-YYYY')}
-                    </CustomText>
-                  </View>
-                  <View style={styles.text_view2}>
-                    <View>
-                      <View style={{flexDirection: 'row'}}>
-                        <Icon
-                          name="map-pin"
-                          as={Feather}
-                          color={Color.orange}
-                        />
-                        <CustomText
-                          isBold={true}
-                          style={{
-                            fontSize: 13,
-                            paddingHorizontal: moderateScale(5, 0.6),
-                          }}>
-                          pickupLocatoion
-                        </CustomText>
-                        <CustomText
-                          isBold
-                          style={[
-                            styles.text1,
-                            {
-                              position: 'absolute',
-                              color: 'black',
-                              paddingVertical: moderateScale(10, 0.6),
-                              top: 11,
-                              // marginLeft: moderateScale(-3, 0.6),
-                              transform: [{rotate: '-90deg'}],
-                            },
-                          ]}>
-                          - - -
-                        </CustomText>
-                      </View>
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          fontSize: 10,
-                          width: windowWidth * 0.8,
-                          marginLeft: moderateScale(18, 0.6),
-                        }}>
-                        {current_ride?.location_from}
-                      </CustomText>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          marginTop: moderateScale(7, 0.6),
-                        }}>
-                        <Icon
-                          name="map-pin"
-                          as={Feather}
-                          color={Color.cartheme}
-                        />
-                        <CustomText
-                          isBold={true}
-                          style={{
-                            fontSize: 13,
-                            paddingHorizontal: moderateScale(5, 0.6),
-                          }}>
-                          drop off location
-                        </CustomText>
-                      </View>
-                      <CustomText
-                        numberOfLines={1}
-                        style={{
-                          fontSize: 10,
-                          width: windowWidth * 0.8,
-                          marginLeft: moderateScale(18, 0.6),
-                        }}>
-                        {current_ride?.location_to}
-                      </CustomText>
-                    </View>
-                  </View>
-                  <CustomButton
-                    text={'Track Ride'}
-                    textColor={Color.white}
-                    width={windowWidth * 0.8}
-                    height={windowHeight * 0.06}
-                    marginTop={moderateScale(10, 0.3)}
-                    bgColor={Color.cartheme}
-                    borderColor={Color.white}
-                    borderWidth={1}
-                    borderRadius={moderateScale(30, 0.3)}
-                    isGradient
-                    onPress={() =>
-                      navigationService.navigate('TrackingScreen', {
-                        data: current_ride,
-                        description: current_ride,
-                        ride_id: current_ride?.id,
-                      })
-                    }
-                  />
-                </View>
-              )} */}
-          </ScrollView>
-        ) : (
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View>
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={deliveryList}
-                style={styles.container_Style}
-                contentContainerStyle={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                renderItem={({item}) => {
-                  return <DeliveryBox data={item} />;
-                }}
-              />
-            </View>
-            <View style={styles.button_Box}>
-              <CustomButton
-                onPress={() => {
-                  setactivebutton('current');
-                }}
-                text={'Current '}
-                fontSize={moderateScale(14, 0.3)}
-                textColor={
-                  activebutton === 'current' ? Color.white : Color.btn_Color
-                }
-                borderRadius={moderateScale(30, 0.3)}
-                width={windowWidth * 0.42}
-                height={windowHeight * 0.053}
-                bgColor={
-                  activebutton === 'current' ? Color.btn_Color : 'transparent'
-                }
-                textTransform={'capitalize'}
-              />
-              <CustomButton
-                onPress={() => {
-                  setactivebutton('history');
-                }}
-                text={'History'}
-                fontSize={moderateScale(14, 0.3)}
-                textColor={
-                  activebutton === 'history' ? Color.white : Color.btn_Color
-                }
-                borderRadius={moderateScale(30, 0.3)}
-                width={windowWidth * 0.42}
-                //   marginTop={moderateScale(10,.3)}
-                height={windowHeight * 0.055}
-                bgColor={
-                  activebutton === 'history' ? Color.btn_Color : 'transparent'
-                }
-                textTransform={'capitalize'}
-              />
-            </View>
-            {historyLoading ? (
-              <ActivityIndicator
-                style={styles.indicatorStyle}
-                size="small"
-                color={Color.black}
-              />
-            ) : (
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                  <CustomText
-                    style={{
-                      textAlign: 'center',
-                      fontSize: moderateScale(11, 0.6),
-                      color: Color.red,
-                    }}>
-                    no data found
-                  </CustomText>
-                }
-                style={{paddingBottom: moderateScale(150, 0.6)}}
-                contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-                data={histry_list}
-                renderItem={({item}) => {
-                  return <Userbox data={item} />;
-                }}
-              />
-              
-            )}
-            {/* {Object.keys(current_ride).length > 0 &&
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={deliveryList}
+              style={styles.container_Style}
+              contentContainerStyle={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              renderItem={({ item }) => {
+                return <DeliveryBox data={item} />;
+              }}
+            />
+          </View>
+          <View style={styles.button_Box}>
+            <CustomButton
+              onPress={() => {
+                setactivebutton('current');
+              }}
+              text={'Current '}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'current' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              height={windowHeight * 0.053}
+              bgColor={
+                activebutton === 'current' ? Color.btn_Color : 'transparent'
+              }
+              textTransform={'capitalize'}
+            />
+            <CustomButton
+              onPress={() => {
+                setactivebutton('history');
+              }}
+              text={'History'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'history' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              //   marginTop={moderateScale(10,.3)}
+              height={windowHeight * 0.055}
+              bgColor={
+                activebutton === 'history' ? Color.btn_Color : 'transparent'
+              }
+              textTransform={'capitalize'}
+            />
+          </View>
+          {historyLoading ? (
+            <ActivityIndicator
+              style={styles.indicatorStyle}
+              size="small"
+              color={Color.black}
+            />
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <CustomText
+                  style={{
+                    textAlign: 'center',
+                    fontSize: moderateScale(11, 0.6),
+                    color: Color.red,
+                  }}>
+                  no data found
+                </CustomText>
+              }
+              style={{ paddingBottom: moderateScale(150, 0.6) }}
+              contentContainerStyle={{ gap: moderateScale(10, 0.6) }}
+              data={histry_list}
+              renderItem={({ item }) => {
+                return <Userbox data={item} />;
+              }}
+            />
+
+          )}
+          {/* {Object.keys(current_ride).length > 0 &&
               current_ride.status != 'Completed' && (
                 <View
                   style={[
@@ -724,8 +506,7 @@ const Home = () => {
                   />
                 </View>
               )}  */}
-          </ScrollView>
-        )}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

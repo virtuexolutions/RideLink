@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,29 +7,29 @@ import {
   Platform,
   ToastAndroid,
 } from 'react-native';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import navigationService from '../navigationService';
 import Color from '../Assets/Utilities/Color';
 import CustomText from '../Components/CustomText';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
-import {ActivityIndicator} from 'react-native';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { ActivityIndicator } from 'react-native';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 // import CardContainer from '../Components/CardContainer';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Icon} from 'native-base';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Icon } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const VerifyNumber = props => {
   const SelecteduserRole = useSelector(
@@ -40,7 +40,7 @@ const VerifyNumber = props => {
   //params
   const email = props?.route?.params?.email;
   const phoneNumber = props?.route?.params?.phoneNumber;
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
 
   //states
   const [code, setCode] = useState('');
@@ -48,7 +48,7 @@ const VerifyNumber = props => {
   const [isLoading, setIsLoading] = useState(false);
   console.log("🚀 ~ VerifyNumber ~ isLoading:", isLoading)
   const CELL_COUNT = 4;
-  const ref = useBlurOnFulfill({code, cellCount: CELL_COUNT});
+  const ref = useBlurOnFulfill({ code, cellCount: CELL_COUNT });
   const [abcd, getCellOnLayoutHandler] = useClearByFocusCell({
     code,
     setCode,
@@ -93,7 +93,7 @@ const VerifyNumber = props => {
         ? ToastAndroid.show(`otp verified`, ToastAndroid.SHORT)
         : alert(`otp verified`);
 
-        navigationN.navigate('ResetPassword',{email:email});
+      navigationN.navigate('ResetPassword', { email: email });
     }
   };
 
@@ -164,19 +164,19 @@ const VerifyNumber = props => {
           rootStyle={styles.codeFieldRoot}
           keyboardType="number-pad"
           textContentType="oneTimeCode"
-          renderCell={({index, symbol, isFocused}) => (
+          renderCell={({ index, symbol, isFocused }) => (
             <View
               onLayout={getCellOnLayoutHandler(index)}
               key={index}
               style={[styles.cellRoot, isFocused && styles.focusCell]}>
               <CustomText
-                style={[styles.cellText, isFocused && {color: Color.black}]}>
+                style={[styles.cellText, isFocused && { color: Color.black }]}>
                 {symbol || (isFocused ? <Cursor /> : null)}
               </CustomText>
             </View>
           )}
         />
-        <CustomText style={[styles.txt3, {width: windowWidth * 0.6}]}>
+        <CustomText style={[styles.txt3, { width: windowWidth * 0.6 }]}>
           Didn’t get Code yet?
         </CustomText>
         {
@@ -191,7 +191,7 @@ const VerifyNumber = props => {
           </TouchableOpacity>
         }
         <CustomButton
-          text={ isLoading ? <ActivityIndicator size={'small'} color={Color.white}/> :'Verify'}
+          text={isLoading ? <ActivityIndicator size={'small'} color={Color.white} /> : 'Verify'}
           isBold
           textColor={Color.white}
           width={windowWidth * 0.85}
@@ -201,7 +201,7 @@ const VerifyNumber = props => {
           onPress={() => {
             VerifyOTP()
           }}
-          bgColor={user_type === 'Rider' ? Color.darkBlue : Color.themeBlack}
+          bgColor={Color.themeBlack}
         />
       </KeyboardAwareScrollView>
     </>
