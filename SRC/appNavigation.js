@@ -55,7 +55,8 @@ const AppNavigator = () => {
       walkThrough == false
         ? 'WalkThroughScreen'
         : token == null
-        ? 'Start'
+        ?'LoginScreen'
+        // ? 'Start'
         : 'MyDrawer';
 
     return (

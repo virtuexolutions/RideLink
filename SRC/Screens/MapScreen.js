@@ -34,35 +34,21 @@ import CancelRide from '../Components/CancelRide';
 const MapScreen = props => {
   const mapRef = useRef();
   const ridedata = props?.route?.params?.ridedata;
-  console.log(
-    '🚀 ~ ridedata?.multiplePickups====================:',
-    ridedata?.multiplePickups,
-  );
+
   const paymentMethod = props?.route?.params?.paymentMethod;
   const nearestcab = props?.route?.params?.isEnabled;
-  const fromrideScreen = props?.route?.params?.fromrideScreen;
-  const {user_type} = useSelector(state => state.authReducer);
-  console.log('🚀 ~ user_type:', user_type);
-
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ token:', token, user_type);
   const fcmToken = useSelector(state => state.authReducer.fcmToken);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-
   const [price, setPrice] = useState(ridedata?.fare);
-
   const [declineModal, setDeclineModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
-  console.log('🚀 ~ rideId:', rideId);
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  console.log(
-    '🚀 ~ isVisible ===================================== canccel modal===============:',
-    isVisible,
-  );
+
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
   const [currentPosition, setCurrentPosition] = useState({
@@ -198,18 +184,7 @@ const MapScreen = props => {
           longitude: currentPosition.longitude || 0,
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
-        }}
-        // initialCamera={{
-        //   center: {
-        //     latitude: currentPosition?.latitude || 0,
-        //     longitude: currentPosition?.longitude || 0,
-        //   },
-        //   pitch: 0,
-        //   zoom: 18,
-        //   heading: 0,
-        //   altitude: 1000,
-        // }}
-      ></MapView>
+        }}></MapView>
 
       <Pulse
         color={Color.black}

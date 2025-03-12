@@ -17,7 +17,9 @@ const initialState = {
   location: '',
   pickupLocatin: {},
   dropoffLocation: {},
+  rideInfo: {},
 };
+console.log("🚀 ~ rideInfo:",initialState?.rideInfo)
 
 const CommonSlice = createSlice({
   name: 'commonReducer',
@@ -216,6 +218,10 @@ const CommonSlice = createSlice({
       state.location = action.payload;
       console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
     },
+    setRideinfo(state, action) {
+      state.rideInfo = action.payload;
+      console.log("🚀 ~ setRideinfo ~ action.payload:", action.payload)
+    },
   },
 });
 
@@ -245,6 +251,7 @@ export const {
   setLoaction,
   setPickupLocation,
   setDropoffLocation,
+  setRideinfo ,
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

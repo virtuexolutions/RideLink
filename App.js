@@ -1,15 +1,8 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+
 
 import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
-// import {StripeProvider} from '@stripe/stripe-react-native';
 import messaging from '@react-native-firebase/messaging';
 import {NativeBaseProvider} from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
@@ -37,8 +30,6 @@ const App = () => {
     setPublishableKey(key);
   };
 
-  console.reportErrorsAsExceptions = false;
-  console.reportErrorsAsExceptions = false;
 
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -57,7 +48,6 @@ const App = () => {
 
   const [notification, setNotification] = useState();
   const [notificationModal, setNotificationModal] = useState(false);
-  console.log('🚀 ~ App ~ notificationModal:', notificationModal);
 
   // useEffect(() => {
   //   console.log('chl rha ha')
@@ -130,7 +120,7 @@ const App = () => {
             <MainContainer />
           </NativeBaseProvider>
         </PersistGate>
-        {notificationModal === true && (
+        {/* {notificationModal === true && (
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => setNotificationModal(false)}
@@ -175,7 +165,7 @@ const App = () => {
               </View>
             </View>
           </TouchableOpacity>
-        )}
+        )} */}
       </Provider>
     </StripeProvider>
   );
@@ -199,15 +189,15 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   // return <ChooseDeclineReasonScreen/>;
-  return <AppNavigator />;
+  return <AppNavigator />
 };
 
 const useloader = value => {
   const [isloading, setIsloading] = useState(value);
-  const [loadingTime] = useState(5000);
+  const [loadingTime] = useState(5000)
   useEffect(() => {
-    setTimeout(() => setIsloading(false), loadingTime);
-  }, []);
-  return [isloading];
+    setTimeout(() => setIsloading(false), loadingTime)
+  }, [])
+  return [isloading]
 };
 export default App;
