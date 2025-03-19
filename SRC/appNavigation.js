@@ -48,7 +48,7 @@ const AppNavigator = () => {
   const token = useSelector(state => state.authReducer.token);
 
   const RootNav = createNativeStackNavigator();
-  const RootNavLogged = createNativeStackNavigator();
+  // const RootNavLogged = createNativeStackNavigator();
 
 
   //chnges 
