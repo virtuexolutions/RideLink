@@ -50,6 +50,9 @@ const AppNavigator = () => {
   const RootNav = createNativeStackNavigator();
   const RootNavLogged = createNativeStackNavigator();
 
+
+  //chnges 
+
   const AppNavigatorContainer = () => {
     const firstScreen =
       walkThrough == false
