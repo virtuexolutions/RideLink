@@ -1,7 +1,7 @@
-import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
-import {Icon, Toast} from 'native-base';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import { Icon, Toast } from 'native-base';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,10 +12,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {moderateScale} from 'react-native-size-matters';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { moderateScale } from 'react-native-size-matters';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
@@ -23,13 +23,13 @@ import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {addYourCarSchema, loginSchema} from '../Constant/schema';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { addYourCarSchema, loginSchema } from '../Constant/schema';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import DropDownSingleSelect from './DropDownSingleSelect';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import Header from '../Components/Header';
-import {setUserData} from '../Store/slices/common';
-import {setUserToken} from '../Store/slices/auth';
+import { setUserData } from '../Store/slices/common';
+import { setUserToken } from '../Store/slices/auth';
 import navigationService from '../navigationService';
 
 const AddYourCar = props => {
@@ -44,7 +44,7 @@ const AddYourCar = props => {
   const [image, setImage] = useState({});
   const navigation = useNavigation();
   const [loginMethod, setLoginMethod] = useState('');
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const carType = ['Mini', 'Standered Ac', 'Luxury Ac'];
 
   const onSubmit = async values => {
@@ -57,7 +57,7 @@ const AddYourCar = props => {
       category: cartype,
       model: values.carModel,
       status: 'active',
-      type :'hjhjhjk'
+      type: 'hjhjhjk'
     };
     for (let key in body) {
       if (key == '') {
@@ -77,13 +77,13 @@ const AddYourCar = props => {
         ? ToastAndroid.show('Your car is Updated', ToastAndroid.SHORT)
         : Alert.alert('Your car is Updated');
       dispatch(setUserData(response?.data?.user_info));
-      dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(setUserToken({ token: response?.data?.token }));
       navigationService.navigate('Home');
     }
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
@@ -116,7 +116,7 @@ const AddYourCar = props => {
             }}
             onSubmit={onSubmit}
             validationSchema={addYourCarSchema}>
-            {({handleChange, handleSubmit, values, errors, touched}) => {
+            {({ handleChange, handleSubmit, values, errors, touched }) => {
               return (
                 <>
                   <TextInputWithTitle
@@ -124,8 +124,8 @@ const AddYourCar = props => {
                     placeholder={'enter your car name here'}
                     setText={handleChange('carName')}
                     value={values.carName}
-                    viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                    viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                    viewHeight={0.06}
+                    viewWidth={0.85}
                     inputWidth={0.8}
                     border={1}
                     fontSize={moderateScale(10, 0.6)}
@@ -134,7 +134,7 @@ const AddYourCar = props => {
                     borderColor={Color.lightGrey}
                     marginTop={moderateScale(10, 0.3)}
                     placeholderColor={Color.darkGray}
-                    titleStlye={{right: 10}}
+                    titleStlye={{ right: 10 }}
                   />
                   {touched.carName && errors.carName && (
                     <CustomText
@@ -152,8 +152,8 @@ const AddYourCar = props => {
                     placeholder={'enter your car model here'}
                     setText={handleChange('carModel')}
                     value={values.carModel}
-                    viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                    viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                    viewHeight={0.06}
+                    viewWidth={0.85}
                     inputWidth={0.8}
                     border={1}
                     fontSize={moderateScale(10, 0.6)}
@@ -162,7 +162,7 @@ const AddYourCar = props => {
                     borderColor={Color.lightGrey}
                     marginTop={moderateScale(10, 0.3)}
                     placeholderColor={Color.darkGray}
-                    titleStlye={{right: 10}}
+                    titleStlye={{ right: 10 }}
                   />
                   {touched.carModel && errors.carModel && (
                     <CustomText
@@ -180,8 +180,8 @@ const AddYourCar = props => {
                     placeholder={'enter your car number'}
                     setText={handleChange('carNumber')}
                     value={values.carNumber}
-                    viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                    viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                    viewHeight={0.06}
+                    viewWidth={0.85}
                     inputWidth={0.8}
                     border={1}
                     fontSize={moderateScale(10, 0.6)}
@@ -190,7 +190,7 @@ const AddYourCar = props => {
                     borderColor={Color.lightGrey}
                     marginTop={moderateScale(10, 0.3)}
                     placeholderColor={Color.darkGray}
-                    titleStlye={{right: 10}}
+                    titleStlye={{ right: 10 }}
                   />
                   {touched.carNumber && errors.carNumber && (
                     <CustomText
@@ -208,8 +208,8 @@ const AddYourCar = props => {
                     placeholder={'enter your car seats here'}
                     setText={handleChange('carSeats')}
                     value={values.carSeats}
-                    viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                    viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                    viewHeight={0.06}
+                    viewWidth={0.85}
                     inputWidth={0.8}
                     border={1}
                     fontSize={moderateScale(9, 0.6)}
@@ -218,7 +218,7 @@ const AddYourCar = props => {
                     borderColor={Color.lightGrey}
                     marginTop={moderateScale(10, 0.3)}
                     placeholderColor={Color.veryLightGray}
-                    titleStlye={{right: 10}}
+                    titleStlye={{ right: 10 }}
                   />
                   {touched.carSeats && errors.carSeats && (
                     <CustomText
@@ -231,7 +231,7 @@ const AddYourCar = props => {
                       {errors.carSeats}
                     </CustomText>
                   )}
-                  <View style={{marginTop: moderateScale(10, 0.6)}} />
+                  <View style={{ marginTop: moderateScale(10, 0.6) }} />
                   <CustomText
                     style={{
                       color: Color.black,
@@ -279,7 +279,7 @@ const AddYourCar = props => {
                     style={styles.image}>
                     {Object.keys(image).length > 0 ? (
                       <CustomImage
-                        source={{uri: image?.uri}}
+                        source={{ uri: image?.uri }}
                         resizeMode="cover"
                         style={{
                           height: windowHeight * 0.14,

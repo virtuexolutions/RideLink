@@ -6,34 +6,34 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import Header from '../Components/Header';
-import {moderateScale} from 'react-native-size-matters';
-import {color} from 'native-base/lib/typescript/theme/styled-system';
+import { moderateScale } from 'react-native-size-matters';
+import { color } from 'native-base/lib/typescript/theme/styled-system';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {Icon} from 'native-base';
-import {Rating} from 'react-native-ratings';
+import { Icon } from 'native-base';
+import { Rating } from 'react-native-ratings';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const RateScreen = props => {
   const data = props?.route?.params?.data;
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
 
   return (
     <SafeAreaView>
       <View style={styles.mainContainer}>
         <Header
           showBack={true}
-          textstyle={{fontWeight: 'regular'}}
+          textstyle={{ fontWeight: 'regular' }}
           title={user_type == 'Customer' ? 'rate Rider' : 'Rate Passenger'}
         />
         <View style={styles.box}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={styles.image_Style}>
               <CustomImage
                 style={{
@@ -48,11 +48,11 @@ const RateScreen = props => {
               <CustomText style={styles.ride_status}>COMPLETE</CustomText>
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: moderateScale(20, 0.6)}}>
-            <View style={{flexDirection: 'row'}}>
+          <View style={{ marginTop: moderateScale(20, 0.6) }}>
+            <View style={{ flexDirection: 'row' }}>
               <View style={styles.Circle}>
                 <Icon
-                  style={{color: Color.white}}
+                  style={{ color: Color.white }}
                   as={FontAwesome5}
                   name="car"
                   size={moderateScale(12, 0.6)}
@@ -66,13 +66,13 @@ const RateScreen = props => {
               </View>
             </View>
             <View style={styles.rotate_View}>
-              <CustomText style={{color: Color.black}}>.........</CustomText>
+              <CustomText style={{ color: Color.black }}>.........</CustomText>
             </View>
             <View
-              style={{flexDirection: 'row', marginTop: moderateScale(20, 0.6)}}>
+              style={{ flexDirection: 'row', marginTop: moderateScale(20, 0.6) }}>
               <View style={styles.Circle}>
                 <Icon
-                  style={{color: Color.white}}
+                  style={{ color: Color.white }}
                   as={FontAwesome5}
                   name="car"
                   size={moderateScale(12, 0.6)}
@@ -88,7 +88,7 @@ const RateScreen = props => {
           </View>
         </View>
         <View style={styles.amountBox}>
-          <View style={{gap: moderateScale(10, 0.6)}}>
+          <View style={{ gap: moderateScale(10, 0.6) }}>
             <View style={styles.row}>
               <CustomText style={styles.trip_t}>Trip Fare Breakdown</CustomText>
               <CustomText style={styles.h1}>$50.25</CustomText>
@@ -136,24 +136,24 @@ const RateScreen = props => {
           ratingColor={Color.yellow}
           imageSize={moderateScale(35, 0.3)}
           tintColor={Color.white}
-          style={{marginTop: moderateScale(30, 0.6)}}
+          style={{ marginTop: moderateScale(30, 0.6) }}
         />
         <View style={styles.btn_view}>
           <CustomButton
             text={'SUBMIT'}
             fontSize={moderateScale(15, 0.3)}
             textColor={Color.white}
-            borderWidth={user_type === 'Rider' ? 0 : 1.5}
+            borderWidth={1.5}
             borderColor={Color.white}
             borderRadius={moderateScale(30, 0.3)}
             width={windowWidth * 0.9}
             height={windowHeight * 0.075}
-            bgColor={user_type === 'Rider' ? Color.darkBlue : Color.btn_Color}
+            bgColor={Color.btn_Color}
             textTransform={'capitalize'}
-            elevation={user_type === 'Rider' ? true : false}
+            elevation={false}
             onPress={() => {
               if (user_type === 'Rider') {
-                navigationService.navigate('RecieptScreen', {type: ''});
+                navigationService.navigate('RecieptScreen', { type: '' });
               } else {
                 navigationService.navigate('Home');
               }
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rotate_View: {
-    transform: [{rotate: '90deg'}],
+    transform: [{ rotate: '90deg' }],
     position: 'absolute',
     width: windowWidth * 0.1,
     top: moderateScale(40, 0.6),
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     color: Color.themeBlack,
     fontWeight: '600',
   },
-  row: {flexDirection: 'row', justifyContent: 'space-between'},
+  row: { flexDirection: 'row', justifyContent: 'space-between' },
   h1: {
     fontSize: moderateScale(12, 0.6),
     color: Color.themeBlack,
@@ -287,5 +287,5 @@ const styles = StyleSheet.create({
     bottom: moderateScale(30, 0.6),
     alignSelf: 'center',
   },
-  loca_con: {marginLeft: moderateScale(10, 0.6)},
+  loca_con: { marginLeft: moderateScale(10, 0.6) },
 });

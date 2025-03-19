@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   Dimensions,
@@ -9,27 +9,27 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch, useSelector } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 
-import {Icon} from 'native-base';
-import {useNavigation} from '@react-navigation/native';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import {Formik} from 'formik';
-import {forgotpasswordSchema} from '../Constant/schema';
+import { Icon } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import { Post } from '../Axios/AxiosInterceptorFunction';
+import { Formik } from 'formik';
+import { forgotpasswordSchema } from '../Constant/schema';
 
 const VerifyEmail = props => {
   const dispatch = useDispatch();
   const navigationN = useNavigation();
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const [isLoading, setIsLoading] = useState(false);
 
   const sendOTP = async values => {
@@ -37,7 +37,7 @@ const VerifyEmail = props => {
     const url = 'password/email';
 
     setIsLoading(true);
-    const response = await Post(url, {email: values.email}, apiHeader());
+    const response = await Post(url, { email: values.email }, apiHeader());
     setIsLoading(false);
     console.log('response data =========================>', response?.data);
     if (response != undefined) {
@@ -46,7 +46,7 @@ const VerifyEmail = props => {
         : alert(`OTP sent to ${values.email}`);
       // fromForgot
       //   ?
-      navigationN.navigate('VerifyNumber',{email : values.email});
+      navigationN.navigate('VerifyNumber', { email: values.email });
       // : navigationService.navigate('VerifyNumber', {
       //     email: `${email}`,
       //   });
@@ -92,7 +92,7 @@ const VerifyEmail = props => {
             }}
             validationSchema={forgotpasswordSchema}
             onSubmit={sendOTP}>
-            {({values, handleChange, handleSubmit, touched, errors}) => {
+            {({ values, handleChange, handleSubmit, touched, errors }) => {
               console.log(
                 '🚀 ~ VerifyEmail ~ errors:',
                 errors.email,
@@ -122,7 +122,7 @@ const VerifyEmail = props => {
                     </CustomText>
                   )}
                   <CustomButton
-                    text={isLoading ? <ActivityIndicator size={'small'} color={Color.white}/>:'submit'}
+                    text={isLoading ? <ActivityIndicator size={'small'} color={Color.white} /> : 'submit'}
                     textColor={Color.white}
                     width={windowWidth * 0.8}
                     height={windowHeight * 0.06}
@@ -133,7 +133,7 @@ const VerifyEmail = props => {
                     }
                     borderRadius={30}
                     bgColor={
-                      user_type === 'Rider' ? Color.darkBlue : Color.themeBlack
+                      Color.themeBlack
                     }
                   />
                 </View>

@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Color from '../Assets/Utilities/Color';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import {
   ActivityIndicator,
   ScrollView,
@@ -17,18 +17,18 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import navigationService from '../navigationService';
-import {Icon} from 'native-base';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {Formik} from 'formik';
-import {changePasswordSchema} from '../Constant/schema';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Icon } from 'native-base';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { Formik } from 'formik';
+import { changePasswordSchema } from '../Constant/schema';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 
 const ChangePassword = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const token = useSelector(state => state.authReducer.token);
 
   const handleReset = async values => {
@@ -81,7 +81,7 @@ const ChangePassword = () => {
             confirmNewPassword: '',
           }}
           onSubmit={handleReset}>
-          {({handleChange, handleSubmit, values, errors, touched}) => {
+          {({ handleChange, handleSubmit, values, errors, touched }) => {
             return (
               <View style={styles.text_input}>
                 <TextInputWithTitle
@@ -168,7 +168,7 @@ const ChangePassword = () => {
                   height={windowHeight * 0.065}
                   marginTop={moderateScale(20, 0.3)}
                   bgColor={
-                    user_type === 'Rider' ? Color.darkBlue : Color.btn_Color
+                    Color.btn_Color
                   }
                   isBold
                   elevation

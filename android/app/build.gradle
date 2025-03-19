@@ -81,19 +81,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.ridelink"
-    //   lintOptions {
-    //     checkReleaseBuilds false
-    //     abortOnError false
-    // }
-    //     externalNativeBuild {
-    //     cmake {
-    //         path "src/main/cpp/CMakeLists.txt"
-    //         version "3.10.2"
-    //     }
-    // }
-project.ext.react = [
- enableHermes: true,  // clean and rebuild if changing
-]
+
     defaultConfig {
         applicationId "com.ridelink"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -133,6 +121,7 @@ project.ext.react = [
 }
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
+   
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-vector-icons')
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))

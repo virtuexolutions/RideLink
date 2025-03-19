@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,23 +9,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {moderateScale, ScaledSheet} from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 // import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {Formik} from 'formik';
-import {Icon} from 'native-base';
+import { Formik } from 'formik';
+import { Icon } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {SignupSchema} from '../Constant/schema';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {setUserData} from '../Store/slices/common';
+import { SignupSchema } from '../Constant/schema';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import { setUserData } from '../Store/slices/common';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const Signup = () => {
   const [term, setTerm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   console.log('🚀 ~ Signup ~ isLoading:', isLoading);
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   console.log(user_type, 'userrtypeeeeee');
 
   const onPressregister = async values => {
@@ -133,8 +133,8 @@ const Signup = () => {
                   placeholder={'James W. Brown'}
                   setText={handleChange('name')}
                   value={values.name}
-                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  viewHeight={0.06}
+                  viewWidth={0.85}
                   inputWidth={0.8}
                   border={1}
                   borderRadius={30}
@@ -142,7 +142,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.name && errors.name && (
                   <CustomText style={styles.schemaText}>
@@ -155,8 +155,8 @@ const Signup = () => {
                   placeholder={'Email '}
                   setText={handleChange('email')}
                   value={values.email}
-                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  viewHeight={0.06}
+                  viewWidth={0.85}
                   inputWidth={0.8}
                   border={1}
                   borderRadius={30}
@@ -164,7 +164,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.email && errors.email && (
                   <CustomText
@@ -188,8 +188,8 @@ const Signup = () => {
                   placeholder={'phone number'}
                   setText={handleChange('contact')}
                   value={values.contact}
-                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  viewHeight={0.06}
+                  viewWidth={0.85}
                   inputWidth={0.8}
                   border={1}
                   borderRadius={30}
@@ -197,7 +197,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.contact && errors.contact && (
                   <CustomText style={styles.schemaText}>
@@ -210,8 +210,8 @@ const Signup = () => {
                   placeholder={'password'}
                   setText={handleChange('password')}
                   value={values.password}
-                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  viewHeight={0.06}
+                  viewWidth={0.85}
                   inputWidth={0.8}
                   border={1}
                   secureText={true}
@@ -221,7 +221,7 @@ const Signup = () => {
                   marginTop={moderateScale(8, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.password && errors.password && (
                   <CustomText style={styles.schemaText}>
@@ -234,8 +234,8 @@ const Signup = () => {
                   placeholder={'Confirm Password'}
                   setText={handleChange('confirmPassword')}
                   value={values.confirmPassword}
-                  viewHeight={user_type === 'Rider' ? 0.055 : 0.06}
-                  viewWidth={user_type === 'Rider' ? 0.82 : 0.85}
+                  viewHeight={0.06}
+                  viewWidth={0.85}
                   inputWidth={0.8}
                   border={1}
                   secureText={true}
@@ -245,7 +245,7 @@ const Signup = () => {
                   marginTop={moderateScale(8, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.password && errors.password && (
                   <CustomText style={styles.schemaText}>
@@ -270,13 +270,13 @@ const Signup = () => {
                   <CustomText style={styles.term_text}>
                     By Click You Agree To Our
                     <CustomText
-                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
+                      style={{ fontSize: moderateScale(11, 0.6), color: 'red' }}>
                       {' '}
                       terms & conditions{' '}
                     </CustomText>{' '}
                     As Well As Our
                     <CustomText
-                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
+                      style={{ fontSize: moderateScale(11, 0.6), color: 'red' }}>
                       {' '}
                       Privacy Policy.
                     </CustomText>
@@ -304,18 +304,18 @@ const Signup = () => {
                   textColor={Color.white}
                   borderWidth={1.5}
                   borderColor={
-                    user_type === 'Rider' ? Color.darkBlue : Color.white
+                    Color.white
                   }
                   borderRadius={moderateScale(30, 0.3)}
                   width={windowWidth * 0.8}
                   marginTop={moderateScale(10, 0.3)}
                   height={windowHeight * 0.075}
                   bgColor={
-                    user_type === 'Rider' ? Color.darkBlue : Color.btn_Color
+                    Color.btn_Color
                   }
                   textTransform={'capitalize'}
                   elevation
-                  // isBold
+                // isBold
                 />
               </View>
             );

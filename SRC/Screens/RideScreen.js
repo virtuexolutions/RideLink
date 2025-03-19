@@ -1,5 +1,5 @@
-import {Icon} from 'native-base';
-import React, {useEffect, useRef, useState} from 'react';
+import { Icon } from 'native-base';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Linking,
@@ -11,34 +11,34 @@ import {
   VirtualizedList,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import {customMapStyle} from '../Utillity/mapstyle';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { customMapStyle } from '../Utillity/mapstyle';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {object} from 'yup';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { object } from 'yup';
 import AdditionalTimeModal from '../Components/AdditionalTimeModal';
-import {getDistance, isValidCoordinate} from 'geolib';
+import { getDistance, isValidCoordinate } from 'geolib';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CountdownTimer from '../Components/CountdownTimer';
 import CustomImage from '../Components/CustomImage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {baseUrl} from '../Config';
 
-const RideScreen = ({route}) => {
-  const {data, type} = route?.params;
+const RideScreen = ({ route }) => {
+  const { data, type } = route?.params;
   const rideData = route?.params?.data;
   const rider_arrived_time = route?.params?.rider_arrived_time;
   const isFocused = useIsFocused();
@@ -51,7 +51,7 @@ const RideScreen = ({route}) => {
   const [isriderArrive, setIsRiderArrived] = useState(false);
   const [addTime, setAddTime] = useState(0);
   const [time, setTime] = useState(0);
-  const {user_type} = useSelector(state => state.authReducer);
+  const { user_type } = useSelector(state => state.authReducer);
   const [start_waiting, setStartWaiting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [arrive, setArrive] = useState(false);
@@ -126,7 +126,7 @@ const RideScreen = ({route}) => {
   useEffect(() => {
     const watchId = Geolocation.watchPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         setCurrentPosition(prevLocation => ({
           ...prevLocation,
           latitude,

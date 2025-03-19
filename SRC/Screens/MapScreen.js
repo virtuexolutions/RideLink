@@ -1,7 +1,7 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {isValidCoordinate} from 'geolib';
-import {Icon} from 'native-base';
-import React, {useEffect, useRef, useState} from 'react';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { isValidCoordinate } from 'geolib';
+import { Icon } from 'native-base';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,18 +10,18 @@ import {
   View,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import Pulse from 'react-native-pulse';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import { Get, Post } from '../Axios/AxiosInterceptorFunction';
 import DeclineModal from '../Components/DeclineModal';
 import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import CustomButton from '../Components/CustomButton';
 import database, {
   firebase,
@@ -146,9 +146,11 @@ const MapScreen = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
+    console.log("🚀 ~ requestforRide ~ body:", formData)
     const url = 'auth/bookride';
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
+    console.log("🚀 ~ requestforRide ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
@@ -203,10 +205,10 @@ const MapScreen = props => {
           as={FontAwesome5}
           size={moderateScale(30, 0.6)}
           color={Color.white}
-          style={{left: 5}}
+          style={{ left: 5 }}
         />
       </View>
-      <View style={{position: 'absolute', bottom: 20}}>
+      <View style={{ position: 'absolute', bottom: 20 }}>
         {/* <AskLocation
           main_view_style={{height: windowHeight * 0.17}}
           heading={'Waiting For Replies'}
