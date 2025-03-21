@@ -392,129 +392,71 @@ const RideScreen = ({ route }) => {
           </View>
         </View> */}
 
-        {user_type === 'Rider' && passengerArrive === true ? (
+
+
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            alignSelf: 'center',
+          }}>
           <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              height: windowHeight * 0.2,
-              width: windowWidth,
-            }}>
-            <CustomButton
-              text={'DRIVE'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={Color.white}
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.85}
-              marginTop={moderateScale(10, 0.3)}
-              height={windowHeight * 0.07}
-              bgColor={Color.darkBlue}
-              borderWidth={1.5}
-              borderColor={Color.darkBlue}
-              textTransform={'capitalize'}
-              isBold
-              onPress={() => {
-                onPressStartNavigation()
-                // console.log('trying to navigate tracknng screen ');
-                // const url = `https://www.google.com/maps/dir/?api=1&origin=${currentPosition?.latitude},${currentPosition?.longitude}&destination=${destination?.lat},${destination?.lng}&travelmode=driving`;
-                // Linking.openURL(url).catch(err =>
-                //   console.error('An error occurred', err),
-                // );
-              }}
-            />
-          </View>
-        ) : (
-          <>
-            {additionalTime ? (
-              <CountdownTimer
-                // addTime={addTime}
-                initialTime={addTime}
-                onComplete={() => {
-                  // setAdditionalTimeModal(true);
-                  // setAdditionalTime(true);
-                }}
+            style={[
+              styles.waiting_card,
+              {
+                height:
+                  user_type === 'Rider'
+                    ? windowHeight * 0.32
+                    : windowHeight * 0.25,
+              },
+            ]}>
+            <View
+              style={[styles.row_view, { justifyContent: 'center' }]}>
+              <CustomText style={styles.text_view}>
+                Waiting PickUp
+              </CustomText>
+              <Icon
+                name="cross"
+                as={Entypo}
+                size={moderateScale(18, 0.6)}
+                color={Color.veryLightGray}
+                style={{ position: 'absolute', right: 0 }}
               />
-            ) : (
-              // <View
-              //   style={[
-              //     styles.waiting_card,
-              //     {
-              //       height: windowHeight * 0.15,
-              //       bottom: 100,
-              //       position: 'absolute',
-              //       alignItems: 'center',
-              //       justifyContent: 'center',
-              //     },
-              //   ]}>
-              //   <CustomText isBold style={styles.time}>
-              //     01 : 59
-              //   </CustomText>
-              // </View>
-              <>
-                {user_type === 'Customer' ? (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      bottom: 100,
-                      alignSelf: 'center',
-                    }}>
-                    <View
-                      style={[
-                        styles.waiting_card,
-                        {
-                          height:
-                            user_type === 'Rider'
-                              ? windowHeight * 0.32
-                              : windowHeight * 0.25,
-                        },
-                      ]}>
-                      <View
-                        style={[styles.row_view, { justifyContent: 'center' }]}>
-                        <CustomText style={styles.text_view}>
-                          Waiting PickUp
-                        </CustomText>
-                        <Icon
-                          name="cross"
-                          as={Entypo}
-                          size={moderateScale(18, 0.6)}
-                          color={Color.veryLightGray}
-                          style={{ position: 'absolute', right: 0 }}
-                        />
-                      </View>
-                      <View style={styles.location_text_view}>
-                        <Icon
-                          name="map-marker-alt"
-                          as={FontAwesome5}
-                          size={moderateScale(14, 0.6)}
-                          color={Color.veryLightGray}
-                          style={{ left: 5 }}
-                        />
-                        <CustomText numberOfLines={1} style={styles.text}>
-                          {rideData?.ride_info?.location_from}
-                        </CustomText>
-                      </View>
-                      <View
-                        style={[
-                          styles.location_text_view,
-                          { marginTop: moderateScale(10, 0.6) },
-                        ]}>
-                        <Icon
-                          name="map-marker-alt"
-                          as={FontAwesome5}
-                          size={moderateScale(14, 0.6)}
-                          color={Color.veryLightGray}
-                          style={{ left: 5 }}
-                        />
-                        <CustomText numberOfLines={1} style={styles.text}>
-                          {rideData?.ride_info?.location_to}
-                        </CustomText>
-                      </View>
-                      <View
-                        style={[
-                          styles.row_view,
-                          { marginTop: moderateScale(10, 0.6) },
-                        ]}>
-                        {/* <TouchableOpacity
+            </View>
+            <View style={styles.location_text_view}>
+              <Icon
+                name="map-marker-alt"
+                as={FontAwesome5}
+                size={moderateScale(14, 0.6)}
+                color={Color.veryLightGray}
+                style={{ left: 5 }}
+              />
+              <CustomText numberOfLines={1} style={styles.text}>
+                {rideData?.ride_info?.location_from}
+              </CustomText>
+            </View>
+            <View
+              style={[
+                styles.location_text_view,
+                { marginTop: moderateScale(10, 0.6) },
+              ]}>
+              <Icon
+                name="map-marker-alt"
+                as={FontAwesome5}
+                size={moderateScale(14, 0.6)}
+                color={Color.veryLightGray}
+                style={{ left: 5 }}
+              />
+              <CustomText numberOfLines={1} style={styles.text}>
+                {rideData?.ride_info?.location_to}
+              </CustomText>
+            </View>
+            <View
+              style={[
+                styles.row_view,
+                { marginTop: moderateScale(10, 0.6) },
+              ]}>
+              {/* <TouchableOpacity
                           // onPress={() => setAdditionalTime(true)}
                           style={[
                             styles.row_view,
@@ -534,114 +476,47 @@ const RideScreen = ({ route }) => {
                             ADD ADDITIONAL TIME
                           </CustomText>
                         </TouchableOpacity> */}
-                        <TouchableOpacity
-                          style={{}}
-                          onPress={() => {
-                            navigationService.navigate(
-                              'ChooseDeclineReasonScreen',
-                              { data: rideData },
-                            );
-                          }}>
-                          <CustomText
-                            onPress={() => {
-                              navigationService.navigate(
-                                'ChooseDeclineReasonScreen',
-                                { data: rideData },
-                              );
-                            }}
-                            style={styles.text2}>
-                            CANCEL RIDE
-                          </CustomText>
-                        </TouchableOpacity>
-                      </View>
-                      <CustomButton
-                        text={'PAY Now'}
-                        fontSize={moderateScale(14, 0.3)}
-                        textColor={Color.white}
-                        borderRadius={moderateScale(30, 0.3)}
-                        width={windowWidth * 0.85}
-                        marginTop={moderateScale(10, 0.3)}
-                        height={windowHeight * 0.07}
-                        bgColor={Color.themeBlack}
-                        textTransform={'capitalize'}
-                        isBold
-                        onPress={() =>
-                          navigationService.navigate('PaymentScreen', {
-                            data: rideData,
-                          })
-                        }
-                      />
-                    </View>
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      width: windowWidth,
-                      height: windowHeight * 0.2,
-                      position: 'absolute',
-                      bottom: 0,
-                    }}>
-                    {isriderArrive && !arrive ? (
-                      <CustomButton
-                        onPress={() => {
-                          setArrive(true);
-                        }}
-                        text={'ARRIVE LOCATION'}
-                        fontSize={moderateScale(14, 0.3)}
-                        textColor={Color.white}
-                        borderRadius={moderateScale(30, 0.3)}
-                        width={windowWidth * 0.85}
-                        marginTop={moderateScale(10, 0.3)}
-                        height={windowHeight * 0.07}
-                        bgColor={Color.darkBlue}
-                        textTransform={'capitalize'}
-                        isBold
-                      />
-                    ) : start_waiting == false ? (
-                      <CustomButton
-                        style={{
-                          position: 'absolute',
-                          bottom: 100,
-                        }}
-                        text={'start waiting'}
-                        fontSize={moderateScale(14, 0.3)}
-                        textColor={Color.white}
-                        borderRadius={moderateScale(30, 0.3)}
-                        width={windowWidth * 0.85}
-                        marginTop={moderateScale(10, 0.3)}
-                        height={windowHeight * 0.07}
-                        bgColor={Color.darkBlue}
-                        textTransform={'capitalize'}
-                        isBold
-                        onPress={() => {
-                          // rideUpdate();
-                          setStartWaiting(true);
-                        }}
-                      />
-                    ) : (
-                      <CustomButton
-                        text={'arrive '}
-                        fontSize={moderateScale(14, 0.3)}
-                        textColor={Color.white}
-                        borderRadius={moderateScale(30, 0.3)}
-                        width={windowWidth * 0.85}
-                        height={windowHeight * 0.07}
-                        bgColor={Color.darkBlue}
-                        borderWidth={1}
-                        borderColor={Color.blue}
-                        textTransform={'capitalize'}
-                        // style={{bottom: 60}}
-                        isBold
-                        onPress={() => setPassengerArrive(true)}
-                      />
-                    )}
-                  </View>
-                )}
-              </>
-            )}
-          </>
-        )}
+              <TouchableOpacity
+                style={{}}
+                onPress={() => {
+                  navigationService.navigate(
+                    'ChooseDeclineReasonScreen',
+                    { data: rideData },
+                  );
+                }}>
+                <CustomText
+                  onPress={() => {
+                    navigationService.navigate(
+                      'ChooseDeclineReasonScreen',
+                      { data: rideData },
+                    );
+                  }}
+                  style={styles.text2}>
+                  CANCEL RIDE
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+            <CustomButton
+              text={'PAY Now'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.85}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.07}
+              bgColor={Color.themeBlack}
+              textTransform={'capitalize'}
+              isBold
+              onPress={() =>
+                navigationService.navigate('PaymentScreen', {
+                  data: rideData,
+                })
+              }
+            />
+          </View>
+        </View>
+
+
       </View>
       <AdditionalTimeModal
         setAdditionalTime={setAdditionalTime}
