@@ -309,7 +309,7 @@ const RideScreen = ({ route }) => {
             }}
           />
         </MapView>
-        {/* <View
+        <View
           style={[
             styles.latest_ride_view,
             {
@@ -319,11 +319,10 @@ const RideScreen = ({ route }) => {
           <View style={styles.latest_ride_subView}>
             <View style={styles.latest_ride_image_view}>
               <CustomImage
-                // source={{uri: `${baseUrl}/${history?.user?.photo}`}}
+                source={require('../Assets/Images/user.png')}
                 style={{
                   width: '100%',
                   height: '100%',
-                  backgroundColor: 'red',
                   borderRadius: windowWidth,
                 }}
               />
@@ -339,10 +338,10 @@ const RideScreen = ({ route }) => {
                   fontSize: moderateScale(13, 0.6),
                   color: Color.black,
                 }}>
-            
-                {rideData?.user?.name}
+
+                {rideData?.ride_info?.rider?.name}
               </CustomText>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <CustomText
                   isBold
                   style={{
@@ -357,7 +356,8 @@ const RideScreen = ({ route }) => {
                     color: Color.veryLightGray,
                     marginLeft: moderateScale(8, 0.6),
                   }}>
-                  {rideData?.status}
+                  {rideData?.ride_info?.status}
+
                 </CustomText>
               </View>
             </View>
@@ -390,7 +390,7 @@ const RideScreen = ({ route }) => {
               />
             </View>
           </View>
-        </View> */}
+        </View>
 
 
 
