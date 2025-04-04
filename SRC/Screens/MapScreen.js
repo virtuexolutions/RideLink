@@ -151,6 +151,7 @@ const MapScreen = props => {
       nearest_cab: nearestcab,
       type: ridedata?.CabType?.name,
       time: ridedata?.time,
+      category :'delivery'
     };
     ridedata?.multiplePickups?.forEach((item, index) => {
       console.log('🚀 ~ ridedata?.multiplePickups?.forEach ~ item:', item);
@@ -160,11 +161,11 @@ const MapScreen = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
+    // return  console.log("🚀 ~ requestforRide ~ response:",formData)
     console.log("🚀 ~ requestforRide ~ body:", formData)
     const url = 'auth/bookride';
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-    console.log("🚀 ~ requestforRide ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setRideID(response?.data.data?.id);
