@@ -279,6 +279,7 @@ const Home = () => {
                 justifyContent: 'center',
               }}
               renderItem={({ item }) => {
+                console.log('itemmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm' , item )
                 return <DeliveryBox data={item} />;
               }}
             />

@@ -125,6 +125,11 @@ const TextInputWithTitle = props => {
                 position: 'absolute',
                 right: moderateScale(10, 0.3),
               },
+
+              props.leftIcon && {
+                position: 'absolute',
+                left: moderateScale(10, 0.3),
+              },
             ]}
             size={moderateScale(17, 0.3)}
             onPress={props.onPressLeft}

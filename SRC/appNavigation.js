@@ -35,6 +35,7 @@ import AddYourCar from './Screens/AddYourCar';
 import History from './Screens/History';
 import ReferFriendScreen from './Screens/ReferFriendScreen';
 import MessagesScreen from './Screens/MessagesScreen';
+import ContactsScreen from './Screens/Contacts';
 // import ReferFriendScreen from './Screens/ReferFriendScreen';
 // import LearningCenter from './Screens/LearningCenter';
 // import PrivacyPolicy from './Screens/PrivacyPolicy';
@@ -89,6 +90,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="AddYourCar" component={AddYourCar} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
+          <RootNav.Screen name="ContactsScreen" component={ContactsScreen} />
+
 
           {/* <RootNav.Screen name="History" component={History} /> */}
           {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}

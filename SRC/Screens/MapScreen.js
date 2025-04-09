@@ -151,7 +151,6 @@ const MapScreen = props => {
       nearest_cab: nearestcab,
       type: ridedata?.CabType?.name,
       time: ridedata?.time,
-      category :'delivery'
     };
     ridedata?.multiplePickups?.forEach((item, index) => {
       console.log('🚀 ~ ridedata?.multiplePickups?.forEach ~ item:', item);

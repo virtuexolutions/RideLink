@@ -25,8 +25,12 @@ import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import navigationService from '../navigationService';
 import {windowHeight, windowWidth} from '../Utillity/utils';
+import RequestForDelivery from '../Components/RequestForDelivery.js';
 
-const RequestScreen = () => {
+const RequestScreen = props => {
+  const data = props?.route?.params?.data;
+  const rbRef = useRef(null);
+  // const [ref, setRef] = useState(null);
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
@@ -242,57 +246,6 @@ const RequestScreen = () => {
     }
   };
 
-  // const nearestRide = async () => {
-  //   const url = 'auth/customer/near_riders_list';
-  //   const response = await Get(url, token);
-  //   if (response != undefined) {
-  //     setNearestRider(response?.data?.data);
-  //   }
-  // };
-
-  // // useEffect(() => {
-  // //   // const riderPosition = nearestRider.watchPosition
-  // //   // this.watchId = navigator.Wa
-  // //   this.watchId = navigator.geolocation.watchPosition(
-  // //         (position) => {
-  // //           const region = regionFrom(
-  // //             position.coords.latitude,
-  // //             position.coords.longitude,
-  // //             position.coords.accuracy
-  // //           );
-  // //           // update the UI
-  // //           this.setState({
-  // //             region: region,
-  // //             accuracy: position.coords.accuracy
-  // //           });
-
-  // //           if(this.state.has_passenger && this.state.passenger){
-  // //             // next: add code for sending driver's current location to passenger
-  // //           }
-  // //         },
-  // //         (error) => this.setState({ error: error.message }),
-  // //         {
-  // //           enableHighAccuracy: true, // allows you to get the most accurate location
-  // //           timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  // //           maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
-  // //           distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-  // //         },
-  // //       );
-  // // }, [])
-
-  // useEffect(() => {
-  //   nearestRide();
-  // }, [isFocused]);
-
-  // const sortedRiders = nearestRider
-  //   ?.map(rider => ({
-  //     ...rider,
-  //     distance: haversine(currentPosition, {
-  //       latitude: nearestRider.lat,
-  //       longitude: nearestRider.lng,
-  //     }),
-  //   }))
-  //   ?.sort((a, b) => a.distance - b.distance);
   const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
 
   const handleMultipleStopsUpdate = updatedStops => {
@@ -483,30 +436,43 @@ const RequestScreen = () => {
               dropLocation != null &&
               pickupLocation != null
             ) {
-              navigationService.navigate('FareScreen', {
-                rideData: {
-                  distance: parseInt(distance),
-                  time: time,
-                  fare: Number(fare),
-                  pickup: origin,
-                  dropoff: destination,
-                  currentPosition: currentPosition,
-                  pickupLocation: pickupLocation,
-                  dropoffLocation: dropLocation,
-                  CabType: cabType,
-                  multiplePickups: multipleLocation,
-                },
-              })
-
+              if (data?.title == 'Ride') {
+                navigationService.navigate('FareScreen', {
+                  rideData: {
+                    distance: parseInt(distance),
+                    time: time,
+                    fare: Number(fare),
+                    pickup: origin,
+                    dropoff: destination,
+                    currentPosition: currentPosition,
+                    pickupLocation: pickupLocation,
+                    dropoffLocation: dropLocation,
+                    CabType: cabType,
+                    multiplePickups: multipleLocation,
+                  },
+                });
+              } else {
+                rbRef.current.open();
+              }
             } else {
               Platform.OS == 'android'
-              ? ToastAndroid.show('required feild is empty ', ToastAndroid.SHORT)
-              : Alert.alert('required feild is empty');
-            
+                ? ToastAndroid.show(
+                    'required feild is empty',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('required feild is empty');
             }
           }}
         />
       </View>
+      <RequestForDelivery
+        rbRef={rbRef}
+        item={{
+          pickupLocation: pickupLocation,
+          dropLocation: dropLocation,
+          fare: fare,
+        }}
+      />
       {/* </ImageBackground> */}
     </SafeAreaView>
   );
