@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, TextInput, View } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
+import {useIsFocused} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
@@ -8,44 +13,16 @@ import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import PaymentMethodCard from '../Components/PaymentMethodCard';
 import navigationService from '../navigationService';
-import { windowHeight, windowWidth } from '../Utillity/utils';
-import { Icon } from 'native-base';
-import Entypo from 'react-native-vector-icons/Entypo';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { useSelector } from 'react-redux';
-import { baseUrl, imageUrl, profilePicUrl } from '../Config';
-import { getDatabase } from '@react-native-firebase/database';
-import { useIsFocused } from '@react-navigation/native';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
-const PassengerDetails = ({ route }) => {
-  const { type, data } = route.params;
-  const rider_arrived_time = route?.params?.rider_arrived_time
+const PassengerDetails = ({route}) => {
+  const {type, data} = route.params;
+  
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isPaymentCom, setPaymentCom] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
-  const { user_type } = useSelector(state => state.authReducer);
-  const [modalVisible, setModalVisible] = useState(false)
-  const [ridedata, setRideData] = useState('')
-
-  // useEffect(() => {
-  //   const reference = getDatabase().ref(`/requests/${rideId}`);
-  //   console.log('🚀 ~ useEffect ~ reference:', reference);
-  //   const listener = reference.on('value', snapshot => {
-  //     if (snapshot.exists()) {
-  //       const data = snapshot.val();
-  //       if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
-  //         // setRideuptedData(data);
-  //         // setModalVisible(true);
-  //         // setStatus(data.status);
-  //       }
-  //     }
-  //   });
-
-  //   return () => reference.off('value', listener);
-  // }, [isFocused]);
-
 
   return (
     <SafeAreaView style={styles.safearea_view}>
@@ -59,7 +36,6 @@ const PassengerDetails = ({ route }) => {
       <View style={styles.main_view}>
         <PaymentMethodCard
           isuserCard
-
           image={data?.user?.photo}
           name={data?.user?.name}
           pickuplocation={data?.location_from}
@@ -91,13 +67,13 @@ const PassengerDetails = ({ route }) => {
                   isBold
                   style={[
                     styles.heading,
-                    { marginLeft: moderateScale(10, 0.6) },
+                    {marginLeft: moderateScale(10, 0.6)},
                   ]}>
                   Booking Time
                 </CustomText>
               </View>
               <CustomText
-                style={[styles.heading, { color: Color.veryLightGray }]}>
+                style={[styles.heading, {color: Color.veryLightGray}]}>
                 03 : 00 pm
               </CustomText>
             </View>
@@ -123,13 +99,13 @@ const PassengerDetails = ({ route }) => {
                   isBold
                   style={[
                     styles.heading,
-                    { marginLeft: moderateScale(10, 0.6) },
+                    {marginLeft: moderateScale(10, 0.6)},
                   ]}>
                   Passenger{' '}
                 </CustomText>
               </View>
               <CustomText
-                style={[styles.heading, { color: Color.veryLightGray }]}>
+                style={[styles.heading, {color: Color.veryLightGray}]}>
                 3 Passengers
               </CustomText>
             </View>
@@ -155,13 +131,13 @@ const PassengerDetails = ({ route }) => {
                   isBold
                   style={[
                     styles.heading,
-                    { marginLeft: moderateScale(10, 0.6) },
+                    {marginLeft: moderateScale(10, 0.6)},
                   ]}>
                   payment Method
                 </CustomText>
               </View>
               <CustomText
-                style={[styles.heading, { color: Color.veryLightGray }]}>
+                style={[styles.heading, {color: Color.veryLightGray}]}>
                 Online
               </CustomText>
             </View>
@@ -208,23 +184,23 @@ const PassengerDetails = ({ route }) => {
                 Payment Method
               </CustomText>
               <CustomText
-                style={[styles.heading, { color: Color.veryLightGray }]}>
+                style={[styles.heading, {color: Color.veryLightGray}]}>
                 **** *** **** 2482
               </CustomText>
               <View style={styles.text_view}>
-                <View style={[styles.text_view, { width: '35%' }]}>
+                <View style={[styles.text_view, {width: '35%'}]}>
                   <CustomText isBold style={styles.heading}>
                     Expires On :
                   </CustomText>
                   <CustomText
-                    style={[styles.heading, { color: Color.veryLightGray }]}>
+                    style={[styles.heading, {color: Color.veryLightGray}]}>
                     12 / 12{' '}
                   </CustomText>
                 </View>
-                <View style={[styles.text_view, { width: '30%' }]}>
+                <View style={[styles.text_view, {width: '30%'}]}>
                   <CustomText
                     isBold
-                    style={[styles.heading, { color: Color.red }]}>
+                    style={[styles.heading, {color: Color.red}]}>
                     $ 50.25
                   </CustomText>
                   {data?.payment_method === 'visa' ? (
@@ -247,7 +223,7 @@ const PassengerDetails = ({ route }) => {
             </View>
 
             <View
-              style={[styles.search_conatiner, { height: windowHeight * 0.1 }]}>
+              style={[styles.search_conatiner, {height: windowHeight * 0.1}]}>
               <CustomText isBold style={styles.heading}>
                 Promo Code
               </CustomText>
@@ -255,7 +231,7 @@ const PassengerDetails = ({ route }) => {
                 editable={false}
                 placeholder="013244879498"
                 placeholderTextColor={Color.veryLightGray}
-                style={{ borderBottomWidth: 0.5 }}
+                style={{borderBottomWidth: 0.5}}
               />
             </View>
             <View style={styles.expensesContainer}>
@@ -280,17 +256,16 @@ const PassengerDetails = ({ route }) => {
                     marginTop: 15,
                   },
                 ]}>
-                <CustomText isBold style={{ fontSize: moderateScale(24, 0.4) }}>
+                <CustomText isBold style={{fontSize: moderateScale(24, 0.4)}}>
                   Total
                 </CustomText>
-                <CustomText isBold style={{ fontSize: moderateScale(24, 0.4) }}>
+                <CustomText isBold style={{fontSize: moderateScale(24, 0.4)}}>
                   {'$ ' + data?.amount}
                 </CustomText>
-                {/* Resolved Design's calculations issues */}
               </View>
             </View>
             <View
-              style={{ position: 'absolute', bottom: moderateScale(70, 0.6) }}>
+              style={{position: 'absolute', bottom: moderateScale(70, 0.6)}}>
               <CustomButton
                 width={windowWidth * 0.9}
                 height={windowHeight * 0.07}
@@ -306,22 +281,10 @@ const PassengerDetails = ({ route }) => {
                 marginBottom={moderateScale(40, 0.6)}
                 isBold
                 onPress={() => {
-                  if (user_type === 'Rider') {
-                    if (type === 'fromDecline') {
-                      navigationService.navigate('GoOnlineScreen');
-                    } else {
-                      navigationService.navigate('RideScreen', {
-                        data: data,
-                        type: 'details',
-                        rider_arrived_time:rider_arrived_time,
-                      });
-                    }
+                  if (isPaymentCom === true) {
+                    navigationService.navigate('MapScreen');
                   } else {
-                    if (isPaymentCom === true) {
-                      navigationService.navigate('MapScreen');
-                    } else {
-                      setPaymentCom(true);
-                    }
+                    setPaymentCom(true);
                   }
                 }}
               />

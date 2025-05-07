@@ -1,8 +1,8 @@
-import { Pusher } from '@pusher/pusher-websocket-react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Icon } from 'native-base';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import {Pusher} from '@pusher/pusher-websocket-react-native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {SafeAreaView} from 'react-native';
 import {
   Actions,
   Bubble,
@@ -11,86 +11,24 @@ import {
   InputToolbar,
   Send,
 } from 'react-native-gifted-chat';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Get, Post } from '../Axios/AxiosInterceptorFunction';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import Header from '../Components/Header';
-import { baseUrl } from '../Config';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import { current } from '@reduxjs/toolkit';
+import {baseUrl} from '../Config';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
-
-const MessagesScreen = ({ route }) => {
+const MessagesScreen = ({route}) => {
   const focused = useIsFocused();
-  const { data } = route.params;
-  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  const {data} = route.params;
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log("🚀 ~ MessagesScreen ~ userData:", userData?.id)
   const token = useSelector(state => state.authReducer.token);
   const pusher = Pusher.getInstance();
   const myChannel = useRef(null);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
   const [messages, setMessages] = useState([]);
-  console.log("🚀 ~ MessagesScreen ~ messages:", messages)
-  const [loading, setIsLoading] = useState(false);
-  const user_type = useSelector(state => state.authReducer.user_type);
-
-  // useEffect(() => {
-  //   console.log('useEffect runs');
-  //   async function connectPusher() {
-  //     try {
-  //       await pusher.init({
-  //         apiKey: '2cbabf5fca8e6316ecfe',
-  //         cluster: 'ap2',
-  //         forceTLS: true,
-  //         encrypted: true,
-  //       });
-
-  //       myChannel.current = await pusher.subscribe({
-  //         channelName: `my-channel-${userData?.id}`,
-  //         onSubscriptionSucceeded: channelName => {
-  //           console.log(`And here are the channel members: ${myChannel}`);
-  //           console.log(
-  //             `Subscribed to ${JSON.stringify(channelName, null, 2)}`,
-  //           );
-  //         },
-  //         onEvent: event => {
-  //           console.log('Got channel event:', event.data);
-  //           try {
-  //             const dataString = JSON.parse(event.data);
-  //             console.log('🚀 ~ Received Message:', dataString?.message);
-  //             if (dataString?.message?.target_id === userData?.id) {
-  //               setMessages(previousMessages =>
-  //                 GiftedChat.append(previousMessages, dataString?.message),
-  //               );
-  //             }
-  //           } catch (error) {
-  //             console.error('Error parsing event data:', error);
-  //           }
-  //         },
-  //       });
-  //       await pusher.connect();
-  //       console.log('Pusher Connection State:', pusher.connectionState);
-  //     } catch (e) {
-  //       console.log(`ERROR: ${e}`);
-  //     }
-  //   }
-  //   // connectPusher();
-  //   getChatListingData();
-  //   if (pusher.connectionState == 'DISCONNECTED') {
-  //     connectPusher();
-  //   }
-  //   return async () => {
-  //     await pusher.unsubscribe({ channelName: `my-channel-${userData?.id}` });
-  //   };
-  // }, [focused]);
-
 
   useEffect(() => {
     const connectPusher = async () => {
@@ -106,55 +44,57 @@ const MessagesScreen = ({ route }) => {
         console.log('Pusher Connected!');
         myChannel.current = await pusher.subscribe({
           channelName: `my-channel-${userData?.id}`,
-          onSubscriptionSucceeded: (channelName) => {
+          onSubscriptionSucceeded: channelName => {
             console.log(`Subscribed to ${channelName}`);
           },
-          onEvent: (event) => {
+          onEvent: event => {
             console.log('Received Event:', event);
             try {
               const dataString = JSON.parse(event.data);
-              console.log('🚀 ~ Message:', dataString?.message);
               if (!dataString?.message?._id) {
-                dataString.message._id = Math.random().toString(36).substring(7);
+                dataString.message._id = Math.random()
+                  .toString(36)
+                  .substring(7);
               }
               if (dataString?.message?.target_id === userData?.id) {
-                getChatListingData()
+                getChatListingData();
                 setMessages(previousMessages =>
                   GiftedChat.append(previousMessages, dataString?.message),
                 );
               }
-              console.log('Pusher Connection State:', pusher.connectionState.state);
+              console.log(
+                'Pusher Connection State:',
+                pusher.connectionState.state,
+              );
             } catch (error) {
               console.error('Error parsing event data:', error);
             }
           },
         });
-
       } catch (error) {
         console.error('Pusher Connection Error:', error);
       }
-      getChatListingData()
+      getChatListingData();
     };
 
     connectPusher();
 
     return () => {
       if (myChannel.current) {
-        pusher.unsubscribe({ channelName: `my-channel-${userData?.id}` });
+        pusher.unsubscribe({channelName: `my-channel-${userData?.id}`});
       }
     };
   }, [focused]);
 
-
   const startChat = async body => {
-    console.log('🚀 ~ startChat ~ body:', body);
     const url = 'auth/send_message';
     try {
       const response = await Post(url, body, apiHeader(token));
-      console.log("🚀 ~ API Response:", response?.data);
-
       if (!response || response.error) {
-        console.error('Send Message API Error:', response?.error || 'No response');
+        console.error(
+          'Send Message API Error:',
+          response?.error || 'No response',
+        );
       }
     } catch (error) {
       console.error('Send Message API Failed:', error);
@@ -167,7 +107,6 @@ const MessagesScreen = ({ route }) => {
     setIsLoading(true);
     try {
       const response = await Get(url, token);
-      console.log('🚀 ~ getChatListingData ~ response:', response?.data?.data);
       if (!response?.data?.data) {
         console.error('No chat data found.');
         return;
@@ -202,7 +141,6 @@ const MessagesScreen = ({ route }) => {
           avatar: baseUrl + userData?.photo,
         },
       };
-      console.log("🚀 ~ Sending Message:", newMessage);
       setMessages(previousMessages =>
         GiftedChat.append(previousMessages, newMessage),
       );
@@ -212,11 +150,11 @@ const MessagesScreen = ({ route }) => {
         ...newMessage,
       });
     },
-    [messages]
+    [messages],
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Color.white }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: Color.white}}>
       <Header headerColor={['white', 'white']} title={'Chat'} showBack={true} />
       <GiftedChat
         textInputStyle={{
@@ -289,7 +227,7 @@ const MessagesScreen = ({ route }) => {
                 marginHorizontal: moderateScale(6, 0.6),
                 borderRadius: moderateScale(12, 0.6),
                 bottom: 10,
-                marginTop: moderateScale(15, 0.6)
+                marginTop: moderateScale(15, 0.6),
               }}>
               <Composer
                 {...props}
@@ -309,7 +247,7 @@ const MessagesScreen = ({ route }) => {
               containerStyle={{
                 left: {
                   paddingVertical: moderateScale(10, 0.6),
-                }
+                },
               }}
               wrapperStyle={{
                 left: {
@@ -330,7 +268,7 @@ const MessagesScreen = ({ route }) => {
                   borderBottomLeftRadius: 10,
                   borderBottomRightRadius: 10,
                   backgroundColor: Color.blue,
-                  paddingVertical: moderateScale(8, 0.5)
+                  paddingVertical: moderateScale(8, 0.5),
                 },
               }}
               textStyle={{
@@ -339,7 +277,6 @@ const MessagesScreen = ({ route }) => {
                 },
                 left: {
                   color: 'black',
-
                 },
               }}></Bubble>
           );
@@ -407,7 +344,7 @@ const styles = ScaledSheet.create({
   },
   userName: {
     fontWeight: 'bold',
-    color: '#007aff', // Adjust color for the name
+    color: '#007aff', 
   },
   messageText: {
     color: '#333333',

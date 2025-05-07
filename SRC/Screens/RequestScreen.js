@@ -1,6 +1,5 @@
 import {useIsFocused} from '@react-navigation/native';
 import {getDistance, isValidCoordinate} from 'geolib';
-import haversine from 'haversine';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
@@ -18,19 +17,18 @@ import MapViewDirections from 'react-native-maps-directions';
 import {moderateScale} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get} from '../Axios/AxiosInterceptorFunction';
 import AskLocation from '../Components/AskLocation';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
+import RequestForDelivery from '../Components/RequestForDelivery.js';
 import navigationService from '../navigationService';
 import {windowHeight, windowWidth} from '../Utillity/utils';
-import RequestForDelivery from '../Components/RequestForDelivery.js';
 
 const RequestScreen = props => {
   const data = props?.route?.params?.data;
+  console.log("🚀 ~ data:", data)
   const rbRef = useRef(null);
-  // const [ref, setRef] = useState(null);
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
@@ -58,13 +56,11 @@ const RequestScreen = props => {
     },
   ];
 
-  const locationPermission = useSelector(state => state.commonReducer.location);
   const [cabType, setCabType] = useState(null);
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropLocation, setDropLocation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
-  const [completePayment, setCompletePayment] = useState(false);
   const [fare, setFare] = useState(0);
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
@@ -74,9 +70,7 @@ const RequestScreen = props => {
     latitude: 0,
     longitude: 0,
   });
-  const [points, setPoints] = useState({});
   const [multipleLocation, setMultipleLocation] = useState([]);
-  const [nearestRider, setNearestRider] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
@@ -107,13 +101,8 @@ const RequestScreen = props => {
     4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
   };
 
-  // useEffect(() => {
-  //   requestLocationPermission();
-  // }, [isFocused]);
-
   useEffect(() => {
     getCurrentLocation();
-    // getcabsData()
   }, [isFocused]);
   const getCurrentLocation = async () => {
     try {
@@ -194,8 +183,7 @@ const RequestScreen = props => {
       setFare(calculatedFare);
       setDistance(km);
       const getTravelTime = async () => {
-        // const apikey ='AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
         try {
           const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
           const response = await fetch(url);
@@ -246,7 +234,7 @@ const RequestScreen = props => {
     }
   };
 
-  const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+  const apikey = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
 
   const handleMultipleStopsUpdate = updatedStops => {
     setMultipleLocation(updatedStops);
@@ -274,7 +262,7 @@ const RequestScreen = props => {
           </>
         )}
 
-        {multipleLocation.map((stop, index) => (
+        {multipleLocation?.map((stop, index) => (
           <Marker
             key={index}
             coordinate={{latitude: stop.lat, longitude: stop.lng}}
@@ -296,11 +284,7 @@ const RequestScreen = props => {
           strokeWidth={6}
           apikey={apikey}
           optimizeWaypoints={false}
-          onStart={params => {
-            // console.log(
-            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            // );
-          }}
+          onStart={params => {}}
           onError={e => {
             console.log('map vview direction erorrrrrrrrrrrrrr', e);
           }}
@@ -316,27 +300,7 @@ const RequestScreen = props => {
             });
           }}
         />
-        {/* {sortedRiders?.map((item, index) => (
-          <Marker
-            coordinate={{
-              latitude: parseFloat(item?.lat),
-              longitude: parseFloat(item?.lng),
-            }}>
-            <View
-              style={{
-                width: windowWidth * 0.09,
-                height: windowHeight * 0.035,
-              }}>
-              <CustomImage
-                style={{
-                  height: '100%',
-                  width: '100%',
-                }}
-                source={require('../Assets/Images/car_icon.png')}
-              />
-            </View>
-          </Marker>
-        ))} */}
+
         {destination != null &&
           Object.keys(destination)?.length > 0 &&
           isValidCoordinate(destination) && (
@@ -436,7 +400,7 @@ const RequestScreen = props => {
               dropLocation != null &&
               pickupLocation != null
             ) {
-              if (data?.title == 'Ride') {
+              if (data?.title == 'ride') {
                 navigationService.navigate('FareScreen', {
                   rideData: {
                     distance: parseInt(distance),
@@ -448,6 +412,7 @@ const RequestScreen = props => {
                     pickupLocation: pickupLocation,
                     dropoffLocation: dropLocation,
                     CabType: cabType,
+                    data : data,
                     multiplePickups: multipleLocation,
                   },
                 });
@@ -471,6 +436,7 @@ const RequestScreen = props => {
           pickupLocation: pickupLocation,
           dropLocation: dropLocation,
           fare: fare,
+          data : data
         }}
       />
       {/* </ImageBackground> */}

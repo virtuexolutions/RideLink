@@ -23,6 +23,7 @@ import {useSelector} from 'react-redux';
 
 const FareScreen = props => {
   const ridedata = props?.route?.params?.rideData;
+  console.log("🚀 ~ ridedata:aaaaaaaaaaaaaaaaaaaaaaa", ridedata)
   const [paymentMethod, setPaymentMethod] = useState('Card');
   const [isEnabled, setIsEnabled] = useState(false);
   const [isPaymentCom, setPaymentCom] = useState(false);

@@ -1,44 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import navigationService from './navigationService';
-import { useSelector } from 'react-redux';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
+import {enableScreens} from 'react-native-screens';
+import {moderateScale} from 'react-native-size-matters';
+import {useSelector} from 'react-redux';
 import Drawer from './Drawer/Drawer';
-import LoginScreen from './Screens/LoginScreen';
-import Signup from './Screens/Signup';
-import VerifyNumber from './Screens/VerifyNumber';
+import navigationService from './navigationService';
 import ChangePassword from './Screens/ChangePassword';
-import ResetPassword from './Screens/ResetPassword';
-import VerifyEmail from './Screens/VerifyEmail';
-import WalkThroughScreen from './Screens/WalkthroughScreen';
-import Start from './Screens/Start';
-import RequestScreen from './Screens/RequestScreen';
-import FareScreen from './Screens/FareScreen';
-import MapScreen from './Screens/MapScreen';
-import RideScreen from './Screens/RideScreen';
-import PaymentScreen from './Screens/PaymentScreen';
-import Home from './Screens/Home';
-import RateScreen from './Screens/RateScreen';
-import RideRequest from './Screens/RideRequest';
-import PassengerDetails from './Screens/PassengerDetails';
-import GoOnlineScreen from './Screens/GoOnlineScreen';
-import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
-import { moderateScale } from 'react-native-size-matters';
-import Walletscreen from './Screens/Walletscreen';
-import Earningsscreen from './Screens/Earningsscreen';
 import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
-import Profile from './Screens/Profile';
-import { enableScreens } from 'react-native-screens';
-import MyWallet from './Screens/MyWallet';
-import AddYourCar from './Screens/AddYourCar';
+import Earningsscreen from './Screens/Earningsscreen';
+import FareScreen from './Screens/FareScreen';
+import GoOnlineScreen from './Screens/GoOnlineScreen';
 import History from './Screens/History';
-import ReferFriendScreen from './Screens/ReferFriendScreen';
+import Home from './Screens/Home';
+import LoginScreen from './Screens/LoginScreen';
+import MapScreen from './Screens/MapScreen';
 import MessagesScreen from './Screens/MessagesScreen';
-import ContactsScreen from './Screens/Contacts';
-// import ReferFriendScreen from './Screens/ReferFriendScreen';
-// import LearningCenter from './Screens/LearningCenter';
-// import PrivacyPolicy from './Screens/PrivacyPolicy';
+import MyWallet from './Screens/MyWallet';
+import ParcelTrackingScreen from './Screens/ParcelTrackingScreen';
+import PassengerDetails from './Screens/PassengerDetails';
+import PaymentScreen from './Screens/PaymentScreen';
+import Profile from './Screens/Profile';
+import RateScreen from './Screens/RateScreen';
+import ReferFriendScreen from './Screens/ReferFriendScreen';
+import RequestScreen from './Screens/RequestScreen';
+import ResetPassword from './Screens/ResetPassword';
+import RideRequest from './Screens/RideRequest';
+import RideScreen from './Screens/RideScreen';
+import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
+import Signup from './Screens/Signup';
+import Start from './Screens/Start';
+import VerifyEmail from './Screens/VerifyEmail';
+import VerifyNumber from './Screens/VerifyNumber';
+import WalkThroughScreen from './Screens/WalkthroughScreen';
+import Walletscreen from './Screens/Walletscreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -49,26 +45,20 @@ const AppNavigator = () => {
   const token = useSelector(state => state.authReducer.token);
 
   const RootNav = createNativeStackNavigator();
-  // const RootNavLogged = createNativeStackNavigator();
-
-
-  //chnges 
 
   const AppNavigatorContainer = () => {
     const firstScreen =
       walkThrough == false
         ? 'WalkThroughScreen'
         : token == null
-          ? 'LoginScreen'
-          : 'MyDrawer';
+        ? 'LoginScreen'
+        : 'MyDrawer';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
           initialRouteName={firstScreen}
-          // initialRouteName={'Walletscreen'}
-          // initialRouteName={'RateScreen'}
-          screenOptions={{ headerShown: false }}>
+          screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen
             name="WalkThroughScreen"
@@ -88,11 +78,11 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
-          <RootNav.Screen name="AddYourCar" component={AddYourCar} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
-          <RootNav.Screen name="ContactsScreen" component={ContactsScreen} />
-
-
+          <RootNav.Screen
+            name="ParcelTrackingScreen"
+            component={ParcelTrackingScreen}
+          />
           {/* <RootNav.Screen name="History" component={History} /> */}
           {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
           {/* <RootNav.Screen
@@ -104,9 +94,7 @@ const AppNavigator = () => {
             name="ReferFriendScreen"
             component={ReferFriendScreen}
           /> */}
-
           <RootNav.Screen name="MyWallet" component={MyWallet} />
-
           <RootNav.Screen
             name="PassengerDetails"
             component={PassengerDetails}
@@ -120,7 +108,6 @@ const AppNavigator = () => {
             name="ChooseDeclineReasonScreen"
             component={ChooseDeclineReasonScreen}
           />
-          {/* <RootNav.Screen name="LearningCenter" component={LearningCenter} /> */}
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -258,7 +245,6 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
       <DrawerNavigation.Screen name="History" component={History} />
-      <DrawerNavigation.Screen name="AddYourCar" component={AddYourCar} />
       <DrawerNavigation.Screen
         name="ReferFriendScreen"
         component={ReferFriendScreen}

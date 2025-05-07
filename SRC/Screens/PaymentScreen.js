@@ -1,28 +1,28 @@
+import {CardField, createToken} from '@stripe/stripe-react-native';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Platform,
   SafeAreaView,
   StyleSheet,
-  Text,
+  ToastAndroid,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import Header from '../Components/Header';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import PaymentMethodCard from '../Components/PaymentMethodCard';
-import CreditCardComponent from '../Components/CreditCardComponent';
-import CustomText from '../Components/CustomText';
-import CustomButton from '../Components/CustomButton';
-import navigationService from '../navigationService';
-import {CardField, createToken} from '@stripe/stripe-react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {moderateScale} from 'react-native-size-matters';
+import Color from '../Assets/Utilities/Color';
+import CustomButton from '../Components/CustomButton';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
+import PaymentMethodCard from '../Components/PaymentMethodCard';
+import navigationService from '../navigationService';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const PaymentScreen = props => {
   const data = props?.route?.params?.data;
   const [loading, setLoading] = useState(false);
   const [stripeToken, setStripeToken] = useState(null);
-
   const strpieToken = async () => {
     setLoading(true);
     const responsetoken = await createToken({
@@ -40,18 +40,21 @@ const PaymentScreen = props => {
       <View style={styles.main_view}>
         <PaymentMethodCard
           fare={data?.ride_info?.amount}
-          paymentMethod={data?.ride_info?.payment_method}
-          isEnabled={data?.ride_info?.nearest_cab}
+          // paymentMethod={'card'}
+          paymentMethod={
+            // data?.ride_info?.type.toLowerCase() == 'delivery'
+            // ?
+            data?.ride_info?.payment_method
+            // : ''
+          }
+          isEnabled={true}
         />
-        {/* <CreditCardComponent /> */}
+
         <LinearGradient
-          colors={['#1f1f1f', '#cfcfcf']} // Adjust these colors for a closer match
+          colors={['#1f1f1f', '#cfcfcf']}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
-          style={styles.addcard}
-          // style={styles.modal}
-        >
-          {/* <View style={styles.modal}> */}
+          style={styles.addcard}>
           <View style={styles.header}>
             <CustomText
               style={{
@@ -68,13 +71,11 @@ const PaymentScreen = props => {
             placeholders={{
               number: '4242 4242 4242 4242',
             }}
-            // placeholdersColor={'black'}
             cardStyle={{
               backgroundColor: Color.white,
               borderRadius: moderateScale(15, 0.6),
               width: windowWidth * 0.5,
               borderRadius: moderateScale(35, 0.6),
-              // placeholderColor:'red',
               textColor: 'black',
               placeholderColor: Color.darkGray,
             }}
@@ -104,11 +105,9 @@ const PaymentScreen = props => {
             fontSize={moderateScale(14, 0.3)}
             textTransform={'uppercase'}
             bgColor={'white'}
-            // isGradient={true}
             isBold
             disabled={loading}
           />
-          {/* </View> */}
         </LinearGradient>
 
         <CustomText isBold style={styles.heading}>
@@ -148,7 +147,13 @@ const PaymentScreen = props => {
           text={'PAY NOW'}
           marginTop={moderateScale(25, 0.6)}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={() => navigationService.navigate('RateScreen', {data: data})}
+          onPress={() =>
+            stripeToken == null
+              ? Platform.OS == 'android'
+                ? ToastAndroid.show(' Add Card', ToastAndroid.SHORT)
+                : Alert.alert(' Add Card')
+              : navigationService.navigate('RateScreen', {data: data})
+          }
         />
       </View>
     </SafeAreaView>

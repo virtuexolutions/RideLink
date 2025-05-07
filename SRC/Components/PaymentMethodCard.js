@@ -8,7 +8,7 @@ import CustomImage from './CustomImage';
 import CustomButton from './CustomButton';
 import {Icon} from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { baseUrl } from '../Config';
+import {baseUrl} from '../Config';
 
 const PaymentMethodCard = ({
   isuserCard,
@@ -26,6 +26,7 @@ const PaymentMethodCard = ({
   setIsEnabled,
   isEnabled,
 }) => {
+  console.log('🚀 ~ paymentMethod:', paymentMethod);
   const [isPaymentCom, setPaymentCom] = useState(false);
   // const [paymentMethod, setPaymentMethod] = useState('Card');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -38,7 +39,10 @@ const PaymentMethodCard = ({
             <View style={styles.image_view}>
               {/* <CustomImage style={styles.image} source={require('../Assets/Images/ridelink.png')}
               /> */}
-              <CustomImage style={styles.image} source={{uri:`${baseUrl}/${image}`}} />
+              <CustomImage
+                style={styles.image}
+                source={{uri: `${baseUrl}/${image}`}}
+              />
             </View>
             <CustomText
               isBold
@@ -131,15 +135,18 @@ const PaymentMethodCard = ({
       ) : (
         <>
           <CustomText style={styles.price}>
-            <CustomText style={{
-            }}>Fare : </CustomText>{`$${fare}`}</CustomText>
+            <CustomText style={{}}>Fare : </CustomText>
+            {`$${fare}`}
+          </CustomText>
           <CustomText style={styles.text}>Payment Method</CustomText>
           <View style={styles.payment_view}>
             <View style={styles.payment_subview}>
               <TouchableOpacity
-                onPress={() => setPaymentMethod('Card')}
+                onPress={() => setPaymentMethod('card')}
                 style={styles.check_box}>
-                {paymentMethod === 'Card' && <View style={styles.dot} />}
+                {paymentMethod.toLowerCase() === 'card' && (
+                  <View style={styles.dot} />
+                )}
               </TouchableOpacity>
               <CustomText style={styles.sub_text}>Credit Card</CustomText>
             </View>
@@ -251,7 +258,7 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.15,
     borderRadius: windowHeight,
     // backgroundColor :'green' ,
-    overflow :'hidden', 
+    overflow: 'hidden',
   },
   image: {
     width: '100%',

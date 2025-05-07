@@ -15,7 +15,6 @@ import CustomText from './CustomText';
 const Userbox = ({data, onPress, onPressDetails}) => {
   const userData = useSelector(state => state.commonReducer.userData);
 
-  const {user_type} = useSelector(state => state.authReducer);
   return (
     <TouchableOpacity onPress={onPress} style={styles.details_Style}>
       <View style={styles.text_Style}>
@@ -37,15 +36,8 @@ const Userbox = ({data, onPress, onPressDetails}) => {
           {moment(data?.created_at).format('LT')}
         </CustomText>
       </View>
-      {/* <View style={{flexDirection:'row'}}> */}
-      <View
-        style={[
-          styles.locationStyle,
-          user_type == 'Rider' && {
-            marginLeft: moderateScale(10, 0.6),
-          },
-        ]}>
-        <View style={{flexDirection: 'row', left: moderateScale(2, 0.6)}}>
+      <View style={styles.locationStyle}>
+        <View style={styles.row_con}>
           <View style={styles.fromLocationStyle}>
             <View style={styles.toLocationStyle}></View>
           </View>
@@ -86,56 +78,18 @@ const Userbox = ({data, onPress, onPressDetails}) => {
           </CustomText>
         </View>
       </View>
-      {user_type == 'Rider' && (
-        <View style={styles.row}>
-          <View style={styles.priceView}>
-            <CustomText isBold style={styles.txt}>
-              price :
-            </CustomText>
-            <CustomText style={styles.txt}>{`${data?.amount} $`}</CustomText>
-          </View>
-          <View style={styles.priceView}>
-            <CustomText isBold style={styles.txt}>
-              distance :
-            </CustomText>
-            <CustomText
-              style={[
-                styles.txt,
-                {
-                  marginHorizontal: moderateScale(5, 0.3),
-                },
-              ]}>
-              {data?.distance}
-            </CustomText>
-          </View>
-        </View>
-      )}
       <View style={styles.buttonBox}>
         <CustomButton
-          text={'Details'}
+          text={'tracking'}
           fontSize={moderateScale(14, 0.3)}
-          textColor={user_type != 'Rider' ? Color.themeDarkGray : Color.white}
+          textColor={Color.white}
           borderRadius={moderateScale(30, 0.3)}
-          width={user_type != 'Rider' ? windowWidth * 0.39 : windowWidth * 0.8}
-          //   marginTop={moderateScale(10,.3)}
+          width={windowWidth * 0.8}
           height={windowHeight * 0.06}
-          bgColor={user_type != 'Rider' ? Color.white : Color.black}
+          bgColor={Color.black}
           textTransform={'capitalize'}
           onPress={onPressDetails}
         />
-        {user_type != 'Rider' && (
-          <CustomButton
-            text={'History'}
-            fontSize={moderateScale(14, 0.3)}
-            textColor={Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.39}
-            //   marginTop={moderateScale(10,.3)}
-            height={windowHeight * 0.06}
-            bgColor={Color.themeBlack}
-            textTransform={'capitalize'}
-          />
-        )}
       </View>
     </TouchableOpacity>
   );
@@ -146,9 +100,8 @@ export default Userbox;
 const styles = StyleSheet.create({
   details_Style: {
     width: windowWidth * 0.88,
-    height: windowHeight * 0.28,
+    height: windowHeight * 0.26,
     borderRadius: moderateScale(17, 0.6),
-    // backgroundColor:'green',
     borderRadius: moderateScale(17, 0.6),
     borderWidth: 1.8,
     borderColor: Color.boxgrey,
@@ -166,7 +119,6 @@ const styles = StyleSheet.create({
   text_Style: {
     flexDirection: 'row',
     alignItems: 'center',
-    // backgroundColor:'green'
   },
   fromLocationStyle: {
     width: windowWidth * 0.038,
@@ -181,11 +133,8 @@ const styles = StyleSheet.create({
     height: windowWidth * 0.02,
     borderRadius: (windowWidth * 0.02) / 2,
     backgroundColor: Color.white,
-    // left:moderateScale(2,0.6)
   },
   locationStyle: {
-    // backgroundColor:'green',
-    // alignItems:'center',
     width: windowWidth * 0.55,
     height: windowHeight * 0.08,
     marginLeft: moderateScale(40, 0.6),
@@ -196,24 +145,14 @@ const styles = StyleSheet.create({
     gap: moderateScale(5, 0.6),
     alignSelf: 'center',
     marginTop: moderateScale(10, 0.6),
-    // backgroundColor:'green',
-    // paddingHorizontal:moderateScale(10,0.6)
   },
-  priceView: {
-    flexDirection: 'row',
-    marginLeft: moderateScale(17, 0.6),
-  },
+
   row: {
     flexDirection: 'row',
-  },
-  txt: {
-    fontSize: moderateScale(12, 0.6),
-    color: Color.themeDarkGray,
   },
   container: {
     width: windowWidth * 0.55,
     marginLeft: moderateScale(20, 0.6),
-    // backgroundColor : 'red'
   },
   h1: {fontSize: moderateScale(20, 0.6), color: Color.themeBlack},
   status: {
@@ -225,4 +164,5 @@ const styles = StyleSheet.create({
     color: Color.themeDarkGray,
     marginLeft: moderateScale(-10, 0.6),
   },
+  row_con: {flexDirection: 'row', left: moderateScale(2, 0.6)},
 });

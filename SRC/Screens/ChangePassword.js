@@ -28,7 +28,6 @@ import { Post } from '../Axios/AxiosInterceptorFunction';
 const ChangePassword = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const { user_type } = useSelector(state => state.authReducer);
   const token = useSelector(state => state.authReducer.token);
 
   const handleReset = async values => {

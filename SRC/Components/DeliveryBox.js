@@ -1,31 +1,21 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useRef, useState} from 'react';
-import CustomImage from './CustomImage';
-import {
-  height,
-  resizeMode,
-} from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
-import {position} from 'native-base/lib/typescript/theme/styled-system';
-import CustomText from './CustomText';
 import navigationService from '../navigationService';
-import RequestForDelivery from './RequestForDelivery.js';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import CustomImage from './CustomImage';
+import CustomText from './CustomText';
 
 const DeliveryBox = ({data}) => {
-  const [focused, setFocused] = useState('');
-  const [isvisibleModal, setIsvisibleModal] = useState(false);
+  console.log("🚀 ~ DeliveryBox ~ data:", data)
   return (
     <>
       <TouchableOpacity
-        // disabled={data?.title == 'Ride' ? false : true}
         onPress={() => {
-         navigationService.navigate('RequestScreen', {
-                data: data,
-              })
-           
-          // setIsvisibleModal(true);
+          navigationService.navigate('RequestScreen', {
+            data: data,
+          });
         }}
         style={[
           styles.box,
@@ -46,10 +36,9 @@ const DeliveryBox = ({data}) => {
           ]}>
           <CustomImage
             onPress={() => {
-               navigationService.navigate('RequestScreen', {
-                    data: data,
-                  })
-                
+              navigationService.navigate('RequestScreen', {
+                data: data,
+              });
             }}
             style={{height: '100%', width: '100%', resizeMode: 'contain'}}
             source={data.image}
@@ -78,17 +67,12 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.08,
     width: windowWidth * 0.23,
     position: 'absolute',
-
     bottom: moderateScale(10, 0.6),
-    // backgroundColor: 'red',
   },
   imageFocused: {
     height: windowHeight * 0.08,
     width: windowWidth * 0.23,
     position: 'absolute',
-
-    // bottom:moderateScale(3,0.6),
-    // backgroundColor: 'red',
   },
   box: {
     width: windowWidth * 0.3,
