@@ -24,6 +24,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const RideScreen = ({route}) => {
   const {data, type} = route?.params;
+  console.log("🚀 ~ data:", data)
   const rideData = route?.params?.data;
 
   const isFocused = useIsFocused();
@@ -50,11 +51,13 @@ const RideScreen = ({route}) => {
   };
   const destination = {
     lat:
-      type === 'details' ? parseFloat(data?.pickup_location_lat) : 37.43312021,
-    // : parseFloat(data?.ride_info?.rider?.lat),
+      type === 'details'
+        ? parseFloat(data?.pickup_location_lat)
+        : parseFloat(data?.ride_info?.rider?.lat),
     lng:
-      type === 'details' ? parseFloat(data?.pickup_location_lng) : -122.0876855,
-    // : parseFloat(data?.ride_info?.rider?.lng),
+      type === 'details'
+        ? parseFloat(data?.pickup_location_lng)
+        : parseFloat(data?.ride_info?.rider?.lng),
   };
 
   useEffect(() => {

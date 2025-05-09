@@ -31,6 +31,7 @@ const RideRequest = ({route}) => {
   const [arrive, setArrive] = useState(false);
   const [decline, setDecline] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [distance, setDistance] = useState('');
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -188,13 +189,22 @@ const RideRequest = ({route}) => {
             coordinate={origin}
             style={{width: 15, height: 10}}
             pinColor={Color.red}></Marker>
-          <MapViewDirections
-            origin={origin}
-            destination={destination}
-            strokeColor={Color.themeBlack}
-            strokeWidth={10}
-            apikey="AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8"
-          />
+          {!['', null, undefined].includes(origin) &&
+            !['', null, undefined].includes(destination) && (
+              <MapViewDirections
+                origin={origin}
+                destination={destination}
+                strokeColor={Color.themeBlack}
+                strokeWidth={10}
+                apikey="AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8"
+                onError={errorMessage => {
+                  console.log(
+                    'MapViewDirections error hereeeeeeeeeeeeeee:',
+                    errorMessage,
+                  );
+                }}
+              />
+            )}
           <Marker
             coordinate={destination}
             style={{width: 15, height: 10}}

@@ -55,7 +55,7 @@ const Home = () => {
     const url = `auth/customer/ride_list?type[0]=${activebutton}`;
     setHistoryLoading(true);
     const response = await Get(url, token);
-  //  return  console.log("🚀 ~ userRequestHistory ~ response:", response?.data)
+    //  return  console.log("🚀 ~ userRequestHistory ~ response:", response?.data)
     setHistoryLoading(false);
     if (response != undefined) {
       setHistoryList(response?.data?.ride_info);
@@ -189,9 +189,13 @@ const Home = () => {
                   <Userbox
                     data={item?.ride_info}
                     onPressDetails={() => {
-                      navigationService.navigate('ParcelTrackingScreen', {
-                        data: item?.ride_info,
-                      });
+                      activebutton === 'ride'
+                        ? navigationService.navigate('RideScreen', {
+                            data: item?.ride_info,
+                          })
+                        : navigationService.navigate('ParcelTrackingScreen', {
+                            data: item,
+                          });
                     }}
                   />
                 );

@@ -27,7 +27,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const RequestScreen = props => {
   const data = props?.route?.params?.data;
-  console.log("🚀 ~ data:", data)
+  console.log('🚀 ~ data:', data);
   const rbRef = useRef(null);
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
@@ -274,33 +274,34 @@ const RequestScreen = props => {
             pinColor={Color.black}
           />
         ))}
-
-        <MapViewDirections
-          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
-          origin={origin}
-          waypoints={waypoints}
-          destination={destination}
-          strokeColor={Color.black}
-          strokeWidth={6}
-          apikey={apikey}
-          optimizeWaypoints={false}
-          onStart={params => {}}
-          onError={e => {
-            console.log('map vview direction erorrrrrrrrrrrrrr', e);
-          }}
-          tappable={true}
-          onReady={result => {
-            mapRef.current.fitToCoordinates(result.coordinates, {
-              edgePadding: {
-                right: 50,
-                left: 50,
-                top: 300,
-                bottom: 100,
-              },
-            });
-          }}
-        />
-
+        {!['', null, undefined].includes(origin) &&
+          !['', null, undefined].includes(destination) && (
+            <MapViewDirections
+              key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
+              origin={origin}
+              waypoints={waypoints}
+              destination={destination}
+              strokeColor={Color.black}
+              strokeWidth={6}
+              apikey={apikey}
+              optimizeWaypoints={false}
+              onStart={params => {}}
+              onError={e => {
+                console.log('map vview direction erorrrrrrrrrrrrrr', e);
+              }}
+              tappable={true}
+              onReady={result => {
+                mapRef.current.fitToCoordinates(result.coordinates, {
+                  edgePadding: {
+                    right: 50,
+                    left: 50,
+                    top: 300,
+                    bottom: 100,
+                  },
+                });
+              }}
+            />
+          )}
         {destination != null &&
           Object.keys(destination)?.length > 0 &&
           isValidCoordinate(destination) && (
@@ -412,7 +413,7 @@ const RequestScreen = props => {
                     pickupLocation: pickupLocation,
                     dropoffLocation: dropLocation,
                     CabType: cabType,
-                    data : data,
+                    data: data,
                     multiplePickups: multipleLocation,
                   },
                 });
@@ -436,7 +437,7 @@ const RequestScreen = props => {
           pickupLocation: pickupLocation,
           dropLocation: dropLocation,
           fare: fare,
-          data : data
+          data: data,
         }}
       />
       {/* </ImageBackground> */}
