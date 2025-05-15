@@ -35,6 +35,8 @@ import VerifyEmail from './Screens/VerifyEmail';
 import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
 import Walletscreen from './Screens/Walletscreen';
+import TrackingScreen from './Screens/TrackingScreen';
+import PlaceholderScreen from './Screens/PlaceholderScreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -65,6 +67,10 @@ const AppNavigator = () => {
             component={WalkThroughScreen}
           />
           <RootNav.Screen name="Start" component={Start} />
+          <RootNav.Screen
+            name="PlaceholderScreen"
+            component={PlaceholderScreen}
+          />
           <RootNav.Screen name="LoginScreen" component={LoginScreen} />
           <RootNav.Screen name="FareScreen" component={FareScreen} />
           <RootNav.Screen name="VerifyEmail" component={VerifyEmail} />
@@ -79,6 +85,9 @@ const AppNavigator = () => {
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
+          <RootNav.Screen name="TrackingScreen" component={TrackingScreen} />
+          <RootNav.Screen name="Home" component={Home} />
+
           <RootNav.Screen
             name="ParcelTrackingScreen"
             component={ParcelTrackingScreen}
@@ -221,11 +230,11 @@ const AppNavigator = () => {
 
 export const MyDrawer = () => {
   const DrawerNavigation = createDrawerNavigator();
-  const firstScreen = 'HomeScreen';
+  const firstScreen = 'PlaceholderScreen';
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={'Home'}
+      initialRouteName={'PlaceholderScreen'}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -234,7 +243,12 @@ export const MyDrawer = () => {
           borderBottomRightRadius: moderateScale(120, 0.6),
         },
       }}>
+      <DrawerNavigation.Screen
+        name="PlaceholderScreen"
+        component={PlaceholderScreen}
+      />
       <DrawerNavigation.Screen name="Home" component={Home} />
+
       <DrawerNavigation.Screen name="Walletscreen" component={Walletscreen} />
       <DrawerNavigation.Screen
         name="Earningsscreen"

@@ -65,8 +65,9 @@ const SearchLocationModal = ({
               justifyContent: 'flex-start',
               alignItems: 'center',
               flexDirection: 'row',
+              // backgroundColor :'red'
             }}>
-            <CustomText>Use Your Current Location</CustomText>
+            <CustomText   onPress={onPressCurrentLocation}>Use Your Current Location</CustomText>
           </TouchableOpacity>
         )}
         <GooglePlacesAutocomplete

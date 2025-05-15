@@ -19,6 +19,7 @@ import DeclineModal from '../Components/DeclineModal';
 import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {isValidCoordinate} from 'geolib';
 
 const MapScreen = props => {
   const mapRef = useRef();
@@ -56,7 +57,7 @@ const MapScreen = props => {
   }, [isFocused]);
 
   useEffect(() => {
-    if (currentPosition) {
+    if (isValidCoordinate(currentPosition)) {
       mapRef.current?.animateToRegion(
         {
           latitude: currentPosition.latitude,
@@ -254,7 +255,7 @@ const MapScreen = props => {
         }}
         data={rideupdatedData}
         onPressAccept={() =>
-          navigationService.navigate('RideScreen', {
+          navigationService.navigate('TrackingScreen', {
             data: rideupdatedData,
             type: '',
           })

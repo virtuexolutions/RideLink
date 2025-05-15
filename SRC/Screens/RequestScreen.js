@@ -19,15 +19,15 @@ import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import AskLocation from '../Components/AskLocation';
 import CustomButton from '../Components/CustomButton';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
 import RequestForDelivery from '../Components/RequestForDelivery.js';
 import navigationService from '../navigationService';
 import {windowHeight, windowWidth} from '../Utillity/utils';
+import CabList from '../Components/CabList.js';
+import CustomText from '../Components/CustomText.js';
+import CustomImage from '../Components/CustomImage.js';
 
 const RequestScreen = props => {
   const data = props?.route?.params?.data;
-  console.log('🚀 ~ data:', data);
   const rbRef = useRef(null);
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
@@ -137,7 +137,7 @@ const RequestScreen = props => {
   };
 
   useEffect(() => {
-    if (currentPosition) {
+    if (isValidCoordinate(currentPosition)) {
       mapRef.current?.animateToRegion(
         {
           latitude: currentPosition?.latitude,
@@ -148,7 +148,7 @@ const RequestScreen = props => {
         1000,
       );
     }
-  }, []);
+  }, [currentPosition]);
 
   const calculateFare = distance => {
     let fare = 0;
@@ -209,13 +209,15 @@ const RequestScreen = props => {
   }, [dropLocation]);
 
   useEffect(() => {
-    const reigion = {
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      latitudeDelta: 0.0522,
-      longitudeDelta: 0.0521,
-    };
-    mapRef.current?.animateToRegion(reigion, 1000);
+    if (isValidCoordinate(origin)) {
+      const reigion = {
+        latitude: origin?.latitude,
+        longitude: origin?.longitude,
+        latitudeDelta: 0.0522,
+        longitudeDelta: 0.0521,
+      };
+      mapRef.current?.animateToRegion(reigion, 1000);
+    }
   }, [origin]);
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
@@ -252,7 +254,7 @@ const RequestScreen = props => {
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}>
-        {Object.keys(origin)?.length > 0 && (
+        {Object.keys(origin)?.length > 0 && isValidCoordinate(origin) && (
           <>
             <Marker
               coordinate={origin}
@@ -261,8 +263,8 @@ const RequestScreen = props => {
             />
           </>
         )}
-
-        {multipleLocation?.map((stop, index) => (
+        
+        {Array.isArray(multipleLocation) &&multipleLocation?.map((stop, index) => (
           <Marker
             key={index}
             coordinate={{latitude: stop.lat, longitude: stop.lng}}
@@ -312,7 +314,13 @@ const RequestScreen = props => {
             />
           )}
       </MapView>
-      <View style={{position: 'absolute', bottom: 20, alignItems: 'center'}}>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          alignItems: 'center',
+          width: windowWidth,
+        }}>
         <FlatList
           horizontal
           data={cablist}
@@ -402,6 +410,7 @@ const RequestScreen = props => {
               pickupLocation != null
             ) {
               if (data?.title == 'ride') {
+                // rbRef?.current?.open();
                 navigationService.navigate('FareScreen', {
                   rideData: {
                     distance: parseInt(distance),
@@ -440,6 +449,22 @@ const RequestScreen = props => {
           data: data,
         }}
       />
+      {/* <CabList
+        rbRef={rbRef}
+        item={{
+          distance: parseInt(distance),
+          time: time,
+          fare: Number(fare),
+          pickup: origin,
+          dropoff: destination,
+          currentPosition: currentPosition,
+          pickupLocation: pickupLocation,
+          dropoffLocation: dropLocation,
+          CabType: cabType,
+          data: data,
+          multiplePickups: multipleLocation,
+        }}
+      /> */}
       {/* </ImageBackground> */}
     </SafeAreaView>
   );
@@ -451,6 +476,7 @@ const styles = StyleSheet.create({
   safearea_view: {
     width: windowWidth,
     height: windowHeight,
+    // alignContent : 'center'
   },
   background_view: {
     width: windowWidth,

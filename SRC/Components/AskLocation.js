@@ -1,15 +1,14 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import CustomText from './CustomText';
-import {Icon} from 'native-base';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {moderateScale} from 'react-native-size-matters';
-import SearchLocationModal from './SearchLocationModal';
-import {position} from 'native-base/lib/typescript/theme/styled-system';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Color from '../Assets/Utilities/Color';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import AskLocationComponent from './AskLocationComponent';
+import CustomText from './CustomText';
+import SearchLocationModal from './SearchLocationModal';
 
 const AskLocation = ({
   setCurrentPosition,
