@@ -1,7 +1,7 @@
 // RideStatusPlaceholderScreen.js
 
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -20,9 +20,9 @@ const PlaceHolderScreen = () => {
   const token = useSelector(state => state.authReducer.token);
   const isFocused = useIsFocused();
 
-  // useEffect(() => {
-  //   rideRequestList();
-  // }, []);
+  useEffect(() => {
+    rideRequestList();
+  }, [isFocused]);
   const rideRequestList = async () => {
     const url = `auth/customer/all_ride_list`;
     setIsLoading(true);
@@ -45,7 +45,7 @@ const PlaceHolderScreen = () => {
       if (Array.isArray(rides) && rides.length > 0) {
         const ride = rides[0]; // Assuming only 1 ride at a time
         console.log('🚀 ~ rideRequestList ~ ride:', ride);
-        const status = ride?.status?.toLowerCase();
+        const status = ride?.ride_info?.status?.toLowerCase();
         console.log('🚀 ~ rideRequestList ~ status:', status);
         const goHomeStatuses = [
           'pending',
@@ -80,39 +80,38 @@ const PlaceHolderScreen = () => {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      rideRequestList();
-    }, 3000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //     rideRequestList();
+  //   }, 3000);
 
-    return () => clearTimeout(timer);
-  }, [isFocused]);
+  //   return () => clearTimeout(timer);
+  // }, [isFocused]);
   return (
     <View style={styles.container}>
-      <SkeletonPlaceholder borderRadius={4}>
+      <ActivityIndicator size={'large'} color={'black'} />
+      {/* <SkeletonPlaceholder borderRadius={4}>
         <View
           style={{
             height: windowHeight,
             width: windowWidth,
-            backgroundColor: 'red',
+            backgroundColor: 'transparent',
             alignItems: 'center',
+            marginTop: moderateScale(20, 0.6),
           }}>
           <View style={styles.searchBar} />
-          {/* Search Bar */}
-          {/* <View style={styles.searchBar} /> */}
-
-          {/* Top Container */}
+      
           <View style={styles.topContainer} />
 
-          {/* Row of Three Containers */}
+      
           <View style={styles.rowContainer}>
             <View style={styles.box} />
             <View style={styles.box} />
             <View style={styles.box} />
           </View>
         </View>
-      </SkeletonPlaceholder>
+      </SkeletonPlaceholder> */}
       {/* <SkeletonPlaceholder borderRadius={8}>
         <SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
           <SkeletonPlaceholder.Item width={60} height={60} borderRadius={30} />
@@ -152,24 +151,25 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
   },
   searchBar: {
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.9,
     height: windowHeight * 0.07,
     borderRadius: moderateScale(10, 0.6),
     marginBottom: moderateScale(20, 0.6),
   },
   topContainer: {
-    width: windowWidth * 0.8,
-    height: windowHeight * 0.25,
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.3,
     borderRadius: moderateScale(10, 0.6),
-    marginBottom: moderateScale(20, 0.6),
+    marginBottom: moderateScale(30, 0.6),
   },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   box: {
-    width: windowWidth * 0.2,
-    height: windowHeight * 0.1,
+    width: windowWidth * 0.25,
+    height: windowHeight * 0.13,
     borderRadius: moderateScale(10, 0.6),
+    marginHorizontal: moderateScale(10, 0.6),
   },
 });

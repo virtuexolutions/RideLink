@@ -19,9 +19,14 @@ import Header from '../Components/Header';
 import navigationService from '../navigationService';
 import {customMapStyle} from '../Utillity/mapstyle';
 import {windowHeight, windowWidth} from '../Utillity/utils';
+import LottieView from 'lottie-react-native';
 
 const TrackingScreen = props => {
   const ridedata = props?.route?.params?.data;
+  console.log(
+    '🚀 ~ ridedata: ================ >>> ',
+    ridedata?.ride_info?.status,
+  );
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
 
@@ -230,152 +235,8 @@ const TrackingScreen = props => {
   // // }, [ridedata?.ride_info?.ride_id]);
 
   return (
-    // <SafeAreaView style={[styles.safe_are, styles.background_view]}>
-    //   <View
-    //     style={{
-    //       paddingTop: moderateScale(10, 0.6),
-    //     }}>
-    //     <Header showBack={true} title={''} />
-    //   </View>
-    //   <View style={styles.main_view}>
-    //     <MapView
-    //       customMapStyle={customMapStyle}
-    //       ref={mapRef}
-    //       provider={PROVIDER_GOOGLE}
-    //       style={styles.map}
-    //       initialRegion={{
-    //         latitude: parseFloat(currentPosition.latitude),
-    //         longitude: parseFloat(currentPosition.longitude),
-    //         latitudeDelta: 0.0522,
-    //         longitudeDelta: 0.0525,
-    //       }}
-    //       onReady={result => {
-    //         if (mapRef.current && !isRouteFitted) {
-    //           mapRef.current.fitToCoordinates(result.coordinates, {
-    //             edgePadding: {
-    //               right: 50,
-    //               left: 50,
-    //               top: 300,
-    //               bottom: 100,
-    //             },
-    //           });
-    //           setIsRouteFitted(true);
-    //         }
-    //       }}>
-    //
-
-    //
-
-    //       {/* {riderStatus === 'riderArrived' && (
-    //       <View key="riderArrivedView" style={styles.waiting_main_view}>
-    //         <View style={styles.waiting_sub_view}>
-    //           <View style={styles.animation_view}>
-    //             <LottieView
-    //               key="riderArrivedLottie" // force remount
-    //               autoPlay
-    //               loop
-    //               style={styles.waiting_animation}
-    //               source={require('../Assets/Images/cab_arrived_animation.json')}
-    //             />
-    //           </View>
-    //           <CustomText isBold style={{fontSize: moderateScale(15, 0.6)}}>
-    //             Your rider has arrived
-    //           </CustomText>
-    //         </View>
-    //       </View>
-    //     )} */}
-    //     </MapView>
-    //     <View
-    //       style={[
-    //         styles.latest_ride_view,
-    //         {
-    //           top: 40,
-    //         },
-    //       ]}>
-    //       <View style={styles.latest_ride_subView}>
-    //         <View style={styles.latest_ride_image_view}>
-    //           <CustomImage
-    //             source={require('../Assets/Images/user.png')}
-    //             style={{
-    //               width: '100%',
-    //               height: '100%',
-    //               borderRadius: windowWidth,
-    //             }}
-    //           />
-    //         </View>
-    //         <View
-    //           style={{
-    //             marginLeft: moderateScale(10, 0.6),
-    //             width: windowWidth * 0.5,
-    //           }}>
-    //           <CustomText
-    //             isBold
-    //             style={{
-    //               fontSize: moderateScale(13, 0.6),
-    //               color: Color.black,
-    //             }}>
-    //             {ridedata?.ride_info?.rider?.name}
-    //           </CustomText>
-    //           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-    //             <CustomText
-    //               isBold
-    //               style={{
-    //                 fontSize: moderateScale(11, 0.6),
-    //                 color: Color.black,
-    //               }}>
-    //               status :
-    //             </CustomText>
-    //             <CustomText
-    //               style={{
-    //                 fontSize: moderateScale(11, 0.6),
-    //                 color: Color.veryLightGray,
-    //                 marginLeft: moderateScale(8, 0.6),
-    //               }}>
-    //               {ridedata?.ride_info?.status}
-    //             </CustomText>
-    //           </View>
-    //         </View>
-    //         <View
-    //           style={{
-    //             flexDirection: 'row',
-    //             width: windowWidth * 0.2,
-    //             height: '100%',
-    //             paddingTop: moderateScale(10, 0.6),
-    //             paddingHorizontal: moderateScale(15, 0.6),
-    //             justifyContent: 'space-between',
-    //           }}>
-    //           <Icon
-    //             style={[
-    //               styles.icons,
-    //               {
-    //                 marginHorizontal: moderateScale(5, 0.6),
-    //               },
-    //             ]}
-    //             name={'call'}
-    //             as={Ionicons}
-    //             size={moderateScale(17, 0.6)}
-    //             color={'white'}
-    //           />
-    //           <Icon
-    //             onPress={() => {
-    //               navigationService.navigate('MessagesScreen', {
-    //                 data: ridedata,
-    //                 fromDelivery: true,
-    //               });
-    //             }}
-    //             style={styles.icons}
-    //             name={'message1'}
-    //             as={AntDesign}
-    //             size={moderateScale(17, 0.6)}
-    //             color={'white'}
-    //           />
-    //         </View>
-    //       </View>
-    //     </View>
-    //   </View>
-    // </SafeAreaView>
     <SafeAreaView style={styles.safe_are}>
-      <Header showBack={true} title={'Navigation to Pickup'} />
+      <Header showBack={true} title={''} />
       <View style={styles.main_view}>
         <MapView
           style={styles.map}
@@ -532,6 +393,36 @@ const TrackingScreen = props => {
             </View>
           </View>
         </View>
+        {ridedata?.ride_info?.status == 'riderArrived' && (
+          <View key="riderArrivedView" style={styles.waiting_main_view}>
+            <View style={styles.waiting_sub_view}>
+              <View style={styles.animation_view}>
+                <LottieView
+                  key="riderArrivedLottie"
+                  autoPlay
+                  loop
+                  style={styles.waiting_animation}
+                  source={require('../Assets/Images/cab_arrived_animation.json')}
+                />
+              </View>
+              {/* <CountDown
+          until={300} // 5 minutes = 300 seconds
+          onFinish={handleCountdownFinish}
+          size={30}
+          digitStyle={{ backgroundColor: '#FFF' }}
+          digitTxtStyle={{ color: '#1CC625' }}
+          timeToShow={['M', 'S']}
+          timeLabels={{ m: 'Min', s: 'Sec' }}
+          showSeparator
+        /> */}
+              <CustomText
+                isBold
+                style={{fontSize: moderateScale(16, 0.6), color: Color.black}}>
+                Your rider has arrived
+              </CustomText>
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -659,7 +550,7 @@ const styles = StyleSheet.create({
   },
 
   icons: {
-    backgroundColor: Color.darkBlue,
+    backgroundColor: Color.black,
     height: windowHeight * 0.05,
     width: windowHeight * 0.05,
     textAlign: 'center',
@@ -669,4 +560,65 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: moderateScale(3, 0.6),
   },
+  waiting_main_view: {
+    width: windowWidth,
+    height: windowHeight * 0.34,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 10,
+    // backgroundColor :'red'
+  },
+  waiting_sub_view: {
+    backgroundColor: Color.white,
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.2,
+    alignSelf: 'center',
+    borderRadius: moderateScale(20, 0.6),
+    paddingHorizontal: moderateScale(20, 0.7),
+    paddingVertical: moderateScale(10, 0.6),
+    alignItems: 'center',
+    // borderWidth: 1,
+    // borderColor: Color.black,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.17,
+    shadowRadius: 2.54,
+    elevation: 3,
+  },
+  animation_view: {
+    width: moderateScale(100, 0.6),
+    height: moderateScale(100, 0.6),
+    marginTop: moderateScale(5, 0.6),
+  },
+  waiting_animation: {
+    height: '100%',
+    width: '1000%',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  // container: {
+  //   // flex: 1,
+  //   position: 'absolute',
+  //   bottom: 30,
+  //   // justifyContent: 'center',
+  //   // alignItems: 'center',
+  //   backgroundColor: '#f2f2f2',
+  //   // padding: 20,
+  // },
+  // headerText: {
+  //   fontSize: 24,
+  //   marginBottom: 20,
+  //   fontWeight: 'bold',
+  //   color: '#333',
+  // },
+  // canceledText: {
+  //   fontSize: 22,
+  //   marginTop: 20,
+  //   color: 'red',
+  //   fontWeight: 'bold',
+  // },
 });

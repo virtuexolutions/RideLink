@@ -65,160 +65,144 @@ const Home = () => {
   }, [isFocused, activebutton]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <SkeletonPlaceholder borderRadius={4}>
-        {/* Search Bar */}
-        <View style={styles.searchBar} />
+    <SafeAreaView style={styles.safe_area}>
+      <Header title={''} />
+      <SearchbarComponent
+        SearchStyle={{
+          width: windowWidth * 0.9,
+          height: windowHeight * 0.058,
+          backgroundColor: Color.white,
+        }}
+        placeholderName={null}
+        isRightIcon={true}
+        name={'search'}
+        as={Feather}
+        color={Color.grey}
+      />
 
-        {/* Top Container */}
-        <View style={styles.topContainer} />
-
-        {/* Row of Three Containers */}
-        <View style={styles.rowContainer}>
-          <View style={styles.box} />
-          <View style={styles.box} />
-          <View style={styles.box} />
+      <View style={styles.main_Container}>
+        <View style={styles.ridelink_Box}>
+          <ImageBackground
+            style={styles.link_Image}
+            imageStyle={{
+              height: '100%',
+              width: '100%',
+            }}
+            source={require('../Assets/Images/bgcimage.png')}>
+            <View style={styles.row_con}>
+              <View style={styles.row}>
+                <CustomText style={styles.h1}>
+                  Request A Ride, Hop In, And Go.
+                </CustomText>
+                <CustomText style={styles.txt}>
+                  Go Anywhere With Ridelynk
+                </CustomText>
+              </View>
+              <View style={styles.second_Image}>
+                <CustomImage
+                  style={{height: '100%', width: '100%'}}
+                  source={require('../Assets/Images/ridelink.png')}
+                />
+              </View>
+            </View>
+          </ImageBackground>
         </View>
-      </SkeletonPlaceholder>
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={deliveryList}
+              style={styles.container_Style}
+              contentContainerStyle={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              renderItem={({item}) => {
+                return <DeliveryBox data={item} />;
+              }}
+            />
+          </View>
+          <View style={styles.button_Box}>
+            <CustomButton
+              onPress={() => {
+                setactivebutton('ride');
+              }}
+              text={'ride '}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'ride' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              height={windowHeight * 0.053}
+              bgColor={
+                activebutton === 'ride' ? Color.btn_Color : 'transparent'
+              }
+              textTransform={'capitalize'}
+            />
+            <CustomButton
+              onPress={() => {
+                setactivebutton('delivery');
+              }}
+              text={'delivery'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={
+                activebutton === 'delivery' ? Color.white : Color.btn_Color
+              }
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.42}
+              height={windowHeight * 0.055}
+              bgColor={
+                activebutton === 'delivery' ? Color.btn_Color : 'transparent'
+              }
+              textTransform={'capitalize'}
+            />
+          </View>
+          {historyLoading ? (
+            <ActivityIndicator
+              style={styles.indicatorStyle}
+              size="small"
+              color={Color.black}
+            />
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <CustomText
+                  style={{
+                    textAlign: 'center',
+                    fontSize: moderateScale(11, 0.6),
+                    color: Color.red,
+                  }}>
+                  no data found
+                </CustomText>
+              }
+              style={{paddingBottom: moderateScale(250, 0.6)}}
+              contentContainerStyle={{gap: moderateScale(10, 0.6)}}
+              data={histry_list}
+              renderItem={({item}) => {
+                return (
+                  <Userbox
+                    data={item?.ride_info}
+                    onPressDetails={() => {
+                      activebutton === 'ride'
+                        ? navigationService.navigate('RideScreen', {
+                            data: item?.ride_info,
+                          })
+                        : navigationService.navigate('ParcelTrackingScreen', {
+                            data: item,
+                          });
+                    }}
+                  />
+                );
+              }}
+            />
+          )}
+        </ScrollView>
+      </View>
     </SafeAreaView>
-    // <SafeAreaView style={styles.safe_area}>
-    //   <Header title={''} />
-    //   <SearchbarComponent
-    //     SearchStyle={{
-    //       width: windowWidth * 0.9,
-    //       height: windowHeight * 0.058,
-    //       backgroundColor: Color.white,
-    //     }}
-    //     placeholderName={null}
-    //     isRightIcon={true}
-    //     name={'search'}
-    //     as={Feather}
-    //     color={Color.grey}
-    //   />
-
-    //   <View style={styles.main_Container}>
-    //     <View style={styles.ridelink_Box}>
-    //       <ImageBackground
-    //         style={styles.link_Image}
-    //         imageStyle={{
-    //           height: '100%',
-    //           width: '100%',
-    //         }}
-    //         source={require('../Assets/Images/bgcimage.png')}>
-    //         <View style={styles.row_con}>
-    //           <View style={styles.row}>
-    //             <CustomText style={styles.h1}>
-    //               Request A Ride, Hop In, And Go.
-    //             </CustomText>
-    //             <CustomText style={styles.txt}>
-    //               Go Anywhere With Ridelynk
-    //             </CustomText>
-    //           </View>
-    //           <View style={styles.second_Image}>
-    //             <CustomImage
-    //               style={{height: '100%', width: '100%'}}
-    //               source={require('../Assets/Images/ridelink.png')}
-    //             />
-    //           </View>
-    //         </View>
-    //       </ImageBackground>
-    //     </View>
-
-    //     <ScrollView showsVerticalScrollIndicator={false}>
-    //       <View>
-    //         <FlatList
-    //           showsHorizontalScrollIndicator={false}
-    //           horizontal
-    //           data={deliveryList}
-    //           style={styles.container_Style}
-    //           contentContainerStyle={{
-    //             alignItems: 'center',
-    //             justifyContent: 'center',
-    //           }}
-    //           renderItem={({item}) => {
-    //             return <DeliveryBox data={item} />;
-    //           }}
-    //         />
-    //       </View>
-    //       <View style={styles.button_Box}>
-    //         <CustomButton
-    //           onPress={() => {
-    //             setactivebutton('ride');
-    //           }}
-    //           text={'ride '}
-    //           fontSize={moderateScale(14, 0.3)}
-    //           textColor={
-    //             activebutton === 'ride' ? Color.white : Color.btn_Color
-    //           }
-    //           borderRadius={moderateScale(30, 0.3)}
-    //           width={windowWidth * 0.42}
-    //           height={windowHeight * 0.053}
-    //           bgColor={
-    //             activebutton === 'ride' ? Color.btn_Color : 'transparent'
-    //           }
-    //           textTransform={'capitalize'}
-    //         />
-    //         <CustomButton
-    //           onPress={() => {
-    //             setactivebutton('delivery');
-    //           }}
-    //           text={'delivery'}
-    //           fontSize={moderateScale(14, 0.3)}
-    //           textColor={
-    //             activebutton === 'delivery' ? Color.white : Color.btn_Color
-    //           }
-    //           borderRadius={moderateScale(30, 0.3)}
-    //           width={windowWidth * 0.42}
-    //           height={windowHeight * 0.055}
-    //           bgColor={
-    //             activebutton === 'delivery' ? Color.btn_Color : 'transparent'
-    //           }
-    //           textTransform={'capitalize'}
-    //         />
-    //       </View>
-    //       {historyLoading ? (
-    //         <ActivityIndicator
-    //           style={styles.indicatorStyle}
-    //           size="small"
-    //           color={Color.black}
-    //         />
-    //       ) : (
-    //         <FlatList
-    //           showsVerticalScrollIndicator={false}
-    //           ListEmptyComponent={
-    //             <CustomText
-    //               style={{
-    //                 textAlign: 'center',
-    //                 fontSize: moderateScale(11, 0.6),
-    //                 color: Color.red,
-    //               }}>
-    //               no data found
-    //             </CustomText>
-    //           }
-    //           style={{paddingBottom: moderateScale(250, 0.6)}}
-    //           contentContainerStyle={{gap: moderateScale(10, 0.6)}}
-    //           data={histry_list}
-    //           renderItem={({item}) => {
-    //             return (
-    //               <Userbox
-    //                 data={item?.ride_info}
-    //                 onPressDetails={() => {
-    //                   activebutton === 'ride'
-    //                     ? navigationService.navigate('RideScreen', {
-    //                         data: item?.ride_info,
-    //                       })
-    //                     : navigationService.navigate('ParcelTrackingScreen', {
-    //                         data: item,
-    //                       });
-    //                 }}
-    //               />
-    //             );
-    //           }}
-    //         />
-    //       )}
-    //     </ScrollView>
-    //   </View>
-    // </SafeAreaView>
   );
 };
 
