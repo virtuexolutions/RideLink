@@ -29,6 +29,8 @@ import CustomImage from '../Components/CustomImage.js';
 const RequestScreen = props => {
   const data = props?.route?.params?.data;
   const rbRef = useRef(null);
+  const deliveryRef = useRef(null);
+
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
@@ -62,8 +64,11 @@ const RequestScreen = props => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
   const [fare, setFare] = useState(0);
+  console.log('🚀 ~ fare================= >>>>:', fare);
   const [time, setTime] = useState(0);
+  console.log('🚀 ~ time:', time);
   const [distance, setDistance] = useState(0);
+  console.log('🚀 ~ distance:', distance);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
@@ -172,16 +177,90 @@ const RequestScreen = props => {
     }
     return calfare;
   };
+  // const calculateRideFare = async ({
+
+  //   surgeMultiplier = 1,
+  // }) => {
+  //   const baseFare = 2.5;
+  //   const costPerMile = 1.25;
+  //   const costPerMinute = 0.3;
+  //   const bookingFee = 1.75;
+  //   const minimumFare = 6.0;
+
+  //   let fare = baseFare + costPerMile * distance + costPerMinute * time;
+  //   fare *= surgeMultiplier;
+  //   fare += bookingFee;
+
+  //   if (fare < minimumFare) {
+  //     console.log('🚀 ~ calculateRideFare ~ fare:', fare ,minimumFare);
+  //     fare = minimumFare;
+  //     fare =
+  //       fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
+  //     calfare = fare.toFixed(0);
+  //   }
+  //   //  if (fareType) {
+  //   // //     fare =
+  //   // //       fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
+  //   // //     calfare = fare.toFixed(0);
+  //   // //   }
+  //   return fare.toFixed(2);
+  // };
+
+  // const calculateRideFare = async ({distance, time, surgeMultiplier = 1}) => {
+  //   const baseFare = 2.5;
+  //   const costPerMile = 1.25;
+  //   const costPerMinute = 0.3;
+  //   const bookingFee = 1.75;
+  //   const minimumFare = 6.0;
+
+  //   let fare = baseFare + costPerMile * distance + costPerMinute * time;
+  //   fare *= surgeMultiplier;
+  //   fare += bookingFee;
+
+  //   if (fare < minimumFare) {
+  //     fare = minimumFare;
+  //   }
+
+  //   return fare.toFixed(2);
+  // };
+
+  const calculateMultiStopFare = async ({
+    distance,
+    time,
+    stops = [],
+    surgeMultiplier = 1,
+  }) => {
+    const baseFare = 2.5;
+    const costPerMile = 1.25;
+    const costPerMinute = 0.3;
+    const bookingFee = 1.75;
+    const minimumFare = 6.0;
+
+    // Basic fare calculation
+    let fare = baseFare + costPerMile * distance + costPerMinute * time;
+
+    // Apply surge only if there are stops
+    if (stops.length > 0) {
+      fare *= surgeMultiplier;
+    }
+
+    // Always add booking fee
+    fare += bookingFee;
+
+    // Ensure minimum fare
+    if (fare < minimumFare) {
+      fare = minimumFare;
+    }
+
+    return fare.toFixed(2);
+  };
 
   useEffect(() => {
     if (dropLocation && pickupLocation != null) {
       const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
       let km = Math.round(checkDistanceBetween / 1000);
-
       const distanceInMiles = km / 1.60934;
-      const calculatedFare = calculateFare(distanceInMiles);
-      setFare(calculatedFare);
-      setDistance(km);
+
       const getTravelTime = async () => {
         const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
         try {
@@ -193,20 +272,67 @@ const RequestScreen = props => {
           const data = await response.json();
           if (data.status === 'OK') {
             const distanceMatrix = data.rows[0].elements[0];
-            const travelTime = distanceMatrix.duration.text;
-            console.log(travelTime, 'travelTime');
-            return setTime(travelTime);
+            const durationInSeconds = distanceMatrix.duration.value; // in seconds
+            const travelTimeInMinutes = Math.ceil(durationInSeconds / 60);
+
+            setTime(travelTimeInMinutes);
+            setDistance(km);
+
+            // const calculatedFare = await calculateMultiStopFare({
+            //   distance: distanceInMiles,
+            //   time: travelTimeInMinutes,
+            //   stop: multipleLocation,
+            //   surgeMultiplier: 1, // adjust if needed
+            // });
+
+            const calculatedFare = await calculateFare(distanceInMiles);
+            setFare(calculatedFare);
           } else {
             console.error('Error fetching travel time:', data.status);
-            return null;
           }
         } catch (error) {
           console.error('Error:', error);
         }
       };
+
       getTravelTime();
     }
   }, [dropLocation]);
+
+  // useEffect(() => {
+  //   if (dropLocation && pickupLocation != null) {
+  //     const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
+  //     let km = Math.round(checkDistanceBetween / 1000);
+
+  //     const distanceInMiles = km / 1.60934;
+  //     const calculatedFare = calculateRideFare(distanceInMiles);
+  //     setFare(calculatedFare);
+  //     setDistance(km);
+  //     const getTravelTime = async () => {
+  //       const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
+  //       try {
+  //         const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
+  //         const response = await fetch(url);
+  //         if (!response.ok) {
+  //           throw new Error('Network response was not ok');
+  //         }
+  //         const data = await response.json();
+  //         if (data.status === 'OK') {
+  //           const distanceMatrix = data.rows[0].elements[0];
+  //           const travelTime = distanceMatrix.duration.text;
+  //           console.log(travelTime, 'travelTime');
+  //           return setTime(travelTime);
+  //         } else {
+  //           console.error('Error fetching travel time:', data.status);
+  //           return null;
+  //         }
+  //       } catch (error) {
+  //         console.error('Error:', error);
+  //       }
+  //     };
+  //     getTravelTime();
+  //   }
+  // }, [dropLocation]);
 
   useEffect(() => {
     if (isValidCoordinate(origin)) {
@@ -263,19 +389,20 @@ const RequestScreen = props => {
             />
           </>
         )}
-        
-        {Array.isArray(multipleLocation) &&multipleLocation?.map((stop, index) => (
-          <Marker
-            key={index}
-            coordinate={{latitude: stop.lat, longitude: stop.lng}}
-            title={`Stop ${index + 1}`}
-            description={
-              stop.name ||
-              `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
-            }
-            pinColor={Color.black}
-          />
-        ))}
+
+        {Array.isArray(multipleLocation) &&
+          multipleLocation?.map((stop, index) => (
+            <Marker
+              key={index}
+              coordinate={{latitude: stop.lat, longitude: stop.lng}}
+              title={`Stop ${index + 1}`}
+              description={
+                stop.name ||
+                `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
+              }
+              pinColor={Color.black}
+            />
+          ))}
         {!['', null, undefined].includes(origin) &&
           !['', null, undefined].includes(destination) && (
             <MapViewDirections
@@ -321,52 +448,58 @@ const RequestScreen = props => {
           alignItems: 'center',
           width: windowWidth,
         }}>
-        <FlatList
-          horizontal
-          data={cablist}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => {
-            return (
-              <View style={styles.cab_view}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginTop: moderateScale(10, 0.6),
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <View>
-                    <CustomText style={styles.text}>{item?.name}</CustomText>
-                    <CustomText style={styles.price}>{item?.price}</CustomText>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setCabType(item);
-                      }}
-                      style={[
-                        styles.btn,
-                        {
-                          backgroundColor:
-                            cabType?.id == item?.id ? '#949392' : Color.black,
-                        },
-                      ]}>
-                      <CustomText style={styles.btn_text}>Book Ride</CustomText>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.image_view}>
-                    <CustomImage
-                      resizeMode="contain"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      source={require('../Assets/Images/carimage.png')}
-                    />
+        {data?.title != 'ride' && (
+          <FlatList
+            horizontal
+            data={cablist}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item}) => {
+              return (
+                <View style={styles.cab_view}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      marginTop: moderateScale(10, 0.6),
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
+                    <View>
+                      <CustomText style={styles.text}>{item?.name}</CustomText>
+                      <CustomText style={styles.price}>
+                        {item?.price}
+                      </CustomText>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCabType(item);
+                        }}
+                        style={[
+                          styles.btn,
+                          {
+                            backgroundColor:
+                              cabType?.id == item?.id ? '#949392' : Color.black,
+                          },
+                        ]}>
+                        <CustomText style={styles.btn_text}>
+                          Book Ride
+                        </CustomText>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.image_view}>
+                      <CustomImage
+                        resizeMode="contain"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                        source={require('../Assets/Images/carimage.png')}
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
-            );
-          }}
-        />
+              );
+            }}
+          />
+        )}
         <AskLocation
           onPressCurrentLocation={() => {
             getCurrentLocation();
@@ -405,29 +538,29 @@ const RequestScreen = props => {
           marginBottom={moderateScale(10, 0.6)}
           onPress={() => {
             if (
-              cabType != null &&
+              // cabType != null &&
               dropLocation != null &&
               pickupLocation != null
             ) {
               if (data?.title == 'ride') {
-                // rbRef?.current?.open();
-                navigationService.navigate('FareScreen', {
-                  rideData: {
-                    distance: parseInt(distance),
-                    time: time,
-                    fare: Number(fare),
-                    pickup: origin,
-                    dropoff: destination,
-                    currentPosition: currentPosition,
-                    pickupLocation: pickupLocation,
-                    dropoffLocation: dropLocation,
-                    CabType: cabType,
-                    data: data,
-                    multiplePickups: multipleLocation,
-                  },
-                });
+                rbRef?.current?.open();
+                // navigationService.navigate('FareScreen', {
+                //   rideData: {
+                //     distance: parseInt(distance),
+                //     time: time,
+                //     fare: Number(fare),
+                //     pickup: origin,
+                //     dropoff: destination,
+                //     currentPosition: currentPosition,
+                //     pickupLocation: pickupLocation,
+                //     dropoffLocation: dropLocation,
+                //     CabType: cabType,
+                //     data: data,
+                //     multiplePickups: multipleLocation,
+                //   },
+                // });
               } else {
-                rbRef.current.open();
+                deliveryRef.current.open();
               }
             } else {
               Platform.OS == 'android'
@@ -441,7 +574,7 @@ const RequestScreen = props => {
         />
       </View>
       <RequestForDelivery
-        rbRef={rbRef}
+        rbRef={deliveryRef}
         item={{
           pickupLocation: pickupLocation,
           dropLocation: dropLocation,
@@ -449,9 +582,9 @@ const RequestScreen = props => {
           data: data,
         }}
       />
-      {/* <CabList
+      <CabList
         rbRef={rbRef}
-        item={{
+        data={{
           distance: parseInt(distance),
           time: time,
           fare: Number(fare),
@@ -460,11 +593,11 @@ const RequestScreen = props => {
           currentPosition: currentPosition,
           pickupLocation: pickupLocation,
           dropoffLocation: dropLocation,
-          CabType: cabType,
+          // CabType: cabType,
           data: data,
           multiplePickups: multipleLocation,
         }}
-      /> */}
+      />
       {/* </ImageBackground> */}
     </SafeAreaView>
   );

@@ -24,7 +24,6 @@ import {isValidCoordinate} from 'geolib';
 const MapScreen = props => {
   const mapRef = useRef();
   const ridedata = props?.route?.params?.ridedata;
-  console.log('🚀 ~ ridedata:', ridedata?.data);
   const fromDelivery = props?.route?.params?.fromDelivery;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const delivery_Id = props?.route?.params?.delivery_Id;
@@ -148,7 +147,8 @@ const MapScreen = props => {
     const response = await Post(url, formData, apiHeader(token));
     setIsLoading(false);
     if (response != undefined) {
-      setRideID(response?.data.data?.ride_info?.ride_id);
+  //  return    console.log("🚀 ~ requestforRide ~ response:", response?.data)
+      setRideID(response?.data?.data?.ride_info?.ride_id);
       setRideStatus(response?.data.data?.ride_info?.status);
       setIsModalVisible(true);
     }
@@ -158,10 +158,11 @@ const MapScreen = props => {
     const reference = database().ref(
       `/requests/${fromDelivery ? delivery_Id : rideId}`,
     );
+    console.log("🚀 ~ useEffect ~ reference:", reference)
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log('🚀 ~ useEffect ~ data:===================', data);
+        console.log('🚀 ~ useEffect ~ data:================sss=============', data?.ride_info?.status);
         if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
           setRideuptedData(data);
           setModalVisible(true);

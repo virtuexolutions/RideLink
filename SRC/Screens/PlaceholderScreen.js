@@ -26,27 +26,15 @@ const PlaceHolderScreen = () => {
   const rideRequestList = async () => {
     const url = `auth/customer/all_ride_list`;
     setIsLoading(true);
-    console.log('🚀 ~ rideRequestList ~ url: >>>>>', url);
 
     try {
       const response = await Get(url, token);
-      console.log(
-        '🚀 ~ rideRequestList ~ response:',
-        response?.data?.ride_info,
-      );
-      const rides = response?.data?.ride_info;
-      console.log('🚀 ~ rideRequestList ~ rides:', rides);
 
-      console.log(
-        '🚀 ~ rideRequestList ~ response:',
-        JSON.stringify(rides?.status, null, 2),
-      );
+      const rides = response?.data?.ride_info;
 
       if (Array.isArray(rides) && rides.length > 0) {
         const ride = rides[0]; // Assuming only 1 ride at a time
-        console.log('🚀 ~ rideRequestList ~ ride:', ride);
         const status = ride?.ride_info?.status?.toLowerCase();
-        console.log('🚀 ~ rideRequestList ~ status:', status);
         const goHomeStatuses = [
           'pending',
           'cancelled',
@@ -60,7 +48,13 @@ const PlaceHolderScreen = () => {
         );
         if (goHomeStatuses.includes(status)) {
           navigationService.navigate('Home');
-        } else {
+        } 
+        // else if (status == 'pending') {
+        //   navigationService.navigate('MapScreen' ,{
+
+        //   })
+        // }
+        else {
           navigationService.navigate('TrackingScreen', {
             data: ride,
             type: 'details',
@@ -69,7 +63,7 @@ const PlaceHolderScreen = () => {
 
         setRequestList(rides);
       } else {
-        setRequestList([]);
+        // setRequestList([]);
         navigationService.navigate('Home');
       }
     } catch (error) {

@@ -1,13 +1,13 @@
 import {useIsFocused} from '@react-navigation/native';
+import database from '@react-native-firebase/database';
 import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Alert, Linking, SafeAreaView, StyleSheet, View} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import {Pusher} from '@pusher/pusher-websocket-react-native';
 import {isValidCoordinate} from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
@@ -20,27 +20,33 @@ import navigationService from '../navigationService';
 import {customMapStyle} from '../Utillity/mapstyle';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import LottieView from 'lottie-react-native';
+import CustomButton from '../Components/CustomButton';
+import RideCancel from '../Components/RideCancel';
 
 const TrackingScreen = props => {
   const ridedata = props?.route?.params?.data;
-  console.log(
-    '🚀 ~ ridedata: ================ >>> ',
-    ridedata?.ride_info?.status,
-  );
+  console.log('🚀 ~ ridedata:', ridedata?.ride_info?.rider?.phone);
+
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
 
   const mapRef = useRef(null);
   const pusher = Pusher.getInstance();
   const myChannel = useRef(null);
+  const timeoutRef = useRef(null);
+  console.log('🚀 ~aaaa timeoutRef:', timeoutRef);
   const isFocused = useIsFocused();
 
   const [isRouteFitted, setIsRouteFitted] = useState(false);
-  const [riderStatus, setRiderStatus] = useState('');
   const [origin, setOrigin] = useState({
     latitude: parseFloat(ridedata?.ride_info?.rider?.lat),
     longitude: parseFloat(ridedata?.ride_info?.rider?.lng),
   });
+  const [isVisible, setIsVisible] = useState(false);
+  console.log('🚀 ~ isVisible:', isVisible);
+
+  const [canCancel, setCanCancel] = useState(true);
+  console.log('🚀 ~ //useEffect ~ canCancel:', canCancel);
   const destination = {
     latitude: parseFloat(ridedata?.ride_info?.pickup_location_lat),
     longitude: parseFloat(ridedata?.ride_info?.pickup_location_lng),
@@ -234,6 +240,49 @@ const TrackingScreen = props => {
   // //   return () => reference.off('value', listener);
   // // }, [ridedata?.ride_info?.ride_id]);
 
+  const handleCancelPress = () => {
+    if (canCancel) {
+      // Alert.alert(
+      //   'Ride Canceled',
+      //   'You have canceled your ride within the free time.',
+      // );
+      clearTimeout(timeoutRef.current);
+    } else {
+      navigationService.navigate('ChooseDeclineReasonScreen', {
+        data: ridedata,
+      });
+    }
+  };
+
+  useEffect(() => {0
+    timeoutRef.current = setTimeout(() => {
+      setCanCancel(false);
+    }, 60000);
+
+    return () => clearTimeout(timeoutRef.current);
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   const reference = database().ref(
+  //     `/requests/${ridedata?.ride_info?.ride_id}`,
+  //   );
+  //   console.log('🚀 ~ useEffect ~ reference:', reference);
+  //   const listener = reference.on('value', snapshot => {
+  //     if (snapshot.exists()) {
+  //       const data = snapshot.val();
+  //       console.log(
+  //         '🚀 ~ useEffect ~ data:================sss=============',
+  //         data?.ride_info?.status,
+  //       );
+  //       if (data?.ride_info?.status && data?.ride_info?.status == 'cancelled') {
+  //         setIsVisible(true);
+  //       }
+  //     }
+  //   });
+
+  //   return () => reference.off('value', listener);
+  // }, [ridedata?.ride_info?.ride_id]);
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header showBack={true} title={''} />
@@ -371,6 +420,9 @@ const TrackingScreen = props => {
                 paddingTop: moderateScale(5, 0.6),
               }}>
               <Icon
+              onPress={() =>{
+                Linking.openURL(`tel:${ridedata?.ride_info?.rider?.phone}`);
+              }}
                 style={styles.icons}
                 name={'call'}
                 as={Ionicons}
@@ -393,6 +445,38 @@ const TrackingScreen = props => {
             </View>
           </View>
         </View>
+        <View
+          style={{
+            // backgroundColor: 'red',
+            width: windowWidth,
+            height: windowHeight,
+            position: 'absolute',
+            bottom: -680,
+          }}>
+          <CustomButton
+            width={windowWidth * 0.9}
+            height={windowHeight * 0.08}
+            bgColor={Color.themeBlack}
+            borderRadius={moderateScale(30, 0.3)}
+            textColor={Color.white}
+            textTransform={'none'}
+            text={
+              'Cancel Ride'
+              // isLoading ? (
+              //   <ActivityIndicator size={'small'} color={Color.white} />
+              // ) : (
+              //   'Request'
+              // )
+            }
+            isBold
+            onPress={() => {
+              handleCancelPress();
+              // navigationService.navigate('ChooseDeclineReasonScreen', {
+              //   data: ridedata,
+              // });
+            }}
+          />
+        </View>
         {ridedata?.ride_info?.status == 'riderArrived' && (
           <View key="riderArrivedView" style={styles.waiting_main_view}>
             <View style={styles.waiting_sub_view}>
@@ -406,15 +490,15 @@ const TrackingScreen = props => {
                 />
               </View>
               {/* <CountDown
-          until={300} // 5 minutes = 300 seconds
-          onFinish={handleCountdownFinish}
-          size={30}
-          digitStyle={{ backgroundColor: '#FFF' }}
-          digitTxtStyle={{ color: '#1CC625' }}
-          timeToShow={['M', 'S']}
-          timeLabels={{ m: 'Min', s: 'Sec' }}
-          showSeparator
-        /> */}
+              until={300} // 5 minutes = 300 seconds
+              onFinish={handleCountdownFinish}
+              size={30}
+              digitStyle={{backgroundColor: '#FFF'}}
+              digitTxtStyle={{color: '#1CC625'}}
+              timeToShow={['M', 'S']}
+              timeLabels={{m: 'Min', s: 'Sec'}}
+              showSeparator
+            /> */}
               <CustomText
                 isBold
                 style={{fontSize: moderateScale(16, 0.6), color: Color.black}}>
@@ -566,7 +650,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 10,
+    bottom: 50,
     // backgroundColor :'red'
   },
   waiting_sub_view: {

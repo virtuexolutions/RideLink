@@ -257,6 +257,7 @@ const RideScreen = ({route}) => {
               <CustomImage
                 source={require('../Assets/Images/user.png')}
                 style={{
+                  backgroundColor :'red',
                   width: '100%',
                   height: '100%',
                   borderRadius: windowWidth,

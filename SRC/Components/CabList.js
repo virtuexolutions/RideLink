@@ -1,5 +1,11 @@
-import React from 'react';
-import {FlatList, ScrollView, StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {moderateScale} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
@@ -7,10 +13,14 @@ import Color from '../Assets/Utilities/Color';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomText from './CustomText';
 import CustomImage from './CustomImage';
+import CustomButton from './CustomButton';
+import navigationService from '../navigationService';
+import {Icon} from 'native-base';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const CabList = ({item, setRef, rbRef, setClientReview}) => {
+const CabList = ({data, setRef, rbRef, setClientReview}) => {
   const token = useSelector(state => state.authReducer.token);
-
+  const [selectedCab, setSelectedCab] = useState(null);
   const standardCabs = [
     {
       id: 1,
@@ -116,16 +126,20 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
       }}>
       <CustomText style={styles.main_heading}>choose a ride</CustomText>
       <ScrollView
-        style={{
-          height: '100%',
-        }}
+        style={
+          {
+            // height: '100%',
+          }
+        }
         showsVerticalScrollIndicator={false}>
         <View style={styles.main_con}>
           <CustomText style={styles.h1}>Standered</CustomText>
           <View>
             <FlatList
+            
               contentContainerStyle={{
-                marginBottom: moderateScale(20, 0.6),
+                marginBottom: moderateScale(10, 0.6),
+                alignItems: 'center',
               }}
               keyExtractor={item => {
                 item?.id;
@@ -133,7 +147,14 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
               scrollEnabled={false}
               data={standardCabs}
               renderItem={({item}) => {
-                return <Card item={item} />;
+                return (
+                  <Card
+                    setSelectedCab={setSelectedCab}
+                    selectedCab={selectedCab}
+                    item={item}
+                    data={data}
+                  />
+                );
               }}
             />
           </View>
@@ -142,6 +163,7 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
             <FlatList
               contentContainerStyle={{
                 marginBottom: moderateScale(20, 0.6),
+                alignItems: 'center',
               }}
               keyExtractor={item => {
                 item?.id;
@@ -149,7 +171,14 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
               scrollEnabled={false}
               data={economyCabs}
               renderItem={({item}) => {
-                return <Card item={item} />;
+                return (
+                  <Card
+                    setSelectedCab={setSelectedCab}
+                    selectedCab={selectedCab}
+                    item={item}
+                    data={data}
+                  />
+                );
               }}
             />
           </View>
@@ -157,7 +186,8 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
           <View>
             <FlatList
               contentContainerStyle={{
-                marginBottom: moderateScale(80, 0.6),
+                marginBottom: moderateScale(20, 0.6),
+                alignItems: 'center',
               }}
               keyExtractor={item => {
                 item?.id;
@@ -165,10 +195,34 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
               scrollEnabled={false}
               data={premiumCabs}
               renderItem={({item}) => {
-                return <Card item={item} />;
+                return (
+                  <Card
+                    data={data}
+                    setSelectedCab={setSelectedCab}
+                    selectedCab={selectedCab}
+                    item={item}
+                  />
+                );
               }}
             />
           </View>
+          <CustomButton
+            width={windowWidth * 0.9}
+            height={windowHeight * 0.07}
+            bgColor={Color.themeBlack}
+            borderRadius={moderateScale(30, 0.3)}
+            textColor={Color.white}
+            marginBottom={moderateScale(10, 0.6)}
+            textTransform={'none'}
+            text={'Choose Lynk Cab'}
+            isBold
+            onPress={() => {
+              selectedCab != null &&
+                navigationService.navigate('FareScreen', {
+                  rideData: {...data, cabtype: selectedCab},
+                });
+            }}
+          />
         </View>
       </ScrollView>
     </RBSheet>
@@ -178,7 +232,10 @@ const CabList = ({item, setRef, rbRef, setClientReview}) => {
 export default CabList;
 
 const styles = StyleSheet.create({
-  main_con: {alignItems: 'center', height: windowHeight * 0.9},
+  main_con: {
+    // alignItems: 'center',
+    //  height: windowHeight * 0.9
+  },
   h1: {
     fontSize: moderateScale(16, 0.6),
     textAlign: 'left',
@@ -194,31 +251,105 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Card = ({item}) => {
+export const Card = ({setSelectedCab, selectedCab, item, data}) => {
   return (
-    <View
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedCab(item);
+      }}
+      activeOpacity={0.4}
       style={{
         width: windowWidth * 0.9,
         height: windowHeight * 0.12,
-        backgroundColor: 'red',
         marginVertical: moderateScale(5.3),
         borderRadius: 10,
         flexDirection: 'row',
+        borderWidth: item?.cabName == selectedCab?.cabName ? 0.7 : 0.3,
+        borderColor:
+          item?.cabName == selectedCab?.cabName ? Color.black : 'transparent',
+        justifyContent: 'space-between',
+        paddingVertical: moderateScale(10, 0.6),
       }}>
       <View
         style={{
-          height: windowHeight * 0.07,
-          width: windowWidth * 0.2,
+          flexDirection: 'row',
+          // alignItems :'center',
         }}>
-        <CustomImage
+        <View
           style={{
-            height: '100%',
-            width: '100%',
-          }}
-          source={require('../Assets/Images/parcelimage.png')}
-        />
+            height: windowHeight * 0.1,
+            width: windowWidth * 0.2,
+          }}>
+          <CustomImage
+            style={{
+              height: '100%',
+              width: '100%',
+            }}
+            source={require('../Assets/Images/parcelimage.png')}
+          />
+        </View>
+        <View
+          style={{
+            paddingHorizontal: moderateScale(10, 0.6),
+            paddingTop: moderateScale(5, 0.6),
+            width: windowWidth * 0.5,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              // paddingHorizontal: moderateScale(10, 0.6),
+
+              // width: windowWidth * 0.5,
+            }}>
+            <CustomText
+              numberOfLines={1}
+              style={{
+                fontSize: moderateScale(13, 0.6),
+                color: Color.black,
+              }}>
+              {item?.cabName}
+            </CustomText>
+            <Icon
+              style={{
+                marginHorizontal: moderateScale(5, 0.6),
+                marginTop: moderateScale(5, 0.6),
+              }}
+              name="user"
+              as={FontAwesome}
+              size={moderateScale(10, 0.6)}
+              color={Color.black}
+            />
+            <CustomText
+              numberOfLines={1}
+              style={{
+                fontSize: moderateScale(10, 0.6),
+              }}>
+              {item?.capacity}
+            </CustomText>
+          </View>
+          <CustomText
+            numberOfLines={1}
+            style={{
+              fontSize: moderateScale(10, 0.6),
+            }}>
+            {data?.time }
+          </CustomText>
+          <CustomText
+            numberOfLines={2}
+            style={{
+              fontSize: moderateScale(10, 0.6),
+            }}>
+            {item?.feature}
+          </CustomText>
+        </View>
       </View>
-      <CustomText></CustomText>
-    </View>
+      <View
+        style={{
+          paddingHorizontal: moderateScale(10, 0.6),
+          paddingTop: moderateScale(10, 0.6),
+        }}>
+        <CustomText>&73.99 </CustomText>
+      </View>
+    </TouchableOpacity>
   );
 };

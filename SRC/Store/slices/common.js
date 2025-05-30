@@ -127,18 +127,11 @@ const CommonSlice = createSlice({
       }
     },
     setServiceBooking(state, action) {
-      console.log(
-        '🚀 ~ file: common.js:116 ~ setServiceBooking ~ action:',
-        action.payload,
-      );
+ 
       state.bookings.push(action.payload);
     },
 
     setAddProducts(state, action) {
-      console.log('Data===============>>=====', state.sellerProducts);
-      console.log('Data===============>>', action.payload);
-
-      // console.log('Dat==================>>>>>>>', {sellerId:action.payload.userId,id:state.sellerProducts.length+1, ...action.payload.item, })
       const item = state.sellerProducts.find(
         item => item?.id == action.payload.item.id,
       );
@@ -162,29 +155,15 @@ const CommonSlice = createSlice({
     },
 
     deleteProducts(state, action) {
-      console.log(
-        '🚀 ~ file: common.js:147 ~ deleteProducts ~ action:',
-        action.payload,
-      );
-
-      console.log('Data===============>>=====', state.sellerProducts);
       state.sellerProducts = state.sellerProducts.filter(
         item => item.id != action.payload.id,
       );
     },
 
     setServices(state, action) {
-      console.log(
-        '🚀 ~ file: common.js:133 ~ setServices ~ state:',
-        state.sellerService,
-      );
-      console.log(
-        '🚀 ~ file: common.js:116 ~ setServiceBooking ~ action:',
-        action.payload,
-      );
+
 
       const item = state.sellerService.find(item => {
-        // console.log(item?.serviceOwner.id, action.payload.id)
         return item.serviceOwner.id == action.payload.serviceOwner.id;
       });
       console.log('🚀 ~ file: common.js:137 ~ setServices ~ item:', item);
