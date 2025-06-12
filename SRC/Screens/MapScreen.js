@@ -1,5 +1,6 @@
 import database from '@react-native-firebase/database';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {isValidCoordinate} from 'geolib';
 import LottieView from 'lottie-react-native';
 import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
@@ -19,28 +20,27 @@ import DeclineModal from '../Components/DeclineModal';
 import RequestModal from '../Components/RequestModal';
 import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {isValidCoordinate} from 'geolib';
 
 const MapScreen = props => {
-  const mapRef = useRef();
   const ridedata = props?.route?.params?.ridedata;
+  console.log(
+    '🚀 ~ ridedata======================================== >>:',
+    ridedata,
+  );
   const fromDelivery = props?.route?.params?.fromDelivery;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const delivery_Id = props?.route?.params?.delivery_Id;
   const nearestcab = props?.route?.params?.isEnabled;
-  const fromrideScreen = props?.route?.params?.fromrideScreen;
 
   const token = useSelector(state => state.authReducer.token);
+  const mapRef = useRef();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [declineModal, setDeclineModal] = useState(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
-  console.log('🚀 ~ rideId:', rideId);
   const [rideStatus, setRideStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -118,6 +118,7 @@ const MapScreen = props => {
   };
 
   const requestforRide = async () => {
+    console.log('========================= >>>>>>>>>>>>>>>>>>');
     const formData = new FormData();
     const body = {
       location_from: ridedata?.pickupLocation?.name,
@@ -130,11 +131,12 @@ const MapScreen = props => {
       payment_method: paymentMethod,
       nearest_cab: nearestcab,
       distance: ridedata?.distance,
-      cab_type: ridedata?.CabType?.name,
+      cab_type: JSON.stringify(ridedata?.cabtype, null, 2),
       time: ridedata?.time,
       category: ridedata?.data?.title,
       type: ridedata?.data?.title,
     };
+
     ridedata?.multiplePickups?.forEach((item, index) => {
       formData.append(`pickup[${index}][lat]`, item?.lat);
       formData.append(`pickup[${index}][lng]`, item?.lng);
@@ -142,12 +144,16 @@ const MapScreen = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
+
+    console.log(
+      '🚀 ~ requestforRide ~ response================ >>>>>:',
+      JSON.stringify(formData, null, 2),
+    );
     const url = 'auth/bookride';
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     setIsLoading(false);
     if (response != undefined) {
-  //  return    console.log("🚀 ~ requestforRide ~ response:", response?.data)
       setRideID(response?.data?.data?.ride_info?.ride_id);
       setRideStatus(response?.data.data?.ride_info?.status);
       setIsModalVisible(true);
@@ -158,15 +164,13 @@ const MapScreen = props => {
     const reference = database().ref(
       `/requests/${fromDelivery ? delivery_Id : rideId}`,
     );
-    console.log("🚀 ~ useEffect ~ reference:", reference)
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log('🚀 ~ useEffect ~ data:================sss=============', data?.ride_info?.status);
+
         if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
           setRideuptedData(data);
           setModalVisible(true);
-          // setStatus(data.status);
         }
       }
     });

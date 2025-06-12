@@ -38,7 +38,7 @@ const RateScreen = props => {
                 source={require('../Assets/Images/riderphoto.png')}
               />
             </View>
-            <CustomText style={styles.name}>Theodora J. Gardner</CustomText>
+            <CustomText style={styles.name}>{data?.ride_info?.rider?.name}</CustomText>
             <TouchableOpacity style={styles.button}>
               <CustomText style={styles.ride_status}>COMPLETE</CustomText>
             </TouchableOpacity>
@@ -239,11 +239,13 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12, 0.6),
     color: Color.themeBlack,
     fontWeight: 'bold',
+    width :windowWidth*0.6,
+    // backgroundColor :'red'
   },
   value: {
     fontSize: moderateScale(10, 0.6),
     color: Color.themeBlack,
-    width: '90%',
+    width: '50%',
     fontWeight: 'bold',
   },
   rotate_View: {
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(10, 0.6),
     color: Color.themeBlack,
     fontWeight: 'bold',
-    width: '80%',
+    width: '70%',
   },
   trip_t: {
     fontSize: moderateScale(12, 0.6),

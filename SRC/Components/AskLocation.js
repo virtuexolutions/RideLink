@@ -11,6 +11,7 @@ import CustomText from './CustomText';
 import SearchLocationModal from './SearchLocationModal';
 
 const AskLocation = ({
+  useCurrentLocation,
   setCurrentPosition,
   currentPosition,
   address,
@@ -40,6 +41,8 @@ const AskLocation = ({
   setAdditionalLocation,
   fromrequest,
 }) => {
+  console.log("🚀 ~ pickupLocationName:", pickupLocationName)
+  console.log("🚀 ~ pickupLocation:", pickupLocation)
   const [addLocation, setAddLocation] = useState(false);
   return (
     <View style={[styles.location_View, main_view_style]}>
@@ -199,7 +202,7 @@ const AskLocation = ({
         </View>
       )}
       <SearchLocationModal
-        onPressonPressCurrentLocation={onPressCurrentLocation}
+        onPressCurrentLocation={onPressCurrentLocation}
         setcurrentPossition={setCurrentPosition}
         currentPosition={currentPosition}
         setAddress={setAddress}
@@ -213,6 +216,7 @@ const AskLocation = ({
         setAdditionalLocation={setAdditionalLocation}
         additionalLocation={additionalLocation}
         addLocation={addLocation}
+        
       />
       <AskLocationComponent
         visible={addLocation}

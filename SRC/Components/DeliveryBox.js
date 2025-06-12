@@ -8,7 +8,6 @@ import CustomImage from './CustomImage';
 import CustomText from './CustomText';
 
 const DeliveryBox = ({data}) => {
-  console.log("🚀 ~ DeliveryBox ~ data:", data)
   return (
     <>
       <TouchableOpacity

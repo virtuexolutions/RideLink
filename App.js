@@ -1,15 +1,6 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
-// import {StripeProvider} from '@stripe/stripe-react-native';
 import messaging from '@react-native-firebase/messaging';
 import {NativeBaseProvider} from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
@@ -116,14 +107,8 @@ const App = () => {
   return (
     <StripeProvider
       publishableKey={
-        'pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12'
-      }
-      // publishableKey={
-      //   'pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12'
-      // }
-      // merchantIdentifier="merchant.identifier" // required for Apple Pay
-      // urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
-    >
+        'pk_test_51McSueJ0WRwehn2Uuf4rm6WNHPQvaJY9NGU235gUEqPA3AJuc9Mq1x98Y8B8uE5eMfivo5l2xK4Vau21zau7ZBDp00g7qWfkx3'
+      }>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <NativeBaseProvider>
@@ -179,13 +164,10 @@ const App = () => {
         )}
       </Provider>
     </StripeProvider>
-  )
-}
+  );
+};
 
 const MainContainer = () => {
-  // const isFocused = useIsFocused()
-  // const dispatch = useDispatch();
-
   useEffect(() => {
     async function GetPermission() {
       await requestLocationPermission();
@@ -197,17 +179,17 @@ const MainContainer = () => {
 
   const [isloading] = useloader(true);
   if (isloading == true) {
-    return <SplashScreen />
+    return <SplashScreen />;
   }
-  return <AppNavigator />
-}
+  return <AppNavigator />;
+};
 
 const useloader = value => {
-  const [isloading, setIsloading] = useState(value)
-  const [loadingTime] = useState(5000)
+  const [isloading, setIsloading] = useState(value);
+  const [loadingTime] = useState(5000);
   useEffect(() => {
-    setTimeout(() => setIsloading(false), loadingTime)
-  }, [])
-  return [isloading]
-}
+    setTimeout(() => setIsloading(false), loadingTime);
+  }, []);
+  return [isloading];
+};
 export default App;

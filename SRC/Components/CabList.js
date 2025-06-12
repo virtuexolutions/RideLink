@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   FlatList,
   ScrollView,
@@ -17,34 +17,32 @@ import CustomButton from './CustomButton';
 import navigationService from '../navigationService';
 import {Icon} from 'native-base';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import RequestForDelivery from './RequestForDelivery';
 
 const CabList = ({data, setRef, rbRef, setClientReview}) => {
+  console.log("🚀 ~ CabList ~ data:", data)
   const token = useSelector(state => state.authReducer.token);
+
+  const deliveryRef = useRef(null);
   const [selectedCab, setSelectedCab] = useState(null);
   const standardCabs = [
     {
       id: 1,
       cabName: 'Lynk X',
       feature: 'Budget-friendly everyday rides.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 2,
       cabName: 'Lynk Plus',
       feature: 'Spacious, newer vehicles with extra comfort.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 3,
       cabName: 'Lynk XL',
       feature: 'Budget-friendly larger vehicles for up to 6 passengers.',
-      price: 'varies',
       capacity: 6,
-      time: 'Real time in Minutes, wait time',
     },
   ];
 
@@ -53,25 +51,19 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
       id: 1,
       cabName: 'LynkEase',
       feature: 'Smooth, quiet rides with additional comfort.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 2,
       cabName: 'Lynk Eco',
       feature: 'Eco-friendly rides in hybrid or electric vehicles',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 3,
       cabName: 'Lynk Pet',
       feature: 'Pet-friendly rides for passengers traveling with pets.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
   ];
 
@@ -80,34 +72,26 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
       id: 1,
       cabName: 'Lynk SUV',
       feature: 'High-end luxury rides with professional drivers.',
-      price: 'varies',
       capacity: 6,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 2,
       cabName: 'Lynk Max',
       feature: 'Vans or large vehicles for events and group travel.',
-      price: 'varies',
       capacity: 6,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 3,
       cabName: 'Taxi',
       feature: 'Traditional friendly Local Taxi.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
     {
       id: 4,
       cabName: 'LynkAccess',
       feature:
         'Wheelchair-accessible vehicles for passengers with disabilities.',
-      price: 'varies',
       capacity: 4,
-      time: 'Real time in Minutes, wait time',
     },
   ];
 
@@ -126,17 +110,12 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
       }}>
       <CustomText style={styles.main_heading}>choose a ride</CustomText>
       <ScrollView
-        style={
-          {
-            // height: '100%',
-          }
-        }
+     
         showsVerticalScrollIndicator={false}>
         <View style={styles.main_con}>
           <CustomText style={styles.h1}>Standered</CustomText>
           <View>
             <FlatList
-            
               contentContainerStyle={{
                 marginBottom: moderateScale(10, 0.6),
                 alignItems: 'center',
@@ -217,13 +196,25 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
             text={'Choose Lynk Cab'}
             isBold
             onPress={() => {
-              selectedCab != null &&
-                navigationService.navigate('FareScreen', {
-                  rideData: {...data, cabtype: selectedCab},
-                });
+              selectedCab != null && data?.data?.title == 'ride'
+                ? navigationService.navigate('FareScreen', {
+                    rideData: {...data, cabtype: selectedCab},
+                  })
+                : deliveryRef.current.open();
+
+              // rbRef.current.close()
             }}
           />
         </View>
+        <RequestForDelivery
+          rbRef={deliveryRef}
+          item={{
+            pickupLocation: data?.pickupLocation,
+            dropLocation: data?.dropoffLocation,
+            fare: data?.fare,
+            data: data?.data,
+          }}
+        />
       </ScrollView>
     </RBSheet>
   );
@@ -232,10 +223,6 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
 export default CabList;
 
 const styles = StyleSheet.create({
-  main_con: {
-    // alignItems: 'center',
-    //  height: windowHeight * 0.9
-  },
   h1: {
     fontSize: moderateScale(16, 0.6),
     textAlign: 'left',
@@ -263,29 +250,42 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
         height: windowHeight * 0.12,
         marginVertical: moderateScale(5.3),
         borderRadius: 10,
+        backgroundColor: Color.white,
         flexDirection: 'row',
         borderWidth: item?.cabName == selectedCab?.cabName ? 0.7 : 0.3,
         borderColor:
           item?.cabName == selectedCab?.cabName ? Color.black : 'transparent',
         justifyContent: 'space-between',
         paddingVertical: moderateScale(10, 0.6),
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+
+        elevation: 4,
       }}>
       <View
         style={{
           flexDirection: 'row',
-          // alignItems :'center',
         }}>
         <View
           style={{
-            height: windowHeight * 0.1,
-            width: windowWidth * 0.2,
+            height: windowHeight * 0.07,
+            width: windowWidth * 0.24,
+            marginTop: moderateScale(14, 0.3),
           }}>
           <CustomImage
+            onPress={() => {
+              setSelectedCab(item);
+            }}
             style={{
               height: '100%',
               width: '100%',
             }}
-            source={require('../Assets/Images/parcelimage.png')}
+            source={require('../Assets/Images/cab_image.jpg')}
           />
         </View>
         <View
@@ -297,9 +297,6 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
           <View
             style={{
               flexDirection: 'row',
-              // paddingHorizontal: moderateScale(10, 0.6),
-
-              // width: windowWidth * 0.5,
             }}>
             <CustomText
               numberOfLines={1}
@@ -332,7 +329,7 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
             style={{
               fontSize: moderateScale(10, 0.6),
             }}>
-            {data?.time }
+            {`${data?.time} min`}
           </CustomText>
           <CustomText
             numberOfLines={2}
@@ -348,7 +345,7 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
           paddingHorizontal: moderateScale(10, 0.6),
           paddingTop: moderateScale(10, 0.6),
         }}>
-        <CustomText>&73.99 </CustomText>
+        <CustomText>{`$${data?.fare}`} </CustomText>
       </View>
     </TouchableOpacity>
   );

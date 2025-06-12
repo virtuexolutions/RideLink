@@ -1,37 +1,32 @@
-import {useIsFocused} from '@react-navigation/native';
-import {getDistance} from 'geolib';
-import {Icon} from 'native-base';
-import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { getDistance, isValidCoordinate } from 'geolib';
+import { Icon } from 'native-base';
+import React, { useEffect, useRef, useState } from 'react';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import AdditionalTimeModal from '../Components/AdditionalTimeModal';
-import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import {customMapStyle} from '../Utillity/mapstyle';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { customMapStyle } from '../Utillity/mapstyle';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 
 const RideScreen = ({route}) => {
-  const {data, type} = route?.params;
-  console.log("🚀 ~ data:", data)
-  const rideData = route?.params?.data;
+  const {data, type, status} = route?.params;
 
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
 
   const token = useSelector(state => state.authReducer.token);
-  const [additionalTimeModal, setAdditionalTimeModal] = useState(false);
+  const [isNearDestination, setIsNearDestination] = useState(false);
+
   const [currentPosition, setCurrentPosition] = useState({
     // latitude: 0,
     // longitude: 0,
@@ -41,57 +36,28 @@ const RideScreen = ({route}) => {
   const apikey = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
   const origin = {
     lat:
-      type === 'details'
-        ? currentPosition?.latitude
-        : parseFloat(data?.ride_info?.pickup_location_lat),
+      // type === 'details'
+      currentPosition?.latitude,
+    // : parseFloat(data?.ride_info?.pickup_location_lat),
     lng:
-      type === 'details'
-        ? currentPosition?.longitude
-        : parseFloat(data?.ride_info?.pickup_location_lng),
+      // type === 'details'
+      currentPosition?.longitude,
+    // : parseFloat(data?.ride_info?.pickup_location_lng),
   };
   const destination = {
     lat:
-      type === 'details'
-        ? parseFloat(data?.pickup_location_lat)
-        : parseFloat(data?.ride_info?.rider?.lat),
+      // type === 'details'
+      // ?
+      parseFloat(data?.dropoff_location_lat),
+    // : parseFloat(data?.ride_info?.rider?.lat),
     lng:
-      type === 'details'
-        ? parseFloat(data?.pickup_location_lng)
-        : parseFloat(data?.ride_info?.rider?.lng),
+      // type === 'details'
+      // ?
+      parseFloat(data?.dropoff_location_lng),
+    // : parseFloat(data?.ride_info?.rider?.lng),
   };
 
-  useEffect(() => {
-    if (currentPosition && data?.pickup_location_lat != null) {
-      const dropLocation = {
-        latitude: parseFloat(data?.pickup_location_lat),
-        longitude: parseFloat(data?.pickup_location_lng),
-      };
-      const checkDistanceBetween = getDistance(currentPosition, dropLocation);
-      let km = Math.round(checkDistanceBetween / 1000);
-      const getTravelTime = async () => {
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
-        try {
-          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${currentPosition?.latitude},${currentPosition?.longitude}&destinations=${dropLocation.latitude},${dropLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          if (data.status === 'OK') {
-            const distanceMatrix = data.rows[0].elements[0];
-            const travelTime = distanceMatrix.duration.text;
-            return setTime(travelTime);
-          } else {
-            console.error('Error fetching travel time:', data.status);
-            return null;
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      };
-      getTravelTime();
-    }
-  }, [currentPosition]);
+ 
 
   useEffect(() => {
     getCurrentLocation();
@@ -106,28 +72,32 @@ const RideScreen = ({route}) => {
           latitude,
           longitude,
         }));
-        const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
-          Math.abs(lat1 - lat2) < threshold &&
-          Math.abs(lon1 - lon2) < threshold;
-        if (
-          isLocationClose(
-            37.4219983,
-            -122.084,
-            37.43312021060092,
-            -122.08768555488422,
-          )
-        ) {
-          // if (isLocationClose(latitude, !isriderArrive ? origin?.lat : destination?.lat, longitude,!isriderArrive ?  origin?.lng : destination?.lng)) {
-          console.log(
-            'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
-            latitude,
-            origin.lat,
-            longitude,
-            origin.lng,
-          );
 
-          setIsRiderArrived(true);
-        }
+        const distance = getDistance(currentPosition, destination); // in meters
+        setIsNearDestination(distance <= 20);
+
+        // const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
+        //   Math.abs(lat1 - lat2) < threshold &&
+        //   Math.abs(lon1 - lon2) < threshold;
+        // if (
+        //   isLocationClose(
+        //     37.4219983,
+        //     -122.084,
+        //     37.43312021060092,
+        //     -122.08768555488422,
+        //   )
+        // ) {
+        //   // if (isLocationClose(latitude, !isriderArrive ? origin?.lat : destination?.lat, longitude,!isriderArrive ?  origin?.lng : destination?.lng)) {
+        //   console.log(
+        //     'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
+        //     latitude,
+        //     origin.lat,
+        //     longitude,
+        //     origin.lng,
+        //   );
+
+        //   setIsRiderArrived(true);
+        // }
       },
       error => console.log('Error getting location:', error),
       {
@@ -237,13 +207,16 @@ const RideScreen = ({route}) => {
               }
             }}
           />
-          <Marker
-            pinColor={Color.black}
-            coordinate={{
-              latitude: destination?.lat,
-              longitude: destination?.lng,
-            }}
-          />
+          {Object.keys(destination)?.length > 0 &&
+            isValidCoordinate(destination) && (
+              <Marker
+                pinColor={Color.black}
+                coordinate={{
+                  latitude: destination?.lat,
+                  longitude: destination?.lng,
+                }}
+              />
+            )}
         </MapView>
         <View
           style={[
@@ -257,7 +230,7 @@ const RideScreen = ({route}) => {
               <CustomImage
                 source={require('../Assets/Images/user.png')}
                 style={{
-                  backgroundColor :'red',
+                  backgroundColor: 'red',
                   width: '100%',
                   height: '100%',
                   borderRadius: windowWidth,
@@ -275,7 +248,7 @@ const RideScreen = ({route}) => {
                   fontSize: moderateScale(13, 0.6),
                   color: Color.black,
                 }}>
-                {rideData?.ride_info?.rider?.name}
+                {data?.rider?.name}
               </CustomText>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <CustomText
@@ -292,7 +265,7 @@ const RideScreen = ({route}) => {
                     color: Color.veryLightGray,
                     marginLeft: moderateScale(8, 0.6),
                   }}>
-                  {rideData?.ride_info?.status}
+                  {data?.status}
                 </CustomText>
               </View>
             </View>
@@ -314,7 +287,7 @@ const RideScreen = ({route}) => {
               <Icon
                 onPress={() => {
                   navigationService.navigate('MessagesScreen', {
-                    data: rideData,
+                    data: data,
                     fromDelivery: true,
                   });
                 }}
@@ -328,103 +301,8 @@ const RideScreen = ({route}) => {
           </View>
         </View>
 
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 100,
-            alignSelf: 'center',
-          }}>
-          <View
-            style={[
-              styles.waiting_card,
-              {
-                height: windowHeight * 0.25,
-              },
-            ]}>
-            <View style={[styles.row_view, {justifyContent: 'center'}]}>
-              <CustomText style={styles.text_view}>Waiting PickUp</CustomText>
-              <Icon
-                name="cross"
-                as={Entypo}
-                size={moderateScale(18, 0.6)}
-                color={Color.veryLightGray}
-                style={{position: 'absolute', right: 0}}
-              />
-            </View>
-            <View style={styles.location_text_view}>
-              <Icon
-                name="map-marker-alt"
-                as={FontAwesome5}
-                size={moderateScale(14, 0.6)}
-                color={Color.veryLightGray}
-                style={{left: 5}}
-              />
-              <CustomText numberOfLines={1} style={styles.text}>
-                {rideData?.ride_info?.location_from}
-              </CustomText>
-            </View>
-            <View
-              style={[
-                styles.location_text_view,
-                {marginTop: moderateScale(10, 0.6)},
-              ]}>
-              <Icon
-                name="map-marker-alt"
-                as={FontAwesome5}
-                size={moderateScale(14, 0.6)}
-                color={Color.veryLightGray}
-                style={{left: 5}}
-              />
-              <CustomText numberOfLines={1} style={styles.text}>
-                {rideData?.ride_info?.location_to}
-              </CustomText>
-            </View>
-            <View
-              style={[styles.row_view, {marginTop: moderateScale(10, 0.6)}]}>
-              <TouchableOpacity
-                style={{}}
-                onPress={() => {
-                  navigationService.navigate('ChooseDeclineReasonScreen', {
-                    data: rideData,
-                  });
-                }}>
-                <CustomText
-                  onPress={() => {
-                    navigationService.navigate('ChooseDeclineReasonScreen', {
-                      data: rideData,
-                    });
-                  }}
-                  style={styles.text2}>
-                  CANCEL RIDE
-                </CustomText>
-              </TouchableOpacity>
-            </View>
-            <CustomButton
-              text={'PAY Now'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={Color.white}
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.85}
-              marginTop={moderateScale(10, 0.3)}
-              height={windowHeight * 0.07}
-              bgColor={Color.themeBlack}
-              textTransform={'capitalize'}
-              isBold
-              onPress={() =>
-                navigationService.navigate('PaymentScreen', {
-                  data: rideData,
-                })
-              }
-            />
-          </View>
-        </View>
       </View>
-      {/* <AdditionalTimeModal
-        setAdditionalTime={setAdditionalTime}
-        modalvisibe={additionalTimeModal}
-        setTime={setAddTime}
-        setModalVisible={setAdditionalTimeModal}
-      /> */}
+    
     </SafeAreaView>
   );
 };

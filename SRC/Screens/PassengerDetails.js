@@ -43,7 +43,7 @@ const PassengerDetails = ({route}) => {
           isButton={type === 'fromDecline' ? true : false}
           btn_text={'Decline'}
         />
-        {type === 'passangerIdentity' ? (
+        {/* {type === 'passangerIdentity' ? (
           <View>
             <View
               style={[
@@ -178,7 +178,7 @@ const PassengerDetails = ({route}) => {
             />
           </View>
         ) : (
-          <>
+          <> */}
             <View style={styles.search_conatiner}>
               <CustomText isBold style={styles.heading}>
                 Payment Method
@@ -289,8 +289,8 @@ const PassengerDetails = ({route}) => {
                 }}
               />
             </View>
-          </>
-        )}
+          {/* </>
+        // )} */}
       </View>
     </SafeAreaView>
   );

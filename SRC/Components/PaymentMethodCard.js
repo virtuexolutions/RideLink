@@ -144,9 +144,9 @@ const PaymentMethodCard = ({
               <TouchableOpacity
                 onPress={() => setPaymentMethod('card')}
                 style={styles.check_box}>
-                {paymentMethod.toLowerCase() === 'card' && (
+                {/* {paymentMethod.toLowerCase() === 'card' && ( */}
                   <View style={styles.dot} />
-                )}
+                {/* // )} */}
               </TouchableOpacity>
               <CustomText style={styles.sub_text}>Credit Card</CustomText>
             </View>

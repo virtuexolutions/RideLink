@@ -16,6 +16,7 @@ import {useDispatch} from 'react-redux';
 import {setDropoffLocation} from '../Store/slices/common';
 
 const SearchLocationModal = ({
+  
   isModalVisible,
   setIsModalVisible,
   setAddress,

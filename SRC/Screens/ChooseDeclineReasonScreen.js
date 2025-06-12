@@ -22,14 +22,14 @@ const ChooseDeclineReasonScreen = prop => {
   const data = prop?.route?.params?.data;
   const token = useSelector(state => state.authReducer.token);
   const array = [
-    {id: 1, reason: 'Price too High', checked: true},
-    {id: 2, reason: 'Long Wait Time', checked: true},
-    {id: 3, reason: 'Poor Vehicle Condition', checked: true},
-    {id: 4, reason: 'Safety Concerns', checked: true},
-    {id: 5, reason: 'Inconvenient Payment Options', checked: true},
-    {id: 6, reason: 'Negative Past Experience', checked: true},
-    {id: 7, reason: 'Preference for Ride-Hailing Apps', checked: true},
-    {id: 8, reason: 'Unfamiliarity with the Service', checked: true},
+    // {id: 1, reason: 'Price too High', checked: true},
+    // {id: 2, reason: 'Long Wait Time', checked: true},
+    // {id: 3, reason: 'Poor Vehicle Condition', checked: true},
+    // {id: 4, reason: 'Safety Concerns', checked: true},
+    // {id: 5, reason: 'Inconvenient Payment Options', checked: true},
+    // {id: 6, reason: 'Negative Past Experience', checked: true},
+    // {id: 7, reason: 'Preference for Ride-Hailing Apps', checked: true},
+    // {id: 8, reason: 'Unfamiliarity with the Service', checked: true},
     {id: 9, reason: 'Route Concerns', checked: true},
     {id: 10, reason: 'Rider no-show', checked: true},
     {id: 11, reason: 'Wrong address', checked: true},
@@ -42,15 +42,17 @@ const ChooseDeclineReasonScreen = prop => {
 
   const rideCancel = async () => {
     const body = {
+      rider_id: data?.rider?.id,
       status: 'cancel',
       reason: reason?.reason,
+      cancel_from: 'user',
     };
-    const url = `auth/ride_cancel/${data?.id}`;
+    const url = `auth/ride_cancel/${data?.ride_id}`;
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLoading(false);
     if (response != undefined) {
-      navigationService.navigate('MapScreen', {
+      navigationService.navigate('Home', {
         ridedata: data,
         fromrideScreen: true,
       });
@@ -61,7 +63,7 @@ const ChooseDeclineReasonScreen = prop => {
     <SafeAreaView>
       <Header
         headerColor={'transparent'}
-        title={'Chooose Decline Reason'}
+        title={'Why are you canceling'}
         showBack={true}
       />
       <View style={styles.mainView}>

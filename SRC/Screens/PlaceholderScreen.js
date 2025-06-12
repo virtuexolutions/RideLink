@@ -37,7 +37,7 @@ const PlaceHolderScreen = () => {
         const status = ride?.ride_info?.status?.toLowerCase();
         const goHomeStatuses = [
           'pending',
-          'cancelled',
+          'cancel',
           'completed',
           'reviewed',
         ];

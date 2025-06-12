@@ -188,7 +188,7 @@ const Home = () => {
                     data={item?.ride_info}
                     onPressDetails={() => {
                       activebutton === 'ride'
-                        ? navigationService.navigate('RideScreen', {
+                        ? navigationService.navigate('TrackingScreen', {
                             data: item?.ride_info,
                           })
                         : navigationService.navigate('ParcelTrackingScreen', {

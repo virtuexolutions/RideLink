@@ -30,7 +30,7 @@ import database from '@react-native-firebase/database';
 import navigationService from '../navigationService';
 
 const RequestForDelivery = ({setRef, rbRef, item}) => {
-  console.log('🚀 ~ RequestForDelivery ~ item:', item?.data?.title);
+  console.log('🚀 ~ RequestForDelivery ~ item:', item);
   const token = useSelector(state => state.authReducer.token);
   const [pickupEntrance, setPickupEnternce] = useState('');
   const [pickupAppartment, setPickupAppartment] = useState('');

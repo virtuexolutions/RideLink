@@ -2,14 +2,21 @@ import {useIsFocused} from '@react-navigation/native';
 import database from '@react-native-firebase/database';
 import {Icon} from 'native-base';
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, Linking, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Linking,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Pusher} from '@pusher/pusher-websocket-react-native';
-import {isValidCoordinate} from 'geolib';
+import {getDistance, isValidCoordinate} from 'geolib';
 import MapViewDirections from 'react-native-maps-directions';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
@@ -22,10 +29,15 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 import LottieView from 'lottie-react-native';
 import CustomButton from '../Components/CustomButton';
 import RideCancel from '../Components/RideCancel';
+import {
+  background,
+  border,
+  color,
+  position,
+} from 'native-base/lib/typescript/theme/styled-system';
 
 const TrackingScreen = props => {
   const ridedata = props?.route?.params?.data;
-  console.log('🚀 ~ ridedata:', ridedata?.ride_info?.rider?.phone);
 
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -34,28 +46,48 @@ const TrackingScreen = props => {
   const pusher = Pusher.getInstance();
   const myChannel = useRef(null);
   const timeoutRef = useRef(null);
-  console.log('🚀 ~aaaa timeoutRef:', timeoutRef);
   const isFocused = useIsFocused();
 
   const [isRouteFitted, setIsRouteFitted] = useState(false);
-  const [origin, setOrigin] = useState({
-    latitude: parseFloat(ridedata?.ride_info?.rider?.lat),
-    longitude: parseFloat(ridedata?.ride_info?.rider?.lng),
-  });
+
   const [isVisible, setIsVisible] = useState(false);
-  console.log('🚀 ~ isVisible:', isVisible);
+
+  const [updatedStatus, setupdatedStatus] = useState(true);
 
   const [canCancel, setCanCancel] = useState(true);
-  console.log('🚀 ~ //useEffect ~ canCancel:', canCancel);
+
+  const [isNearDestination, setIsNearDestination] = useState(false);
+
   const destination = {
-    latitude: parseFloat(ridedata?.ride_info?.pickup_location_lat),
-    longitude: parseFloat(ridedata?.ride_info?.pickup_location_lng),
+    latitude: parseFloat(
+      updatedStatus == 'ontheway'
+        ? ridedata?.ride_info?.dropoff_location_lat
+        : ridedata?.ride_info?.pickup_location_lat,
+    ),
+    longitude: parseFloat(
+      updatedStatus == 'ontheway'
+        ? ridedata?.ride_info?.dropoff_location_lng
+        : ridedata?.ride_info?.pickup_location_lng,
+    ),
   };
   const waypoints = [ridedata?.ride_info?.pickup];
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
+  const [origin, setOrigin] = useState({
+    latitude: parseFloat(
+      updatedStatus == 'ontheway'
+        ? currentPosition?.latitude
+        : ridedata?.ride_info?.rider?.lat,
+    ),
+    longitude: parseFloat(
+      updatedStatus == 'ontheway'
+        ? currentPosition?.longitude
+        : ridedata?.ride_info?.rider?.lng,
+    ),
+  });
+
   useEffect(() => {
     getCurrentLocation();
   }, [isFocused]);
@@ -172,57 +204,59 @@ const TrackingScreen = props => {
     };
   }, [isFocused]);
   const apikey = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
-  // useEffect(() => {
-  // //   const watchId = Geolocation.watchPosition(
-  // //     position => {
-  // //       const {latitude, longitude} = position.coords;
-  // //       setCurrentPosition(prevLocation => ({
-  // //         ...prevLocation,
-  // //         latitude,
-  // //         longitude,
-  // //       }));
-  // //       const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
-  // //         Math.abs(lat1 - lat2) < threshold &&
-  // //         Math.abs(lon1 - lon2) < threshold;
-  // //       // if (
-  // //       //   isLocationClose(
-  // //       //     37.4219983,
-  // //       //     -122.084,
-  // //       //     37.43312021060092,
-  // //       //     -122.08768555488422,
-  // //       //   )
-  // //       // ) {
-  // //       if (
-  // //         isLocationClose(
-  // //           // latitude,
-  // //           24.8612199,
-  // //           destination?.lat,
-  // //           // longitude,
-  // //           67.0695211,
-  // //           destination?.lng,
-  // //         )
-  // //       ) {
-  // //         console.log(
-  // //           'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
-  // //           24.8612199,
-  // //           destination?.lat,
-  // //           67.0695211,
-  // //           destination?.lng,
-  // //         );
-  // //         setIsRiderArrived(true);
-  // //       }
-  // //     },
-  // //     error => console.log('Error getting location:', error),
-  // //     {
-  // //       enableHighAccuracy: true,
-  // //       distanceFilter: 1,
-  // //       interval: 1000,
-  // //     },
-  // //   );
-  // //   return () => {
-  // //     Geolocation.clearWatch(watchId);
-  // //   };
-  // // }, [isFocused]);
+  useEffect(() => {
+    const watchId = Geolocation.watchPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setCurrentPosition(prevLocation => ({
+          ...prevLocation,
+          latitude,
+          longitude,
+        }));
+        // const isLocationClose = (lat1, lon1, lat2, lon2, threshold = 0.0001) =>
+        //   Math.abs(lat1 - lat2) < threshold &&
+        //   Math.abs(lon1 - lon2) < threshold;
+        // // if (
+        // //   isLocationClose(
+        // //     37.4219983,
+        // //     -122.084,
+        // //     37.43312021060092,
+        // //     -122.08768555488422,
+        // //   )
+        // // ) {
+        // if (
+        //   isLocationClose(
+        //     // latitude,
+        //     24.8612199,
+        //     destination?.lat,
+        //     // longitude,
+        //     67.0695211,
+        //     destination?.lng,
+        //   )
+        // ) {
+        //   console.log(
+        //     'location same eeeeeeeeeeeeeeeeeeeeeeeeee',
+        //     24.8612199,
+        //     destination?.lat,
+        //     67.0695211,
+        //     destination?.lng,
+        //   );
+        //   setIsRiderArrived(true);
+        // }
+        const distance = getDistance(currentPosition, destination); // in meters
+        setIsNearDestination(distance <= 20);
+      },
+      error => console.log('Error getting location:', error),
+      {
+        enableHighAccuracy: true,
+        distanceFilter: 1,
+        interval: 1000,
+      },
+    );
+    return () => {
+      Geolocation.clearWatch(watchId);
+    };
+  }, [isFocused]);
 
   // // useEffect(() => {
   // //   const reference = database().ref(
@@ -240,21 +274,22 @@ const TrackingScreen = props => {
   // //   return () => reference.off('value', listener);
   // // }, [ridedata?.ride_info?.ride_id]);
 
-  const handleCancelPress = () => {
-    if (canCancel) {
-      // Alert.alert(
-      //   'Ride Canceled',
-      //   'You have canceled your ride within the free time.',
-      // );
-      clearTimeout(timeoutRef.current);
-    } else {
-      navigationService.navigate('ChooseDeclineReasonScreen', {
-        data: ridedata,
-      });
-    }
-  };
+  // const handleCancelPress = () => {
+  //   if (canCancel) {
+  //     // Alert.alert(
+  //     //   'Ride Canceled',
+  //     //   'You have canceled your ride within the free time.',
+  //     // );
+  //     clearTimeout(timeoutRef.current);
+  //   } else {
+  //     navigationService.navigate('ChooseDeclineReasonScreen', {
+  //       data: ridedata,
+  //     });
+  //   }
+  // };
 
-  useEffect(() => {0
+  useEffect(() => {
+    0;
     timeoutRef.current = setTimeout(() => {
       setCanCancel(false);
     }, 60000);
@@ -262,26 +297,27 @@ const TrackingScreen = props => {
     return () => clearTimeout(timeoutRef.current);
   }, [isFocused]);
 
-  // useEffect(() => {
-  //   const reference = database().ref(
-  //     `/requests/${ridedata?.ride_info?.ride_id}`,
-  //   );
-  //   console.log('🚀 ~ useEffect ~ reference:', reference);
-  //   const listener = reference.on('value', snapshot => {
-  //     if (snapshot.exists()) {
-  //       const data = snapshot.val();
-  //       console.log(
-  //         '🚀 ~ useEffect ~ data:================sss=============',
-  //         data?.ride_info?.status,
-  //       );
-  //       if (data?.ride_info?.status && data?.ride_info?.status == 'cancelled') {
-  //         setIsVisible(true);
-  //       }
-  //     }
-  //   });
+  useEffect(() => {
+    const reference = database().ref(
+      `/requests/${ridedata?.ride_info?.ride_id}`,
+    );
+    console.log('🚀 ~ useEffect ~ reference:', reference);
+    const listener = reference.on('value', snapshot => {
+      if (snapshot.exists()) {
+        const data1 = snapshot.val();
+        console.log(
+          '🚀 ~ useEffect ~ data:================sss=============',
+          data1?.ride_info?.status,
+        );
+        if (data1?.ride_info?.status) {
+          setupdatedStatus(data1?.ride_info?.status);
+        }
+      
+      }
+    });
 
-  //   return () => reference.off('value', listener);
-  // }, [ridedata?.ride_info?.ride_id]);
+    return () => reference.off('value', listener);
+  }, [ridedata?.ride_info?.ride_id]);
 
   return (
     <SafeAreaView style={styles.safe_are}>
@@ -406,7 +442,7 @@ const TrackingScreen = props => {
                     color: Color.veryLightGray,
                     marginLeft: moderateScale(8, 0.6),
                   }}>
-                  {ridedata?.ride_info?.status}
+                  {updatedStatus}
                 </CustomText>
               </View>
             </View>
@@ -420,9 +456,9 @@ const TrackingScreen = props => {
                 paddingTop: moderateScale(5, 0.6),
               }}>
               <Icon
-              onPress={() =>{
-                Linking.openURL(`tel:${ridedata?.ride_info?.rider?.phone}`);
-              }}
+                onPress={() => {
+                  Linking.openURL(`tel:${ridedata?.ride_info?.rider?.phone}`);
+                }}
                 style={styles.icons}
                 name={'call'}
                 as={Ionicons}
@@ -443,40 +479,62 @@ const TrackingScreen = props => {
                 color={'white'}
               />
             </View>
+            {/* <TouchableOpacity> */}
+            {/* </TouchableOpacity> */}
           </View>
-        </View>
-        <View
-          style={{
-            // backgroundColor: 'red',
-            width: windowWidth,
-            height: windowHeight,
-            position: 'absolute',
-            bottom: -680,
-          }}>
-          <CustomButton
-            width={windowWidth * 0.9}
-            height={windowHeight * 0.08}
-            bgColor={Color.themeBlack}
-            borderRadius={moderateScale(30, 0.3)}
-            textColor={Color.white}
-            textTransform={'none'}
-            text={
-              'Cancel Ride'
-              // isLoading ? (
-              //   <ActivityIndicator size={'small'} color={Color.white} />
-              // ) : (
-              //   'Request'
-              // )
-            }
-            isBold
-            onPress={() => {
-              handleCancelPress();
-              // navigationService.navigate('ChooseDeclineReasonScreen', {
-              //   data: ridedata,
-              // });
+          {updatedStatus == 'riderOntheWay' && (
+            <CustomText
+            onPress={() =>{
+              navigationService.navigate('ChooseDeclineReasonScreen' ,{data : ridedata?.ride_info })
             }}
-          />
+              style={{
+                backgroundColor: Color.black,
+                padding: moderateScale(5, 0.6),
+                paddingHorizontal: moderateScale(10, 0.6),
+                color: Color.white,
+                fontSize: moderateScale(14, 0.6),
+                borderRadius: moderateScale(10, 0.6),
+                position: 'absolute',
+                right: 10,
+                bottom: -40,
+              }}>
+              cancel
+            </CustomText>
+            )} 
         </View>
+        {isNearDestination ||updatedStatus == 'complete' && (
+          <View
+            style={{
+              backgroundColor: 'red',
+              width: windowWidth,
+              // height: windowHeight,
+              position: 'absolute',
+              bottom: 90,
+            }}>
+            <CustomButton
+              style={{
+                position: 'absolute',
+                bottom: 30,
+              }}
+              text={'PAY Now'}
+              fontSize={moderateScale(14, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.85}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.07}
+              bgColor={Color.themeBlack}
+              textTransform={'capitalize'}
+              isBold
+              onPress={() =>
+                navigationService.navigate('PaymentScreen', {
+                  data: ridedata, status :updatedStatus
+                })
+              }
+            />
+          </View>
+        )}
+
         {ridedata?.ride_info?.status == 'riderArrived' && (
           <View key="riderArrivedView" style={styles.waiting_main_view}>
             <View style={styles.waiting_sub_view}>

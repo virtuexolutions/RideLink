@@ -1,17 +1,15 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import {enableScreens} from 'react-native-screens';
-import {moderateScale} from 'react-native-size-matters';
-import {useSelector} from 'react-redux';
+import { enableScreens } from 'react-native-screens';
+import { moderateScale } from 'react-native-size-matters';
+import { useSelector } from 'react-redux';
 import Drawer from './Drawer/Drawer';
 import navigationService from './navigationService';
 import ChangePassword from './Screens/ChangePassword';
 import ChooseDeclineReasonScreen from './Screens/ChooseDeclineReasonScreen';
-import Earningsscreen from './Screens/Earningsscreen';
 import FareScreen from './Screens/FareScreen';
-import GoOnlineScreen from './Screens/GoOnlineScreen';
 import History from './Screens/History';
 import Home from './Screens/Home';
 import LoginScreen from './Screens/LoginScreen';
@@ -21,22 +19,19 @@ import MyWallet from './Screens/MyWallet';
 import ParcelTrackingScreen from './Screens/ParcelTrackingScreen';
 import PassengerDetails from './Screens/PassengerDetails';
 import PaymentScreen from './Screens/PaymentScreen';
+import PlaceholderScreen from './Screens/PlaceholderScreen';
 import Profile from './Screens/Profile';
 import RateScreen from './Screens/RateScreen';
 import ReferFriendScreen from './Screens/ReferFriendScreen';
 import RequestScreen from './Screens/RequestScreen';
 import ResetPassword from './Screens/ResetPassword';
-import RideRequest from './Screens/RideRequest';
 import RideScreen from './Screens/RideScreen';
 import SendTripRecieptScreen from './Screens/SendTripRecieptScreen';
 import Signup from './Screens/Signup';
-import Start from './Screens/Start';
+import TrackingScreen from './Screens/TrackingScreen';
 import VerifyEmail from './Screens/VerifyEmail';
 import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
-import Walletscreen from './Screens/Walletscreen';
-import TrackingScreen from './Screens/TrackingScreen';
-import PlaceholderScreen from './Screens/PlaceholderScreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -66,7 +61,6 @@ const AppNavigator = () => {
             name="WalkThroughScreen"
             component={WalkThroughScreen}
           />
-          <RootNav.Screen name="Start" component={Start} />
           <RootNav.Screen
             name="PlaceholderScreen"
             component={PlaceholderScreen}
@@ -108,7 +102,6 @@ const AppNavigator = () => {
             name="PassengerDetails"
             component={PassengerDetails}
           />
-          <RootNav.Screen name="GoOnlineScreen" component={GoOnlineScreen} />
           <RootNav.Screen
             name="RecieptScreen"
             component={SendTripRecieptScreen}
@@ -249,13 +242,8 @@ export const MyDrawer = () => {
       />
       <DrawerNavigation.Screen name="Home" component={Home} />
 
-      <DrawerNavigation.Screen name="Walletscreen" component={Walletscreen} />
-      <DrawerNavigation.Screen
-        name="Earningsscreen"
-        component={Earningsscreen}
-      />
+     
       <DrawerNavigation.Screen name={'RateScreen'} component={RateScreen} />
-      <DrawerNavigation.Screen name="RideRequest" component={RideRequest} />
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
       <DrawerNavigation.Screen name="History" component={History} />
@@ -274,10 +262,7 @@ export const MyDrawer = () => {
         name="PassengerDetails"
         component={PassengerDetails}
       />
-      <DrawerNavigation.Screen
-        name="GoOnlineScreen"
-        component={GoOnlineScreen}
-      />
+    
     </DrawerNavigation.Navigator>
   );
 };

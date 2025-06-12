@@ -3,12 +3,10 @@ import {getDistance, isValidCoordinate} from 'geolib';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
-  FlatList,
   Platform,
   SafeAreaView,
   StyleSheet,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
@@ -18,13 +16,10 @@ import {moderateScale} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import AskLocation from '../Components/AskLocation';
+import CabList from '../Components/CabList.js';
 import CustomButton from '../Components/CustomButton';
 import RequestForDelivery from '../Components/RequestForDelivery.js';
-import navigationService from '../navigationService';
 import {windowHeight, windowWidth} from '../Utillity/utils';
-import CabList from '../Components/CabList.js';
-import CustomText from '../Components/CustomText.js';
-import CustomImage from '../Components/CustomImage.js';
 
 const RequestScreen = props => {
   const data = props?.route?.params?.data;
@@ -35,46 +30,21 @@ const RequestScreen = props => {
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
 
-  const cablist = [
-    {
-      id: 1,
-      name: 'X Regular',
-      price: '$ 10.00',
-    },
-    {
-      id: 2,
-      name: 'Mini',
-      price: '$ 20.00',
-    },
-    {
-      id: 3,
-      name: 'Standered Ac',
-      price: '$ 30.00',
-    },
-    {
-      id: 4,
-      name: 'Luxury Ac',
-      price: '$ 40.00',
-    },
-  ];
-
-  const [cabType, setCabType] = useState(null);
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropLocation, setDropLocation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
   const [fare, setFare] = useState(0);
-  console.log('🚀 ~ fare================= >>>>:', fare);
   const [time, setTime] = useState(0);
-  console.log('🚀 ~ time:', time);
   const [distance, setDistance] = useState(0);
-  console.log('🚀 ~ distance:', distance);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
+  const [isCurrentLocation, setIsCurrentLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
+  console.log('🚀 ~ currentPosition:=============== >>>>', currentPosition);
   const [multipleLocation, setMultipleLocation] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
@@ -88,23 +58,6 @@ const RequestScreen = props => {
     latitude: parseFloat(item?.lat),
     longitude: parseFloat(item?.lng),
   }));
-
-  const fareStructure = {
-    1: {baseFare: 10, additionalFarePerMile: 1},
-    2: {
-      baseFare: 10,
-      additionalFarePerMile: 2,
-      minDistance: 10,
-      maxDistance: 75,
-    },
-    3: {
-      baseFare: 10,
-      additionalFarePerMile: 1.75,
-      minDistance: 76,
-      maxDistance: 150,
-    },
-    4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
-  };
 
   useEffect(() => {
     getCurrentLocation();
@@ -155,116 +108,52 @@ const RequestScreen = props => {
     }
   }, [currentPosition]);
 
-  const calculateFare = distance => {
-    let fare = 0;
-    let fareType;
-    let calfare;
-
-    Object.keys(fareStructure).forEach(key => {
-      const fareTypeObj = fareStructure[key];
-      if (
-        (!fareTypeObj.minDistance || distance >= fareTypeObj.minDistance) &&
-        (!fareTypeObj.maxDistance || distance <= fareTypeObj.maxDistance)
-      ) {
-        fareType = fareTypeObj;
-      }
-    });
-
-    if (fareType) {
-      fare =
-        fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
-      calfare = fare.toFixed(0);
-    }
-    return calfare;
-  };
-  // const calculateRideFare = async ({
-
-  //   surgeMultiplier = 1,
-  // }) => {
-  //   const baseFare = 2.5;
-  //   const costPerMile = 1.25;
-  //   const costPerMinute = 0.3;
-  //   const bookingFee = 1.75;
-  //   const minimumFare = 6.0;
-
-  //   let fare = baseFare + costPerMile * distance + costPerMinute * time;
-  //   fare *= surgeMultiplier;
-  //   fare += bookingFee;
-
-  //   if (fare < minimumFare) {
-  //     console.log('🚀 ~ calculateRideFare ~ fare:', fare ,minimumFare);
-  //     fare = minimumFare;
-  //     fare =
-  //       fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
-  //     calfare = fare.toFixed(0);
-  //   }
-  //   //  if (fareType) {
-  //   // //     fare =
-  //   // //       fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
-  //   // //     calfare = fare.toFixed(0);
-  //   // //   }
-  //   return fare.toFixed(2);
-  // };
-
-  // const calculateRideFare = async ({distance, time, surgeMultiplier = 1}) => {
-  //   const baseFare = 2.5;
-  //   const costPerMile = 1.25;
-  //   const costPerMinute = 0.3;
-  //   const bookingFee = 1.75;
-  //   const minimumFare = 6.0;
-
-  //   let fare = baseFare + costPerMile * distance + costPerMinute * time;
-  //   fare *= surgeMultiplier;
-  //   fare += bookingFee;
-
-  //   if (fare < minimumFare) {
-  //     fare = minimumFare;
-  //   }
-
-  //   return fare.toFixed(2);
-  // };
-
-  const calculateMultiStopFare = async ({
-    distance,
-    time,
-    stops = [],
-    surgeMultiplier = 1,
-  }) => {
+  const calculateRideFare = async (distance, time) => {
     const baseFare = 2.5;
     const costPerMile = 1.25;
     const costPerMinute = 0.3;
     const bookingFee = 1.75;
     const minimumFare = 6.0;
 
-    // Basic fare calculation
     let fare = baseFare + costPerMile * distance + costPerMinute * time;
 
-    // Apply surge only if there are stops
-    if (stops.length > 0) {
-      fare *= surgeMultiplier;
-    }
-
-    // Always add booking fee
+    // fare *= surgeMultiplier
     fare += bookingFee;
 
-    // Ensure minimum fare
     if (fare < minimumFare) {
       fare = minimumFare;
     }
-
     return fare.toFixed(2);
   };
 
   useEffect(() => {
-    if (dropLocation && pickupLocation != null) {
-      const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
+    if (
+      dropLocation &&
+      (isCurrentLocation ? currentPosition : pickupLocation) != null
+    ) {
+      const checkDistanceBetween = getDistance(
+        isCurrentLocation ? currentPosition : pickupLocation,
+        dropLocation,
+      );
       let km = Math.round(checkDistanceBetween / 1000);
+
       const distanceInMiles = km / 1.60934;
 
+      const fetchFare = async () => {
+        const calculatedFare = await calculateRideFare(distanceInMiles, time);
+        setFare(calculatedFare);
+      };
+      setDistance(km);
       const getTravelTime = async () => {
         const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
         try {
-          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${
+            isCurrentLocation ? currentPosition?.latitude : pickupLocation.lat
+          },${
+            isCurrentLocation ? currentPosition?.longitude : pickupLocation.lng
+          }&destinations=${dropLocation.lat},${
+            dropLocation.lng
+          }&key=${GOOGLE_MAPS_API_KEY}`;
           const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -272,67 +161,22 @@ const RequestScreen = props => {
           const data = await response.json();
           if (data.status === 'OK') {
             const distanceMatrix = data.rows[0].elements[0];
-            const durationInSeconds = distanceMatrix.duration.value; // in seconds
-            const travelTimeInMinutes = Math.ceil(durationInSeconds / 60);
-
-            setTime(travelTimeInMinutes);
-            setDistance(km);
-
-            // const calculatedFare = await calculateMultiStopFare({
-            //   distance: distanceInMiles,
-            //   time: travelTimeInMinutes,
-            //   stop: multipleLocation,
-            //   surgeMultiplier: 1, // adjust if needed
-            // });
-
-            const calculatedFare = await calculateFare(distanceInMiles);
-            setFare(calculatedFare);
+            const travelTime = distanceMatrix.duration.text;
+            const Time = parseInt(travelTime.match(/\d+/)[0]);
+            console.log('yeh rha time ', Time);
+            return setTime(Time);
           } else {
             console.error('Error fetching travel time:', data.status);
+            return null;
           }
         } catch (error) {
           console.error('Error:', error);
         }
       };
-
       getTravelTime();
+      fetchFare();
     }
   }, [dropLocation]);
-
-  // useEffect(() => {
-  //   if (dropLocation && pickupLocation != null) {
-  //     const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
-  //     let km = Math.round(checkDistanceBetween / 1000);
-
-  //     const distanceInMiles = km / 1.60934;
-  //     const calculatedFare = calculateRideFare(distanceInMiles);
-  //     setFare(calculatedFare);
-  //     setDistance(km);
-  //     const getTravelTime = async () => {
-  //       const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
-  //       try {
-  //         const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
-  //         const response = await fetch(url);
-  //         if (!response.ok) {
-  //           throw new Error('Network response was not ok');
-  //         }
-  //         const data = await response.json();
-  //         if (data.status === 'OK') {
-  //           const distanceMatrix = data.rows[0].elements[0];
-  //           const travelTime = distanceMatrix.duration.text;
-  //           console.log(travelTime, 'travelTime');
-  //           return setTime(travelTime);
-  //         } else {
-  //           console.error('Error fetching travel time:', data.status);
-  //           return null;
-  //         }
-  //       } catch (error) {
-  //         console.error('Error:', error);
-  //       }
-  //     };
-  //     getTravelTime();
-  //   }
-  // }, [dropLocation]);
 
   useEffect(() => {
     if (isValidCoordinate(origin)) {
@@ -347,6 +191,7 @@ const RequestScreen = props => {
   }, [origin]);
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
     try {
       const response = await fetch(url);
@@ -380,15 +225,17 @@ const RequestScreen = props => {
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}>
-        {Object.keys(origin)?.length > 0 && isValidCoordinate(origin) && (
-          <>
-            <Marker
-              coordinate={origin}
-              title="pickup  Location"
-              pinColor={Color.red}
-            />
-          </>
-        )}
+        {Object.keys(isCurrentLocation ? currentPosition : origin)?.length >
+          0 &&
+          isValidCoordinate(isCurrentLocation ? currentPosition : origin) && (
+            <>
+              <Marker
+                coordinate={isCurrentLocation ? currentPosition : origin}
+                title="pickup  Location"
+                pinColor={Color.red}
+              />
+            </>
+          )}
 
         {Array.isArray(multipleLocation) &&
           multipleLocation?.map((stop, index) => (
@@ -407,7 +254,7 @@ const RequestScreen = props => {
           !['', null, undefined].includes(destination) && (
             <MapViewDirections
               key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
-              origin={origin}
+              origin={isCurrentLocation ? currentPosition : origin}
               waypoints={waypoints}
               destination={destination}
               strokeColor={Color.black}
@@ -448,60 +295,9 @@ const RequestScreen = props => {
           alignItems: 'center',
           width: windowWidth,
         }}>
-        {data?.title != 'ride' && (
-          <FlatList
-            horizontal
-            data={cablist}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => {
-              return (
-                <View style={styles.cab_view}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginTop: moderateScale(10, 0.6),
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <View>
-                      <CustomText style={styles.text}>{item?.name}</CustomText>
-                      <CustomText style={styles.price}>
-                        {item?.price}
-                      </CustomText>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setCabType(item);
-                        }}
-                        style={[
-                          styles.btn,
-                          {
-                            backgroundColor:
-                              cabType?.id == item?.id ? '#949392' : Color.black,
-                          },
-                        ]}>
-                        <CustomText style={styles.btn_text}>
-                          Book Ride
-                        </CustomText>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.image_view}>
-                      <CustomImage
-                        resizeMode="contain"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                        }}
-                        source={require('../Assets/Images/carimage.png')}
-                      />
-                    </View>
-                  </View>
-                </View>
-              );
-            }}
-          />
-        )}
         <AskLocation
           onPressCurrentLocation={() => {
+            setIsCurrentLocation(true);
             getCurrentLocation();
             setIsModalVisible(false);
           }}
@@ -516,6 +312,7 @@ const RequestScreen = props => {
           setPickupLocation={setPickupLocation}
           setIsModalVisible={setIsModalVisible}
           heading={'Where are you Going?'}
+          pickupLocationName={isCurrentLocation && address}
           locationType={locationType}
           setLocationType={setLocationType}
           multipleLocation={multipleLocation}
@@ -539,29 +336,29 @@ const RequestScreen = props => {
           onPress={() => {
             if (
               // cabType != null &&
-              dropLocation != null &&
-              pickupLocation != null
+              (dropLocation != null && pickupLocation) ||
+              address != null
             ) {
-              if (data?.title == 'ride') {
-                rbRef?.current?.open();
-                // navigationService.navigate('FareScreen', {
-                //   rideData: {
-                //     distance: parseInt(distance),
-                //     time: time,
-                //     fare: Number(fare),
-                //     pickup: origin,
-                //     dropoff: destination,
-                //     currentPosition: currentPosition,
-                //     pickupLocation: pickupLocation,
-                //     dropoffLocation: dropLocation,
-                //     CabType: cabType,
-                //     data: data,
-                //     multiplePickups: multipleLocation,
-                //   },
-                // });
-              } else {
-                deliveryRef.current.open();
-              }
+              // if (data?.title == 'ride') {
+              rbRef?.current?.open();
+              // navigationService.navigate('FareScreen', {
+              //   rideData: {
+              //     distance: parseInt(distance),
+              //     time: time,
+              //     fare: Number(fare),
+              //     pickup: origin,
+              //     dropoff: destination,
+              //     currentPosition: currentPosition,
+              //     pickupLocation: pickupLocation,
+              //     dropoffLocation: dropLocation,
+              //     CabType: cabType,
+              //     data: data,
+              //     multiplePickups: multipleLocation,
+              //   },
+              // });
+              // } else {
+              //   deliveryRef.current.open();
+              // }
             } else {
               Platform.OS == 'android'
                 ? ToastAndroid.show(
@@ -591,14 +388,19 @@ const RequestScreen = props => {
           pickup: origin,
           dropoff: destination,
           currentPosition: currentPosition,
-          pickupLocation: pickupLocation,
+          pickupLocation: isCurrentLocation
+            ? {
+                lat: currentPosition?.latitude,
+                lng: currentPosition?.longitude,
+                name: address,
+              }
+            : pickupLocation,
           dropoffLocation: dropLocation,
-          // CabType: cabType,
+          iscurrent: isCurrentLocation ? true : false,
           data: data,
           multiplePickups: multipleLocation,
         }}
       />
-      {/* </ImageBackground> */}
     </SafeAreaView>
   );
 };
@@ -609,7 +411,6 @@ const styles = StyleSheet.create({
   safearea_view: {
     width: windowWidth,
     height: windowHeight,
-    // alignContent : 'center'
   },
   background_view: {
     width: windowWidth,
