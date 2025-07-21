@@ -1,44 +1,44 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
-import { useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import {useDispatch} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import { setUserToken } from '../Store/slices/auth';
-import { SetUserRole } from '../Store/slices/auth-slice';
-import { setUserLogOut } from '../Store/slices/common';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {setUserToken} from '../Store/slices/auth';
+import {SetUserRole} from '../Store/slices/auth-slice';
+import {setUserLogOut} from '../Store/slices/common';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
   const adminData = [
-    {
-      id: 1,
-      name: 'Inbox',
-      onPress: () => {
-        navigation.navigate('HomeScreen');
-      },
-    },
-    {
-      id: 2,
-      name: 'Refer Friends',
-      onPress: () => {
-        // setIsModalVisible(true);
-        navigation.navigate('ReferFriendScreen');
-      },
-    },
-    {
-      id: 3,
-      name: 'Oppurtunities',
-      onPress: () => {
-        navigation.navigate('MyJourneys');
-      },
-    },
+    // {
+    //   id: 1,
+    //   name: 'Inbox',
+    //   onPress: () => {
+    //     navigation.navigate('HomeScreen');
+    //   },
+    // },
+    // {
+    //   id: 2,
+    //   name: 'Refer Friends',
+    //   onPress: () => {
+    //     // setIsModalVisible(true);
+    //     navigation.navigate('ReferFriendScreen');
+    //   },
+    // },
+    // {
+    //   id: 3,
+    //   name: 'Oppurtunities',
+    //   onPress: () => {
+    //     navigation.navigate('MyJourneys');
+    //   },
+    // },
     {
       id: 4,
       name: 'wallet',
@@ -118,11 +118,11 @@ const Drawer = React.memo(() => {
           <CustomText isBold style={styles.heading_text}>
             PAT H. JHONSON
           </CustomText>
-          <CustomText style={styles.text}>Diver : Car Name</CustomText>
         </View>
         <View
           style={{
             height: '60%',
+            marginTop: moderateScale(20, 0.6),
           }}>
           {adminData.map((item, index) => (
             <>
@@ -132,7 +132,7 @@ const Drawer = React.memo(() => {
                 style={{
                   width: windowWidth * 0.7,
                   borderColor: Color.black,
-                  margin: moderateScale(10, 0.3),
+                  margin: moderateScale(5, 0.3),
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -149,7 +149,7 @@ const Drawer = React.memo(() => {
           ))}
         </View>
         <View style={styles.end_view}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               navigation.navigate('HelpAndSupport');
             }}
@@ -188,7 +188,7 @@ const Drawer = React.memo(() => {
               }}>
               Learning Center
             </CustomText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => {
               dispatch(setUserToken(''));
@@ -200,7 +200,6 @@ const Drawer = React.memo(() => {
               borderColor: Color.black,
               margin: moderateScale(5, 0.3),
               flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: 'space-between',
             }}>
             <CustomText

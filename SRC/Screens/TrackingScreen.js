@@ -502,7 +502,7 @@ const TrackingScreen = props => {
             </CustomText>
             )} 
         </View>
-        {isNearDestination ||updatedStatus == 'complete' && (
+        {isNearDestination ||updatedStatus == 'complete' || 'delivered' && (
           <View
             style={{
               backgroundColor: 'red',

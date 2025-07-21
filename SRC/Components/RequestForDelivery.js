@@ -1,36 +1,31 @@
+import { Icon } from 'native-base';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Platform,
   StyleSheet,
-  Text,
   ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import CustomButton from './CustomButton';
-import Color from '../Assets/Utilities/Color';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {moderateScale} from 'react-native-size-matters';
-import CustomText from './CustomText';
-import TextInputWithTitle from './TextInputWithTitle';
-import {Icon} from 'native-base';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { moderateScale } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import ImagePickerModal from './ImagePickerModal';
-import CustomImage from './CustomImage';
-import {useSelector} from 'react-redux';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import {date} from 'yup';
-import database from '@react-native-firebase/database';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useSelector } from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import navigationService from '../navigationService';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import CustomImage from './CustomImage';
+import CustomText from './CustomText';
+import ImagePickerModal from './ImagePickerModal';
+import TextInputWithTitle from './TextInputWithTitle';
 
 const RequestForDelivery = ({setRef, rbRef, item}) => {
-  console.log('🚀 ~ RequestForDelivery ~ item:', item);
   const token = useSelector(state => state.authReducer.token);
   const [pickupEntrance, setPickupEnternce] = useState('');
   const [pickupAppartment, setPickupAppartment] = useState('');
@@ -99,19 +94,19 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
     if (response != undefined) {
       setDelivery_Id(response?.data?.data?.ride_info?.delivery_id);
       setRideStatus(response?.data?.data?.ride_info?.status);
-      // setDestinationAppartment();
-      // setDestinationDoorPhone();
-      // setDestinationEntrance();
-      // setDestinationFloor();
-      // setreciverDetails();
-      // setReciverContact();
-      // setPickupAppartment();
-      // setPickupDetails();
-      // setPickupEnternce();
-      // setPickupFloor();
-      // setImage({});
-      // setPickupDoorPhone();
-      // setPaymentMethod();
+      setDestinationAppartment();
+      setDestinationDoorPhone();
+      setDestinationEntrance();
+      setDestinationFloor();
+      setreciverDetails();
+      setReciverContact();
+      setPickupAppartment();
+      setPickupDetails();
+      setPickupEnternce();
+      setPickupFloor();
+      setImage({});
+      setPickupDoorPhone();
+      setPaymentMethod();
       navigationService.navigate('MapScreen', {
         fromDelivery: true,
         delivery_Id: response?.data?.data?.ride_info?.delivery_id,
@@ -120,6 +115,41 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
     }
   };
 
+  const usPhoneRegex = /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/;
+
+  const validateAndFormatUSPhone = phoneNumber => {
+    console.log('🚀 ~ RequestForDelivery ~ phoneNumber:', phoneNumber);
+    // if (!usPhoneRegex.test(phoneNumber)) {
+    //   const errorMessage = 'Please enter a valid US phone number'
+    //   // Platform.OS === 'android'
+    //   //   ? ToastAndroid.show(errorMessage, ToastAndroid.SHORT)
+    //   //   : Alert.alert(errorMessage);
+    //   // return null; // ❌ Don't update field
+    // }
+
+    const phoneNumberRegex = /^(\d{3})[-]?(\d{3})[-]?(\d{4})$/;
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    console.log('🚀 ~ RequestForDelivery ~ cleaned:', cleaned);
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `${match[1]} ${match[2]} ${match[3]}`; // e.g., "571 561 8937"
+    }
+
+    return phoneNumber;
+  };
+  useEffect(() => {
+    if (
+      (senderContact && senderContact?.length < 12) ||
+      (reciverContact && reciverContact?.length < 12)
+    ) {
+      const formattedNumber = validateAndFormatUSPhone(
+        senderContact || reciverContact,
+      );
+      senderContact
+        ? setSenderContact(formattedNumber)
+        : setReciverContact(formattedNumber);
+    }
+  }, [senderContact || reciverContact]);
   // useEffect(() => {
   //   const reference = database().ref(`/requests/${delivery_Id}`);
   //   const listener = reference.on('value', snapshot => {
@@ -191,6 +221,7 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
               keyboardType={'numeric'}
+              maxLength={12}
             />
             <TouchableOpacity style={styles.image_con}>
               {image != null ? (
@@ -311,6 +342,8 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
+              maxLength={12}
+              keyboardType={'numeric'}
             />
           </View>
           <TextInputWithTitle
@@ -358,6 +391,7 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
             keyboardType={'numeric'}
+            maxLength={12}
           />
 
           <View
@@ -443,6 +477,8 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
+              maxLength={12}
+              keyboardType={'numeric'}
             />
           </View>
           <TextInputWithTitle
@@ -479,7 +515,13 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
                 />
               )}
             </View>
-            <CustomText>card</CustomText>
+            <CustomText
+              style={{
+                color: Color.black,
+                fontSize: moderateScale(12, 0.6),
+              }}>
+              card
+            </CustomText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -496,7 +538,13 @@ const RequestForDelivery = ({setRef, rbRef, item}) => {
                 />
               )}
             </View>
-            <CustomText>pay pall</CustomText>
+            <CustomText
+              style={{
+                color: Color.black,
+                fontSize: moderateScale(12, 0.6),
+              }}>
+              pay pall
+            </CustomText>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
@@ -566,9 +614,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: Color.mediumGray,
     marginHorizontal: moderateScale(10, 0.6),
-    height: windowHeight * 0.016,
-    marginTop: moderateScale(5, 0.6),
+    height: windowHeight * 0.02,
+    marginTop: moderateScale(3, 0.6),
     width: windowWidth * 0.05,
+    alignItems: 'center',
   },
   payment_con: {
     flexDirection: 'row',

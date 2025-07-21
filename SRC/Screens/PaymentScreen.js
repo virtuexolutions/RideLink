@@ -1,5 +1,5 @@
 import {CardField, createToken} from '@stripe/stripe-react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -20,34 +20,38 @@ import navigationService from '../navigationService';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import StripeCard from '../Components/StripeCard';
 
 const PaymentScreen = props => {
   const data = props?.route?.params?.data;
   const status = props?.route?.params?.status;
 
+  const rbRef = useRef(null);
   const token = useSelector(state => state.authReducer.token);
   const [loading, setLoading] = useState(false);
   const [stripeToken, setStripeToken] = useState(null);
-  console.log("🚀 ~ stripeToken:", stripeToken)
   const [isloading, setIsLoading] = useState(null);
+  const [isStripe, setIsStripe] = useState(null);
+
   const [cardDetails, setCardDetails] = useState(null);
   const strpieToken = async () => {
     setLoading(true);
     const responsetoken = await createToken({
       type: 'Card',
     });
-
     if (responsetoken != undefined) {
-    
+      setIsStripe(true);
       setStripeToken(responsetoken?.token?.id);
       setLoading(false);
+      rbRef?.current?.close()
     }
   };
   const payNow = async () => {
     const url = `auth/customer/ride_update/${data?.ride_info?.ride_id}`;
     const body = {
-      rider_id :data?.ride_info?.rider?.id,
-      status: status, 
+      rider_id: data?.ride_info?.rider?.id,
+      status: 'ride_completed',
       amount: data?.ride_info?.amount,
       stripeToken: stripeToken,
     };
@@ -68,21 +72,22 @@ const PaymentScreen = props => {
 
   return (
     <SafeAreaView style={styles.safe_area}>
-      <Header showBack={true} title={'Offer Your Fare'} />
+      <Header showBack={true} title={'payment'} />
       <View style={styles.main_view}>
         <PaymentMethodCard
           fare={data?.ride_info?.amount}
           // paymentMethod={'card'}
           paymentMethod={
-            // data?.ride_info?.type.toLowerCase() == 'delivery'
-            // ?
-            data?.ride_info?.payment_method
-            // : ''
+            data?.ride_info?.type.toLowerCase() == 'delivery'
+              ? data?.ride_info?.payment_method
+              : ''
+            // data?.ride_info?.payment_method
           }
+          fromPayment={true}
           isEnabled={true}
         />
 
-        <LinearGradient
+        {/* <LinearGradient
           colors={['#1f1f1f', '#cfcfcf']}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
@@ -141,9 +146,9 @@ const PaymentScreen = props => {
             textTransform={'uppercase'}
             bgColor={'white'}
             isBold
-            disabled={loading}
+            disabled={isStripe}
           />
-        </LinearGradient>
+        </LinearGradient> */}
 
         <CustomText isBold style={styles.heading}>
           Details
@@ -173,6 +178,11 @@ const PaymentScreen = props => {
             style={styles.text}>{`$${data?.ride_info?.amount}`}</CustomText>
         </View>
         <CustomButton
+          style={{
+            position: 'absolute',
+            // backgroundColor :'red',
+            bottom: 90,
+          }}
           width={windowWidth * 0.9}
           height={windowHeight * 0.075}
           bgColor={Color.themeBlack}
@@ -189,8 +199,25 @@ const PaymentScreen = props => {
           marginTop={moderateScale(25, 0.6)}
           marginBottom={moderateScale(10, 0.6)}
           onPress={() => {
-            payNow();
+          stripeToken == null ?  rbRef?.current?.open()
+            : payNow();
           }}
+        />
+        <StripeCard
+          rbRef={rbRef}
+          setCardDetails={setCardDetails}
+          loading={loading}
+          onPressHandle={() => {
+            console.log('====================<<<<<<<<<<<<<<<<<<');
+            strpieToken();
+          }}
+          text={
+            loading ? (
+              <ActivityIndicator color={'white'} size={'small'} />
+            ) : (
+              'add'
+            )
+          }
         />
       </View>
     </SafeAreaView>

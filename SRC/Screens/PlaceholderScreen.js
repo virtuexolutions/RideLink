@@ -40,6 +40,8 @@ const PlaceHolderScreen = () => {
           'cancel',
           'completed',
           'reviewed',
+          'ride_completed',
+          'delivered'
         ];
         console.log(
           '================================= >>> goHomeStatuses.includes(status)',

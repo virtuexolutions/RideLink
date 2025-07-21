@@ -25,6 +25,7 @@ const PaymentMethodCard = ({
   paymentMethod,
   setIsEnabled,
   isEnabled,
+  fromPayment,
 }) => {
   console.log('🚀 ~ paymentMethod:', paymentMethod);
   const [isPaymentCom, setPaymentCom] = useState(false);
@@ -32,7 +33,9 @@ const PaymentMethodCard = ({
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
-    <View style={[styles.card_view, style]}>
+    <View style={[styles.card_view, style ,{
+        height: fromPayment ?windowHeight * 0.15 : windowHeight * 0.24
+    }]}>
       {isuserCard ? (
         <View>
           <View style={styles.profile_view}>
@@ -145,34 +148,40 @@ const PaymentMethodCard = ({
                 onPress={() => setPaymentMethod('card')}
                 style={styles.check_box}>
                 {/* {paymentMethod.toLowerCase() === 'card' && ( */}
-                  <View style={styles.dot} />
+                <View style={styles.dot} />
                 {/* // )} */}
               </TouchableOpacity>
               <CustomText style={styles.sub_text}>Credit Card</CustomText>
             </View>
-            <View
-              style={[
-                styles.payment_subview,
-                {marginLeft: moderateScale(10, 0.6)},
-              ]}>
-              <TouchableOpacity
-                onPress={() => setPaymentMethod('Paypal')}
-                style={styles.check_box}>
-                {paymentMethod === 'Paypal' && <View style={styles.dot} />}
-              </TouchableOpacity>
-              <CustomText style={styles.sub_text}>Paypal</CustomText>
-            </View>
+            {!fromPayment && (
+              <View
+                style={[
+                  styles.payment_subview,
+                  {marginLeft: moderateScale(10, 0.6)},
+                ]}>
+                <TouchableOpacity
+                  onPress={() => setPaymentMethod('Paypal')}
+                  style={styles.check_box}>
+                  {paymentMethod === 'Paypal' && <View style={styles.dot} />}
+                </TouchableOpacity>
+                <CustomText style={styles.sub_text}>Paypal</CustomText>
+              </View>
+            )}
           </View>
-          <CustomText style={styles.des}>
-            Automatically Accept The Nearest Drive For Your Fare
-          </CustomText>
-          <Switch
-            trackColor={{false: '#767577', true: Color.themeBlack}}
-            thumbColor={isEnabled ? '#fffff' : '#f4f3f4'}
-            ios_backgroundColor="#fffff"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
+          {!fromPayment && (
+            <>
+              <CustomText style={styles.des}>
+                Automatically Accept The Nearest Drive For Your Fare
+              </CustomText>
+              <Switch
+                trackColor={{false: '#767577', true: Color.themeBlack}}
+                thumbColor={isEnabled ? '#fffff' : '#f4f3f4'}
+                ios_backgroundColor="#fffff"
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              />
+            </>
+          )}
         </>
       )}
     </View>

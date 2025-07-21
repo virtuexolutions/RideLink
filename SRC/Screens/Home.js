@@ -60,9 +60,9 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    userRequestHistory();
-  }, [isFocused, activebutton]);
+  // useEffect(() => {
+  //   userRequestHistory();
+  // }, [isFocused, activebutton]);
 
   return (
     <SafeAreaView style={styles.safe_area}>
@@ -160,7 +160,7 @@ const Home = () => {
               textTransform={'capitalize'}
             />
           </View>
-          {historyLoading ? (
+          {/* {historyLoading ? (
             <ActivityIndicator
               style={styles.indicatorStyle}
               size="small"
@@ -199,7 +199,7 @@ const Home = () => {
                 );
               }}
             />
-          )}
+          )} */}
         </ScrollView>
       </View>
     </SafeAreaView>

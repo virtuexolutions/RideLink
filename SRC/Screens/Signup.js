@@ -25,12 +25,14 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {SignupSchema} from '../Constant/schema';
 import {setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {setUserToken} from '../Store/slices/auth';
 
 const Signup = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const [imagePicker, setImagePicker] = useState(false);
+  const [image, setImage] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const {user_type} = useSelector(state => state.authReducer);
 
@@ -42,7 +44,7 @@ const Signup = () => {
       phone: values.contact,
       agree_terms_condition: values.termsAccepted,
       confirm_password: values.confirmPassword,
-      role: user_type,
+      role: 'customer',
     };
     const url = 'register';
     setIsLoading(true);
@@ -53,6 +55,7 @@ const Signup = () => {
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserToken({token: response?.data?.token}));
     }
   };
 

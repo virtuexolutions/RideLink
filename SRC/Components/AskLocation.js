@@ -216,7 +216,6 @@ const AskLocation = ({
         setAdditionalLocation={setAdditionalLocation}
         additionalLocation={additionalLocation}
         addLocation={addLocation}
-        
       />
       <AskLocationComponent
         visible={addLocation}

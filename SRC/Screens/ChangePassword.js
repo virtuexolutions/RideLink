@@ -188,7 +188,8 @@ const styles = ScaledSheet.create({
     width: windowWidth,
     alignItems: 'center',
     backgroundColor: 'white',
-    justifyContent: 'center',
+    marginTop : windowHeight*0.1,
+    // justifyContent: 'center',
   },
   txt5: {
     textAlign: 'center',
@@ -232,9 +233,10 @@ const styles = ScaledSheet.create({
   header: {
     flexDirection: 'row',
     width: windowWidth,
-    backgroundColor: 'white',
+    backgroundColor: Color.lightGrey,
     paddingHorizontal: moderateScale(10, 0.6),
     paddingTop: moderateScale(5, 0.3),
+  
   },
   headert: {
     fontSize: moderateScale(18, 0.6),
