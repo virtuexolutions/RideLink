@@ -48,7 +48,6 @@ const App = () => {
 
   const [notification, setNotification] = useState();
   const [notificationModal, setNotificationModal] = useState(false);
-  console.log('🚀 ~ App ~ notificationModal:', notificationModal);
 
   // useEffect(() => {
   //   console.log('chl rha ha')
@@ -70,7 +69,6 @@ const App = () => {
   //   messaging()
   //     .getInitialNotification()
   //     .then(remoteMessage => {
-  //       console.log('🚀 ~ useEffect ~ remoteMessage:', remoteMessage);
   //       if (remoteMessage && remoteMessage.data?.screen) {
   //         navigation.navigate(remoteMessage.data.screen, {
   //           messageData: remoteMessage.data,
@@ -107,7 +105,9 @@ const App = () => {
   return (
     <StripeProvider
       publishableKey={
-        'pk_test_51RjPdv2NCEAbWISBZn1SsmYnvJ5xkgrB0XYUWgutWOTKgU7HdR8b5MFXhjM1r40ySpdSZAZw9AnC7pKZAgEIIrED00Yf6JwJ5I '
+        "pk_test_51McSueJ0WRwehn2Uuf4rm6WNHPQvaJY9NGU235gUEqPA3AJuc9Mq1x98Y8B8uE5eMfivo5l2xK4Vau21zau7ZBDp00g7qWfkx3"
+    
+        // 'pk_test_51RjPdv2NCEAbWISBZn1SsmYnvJ5xkgrB0XYUWgutWOTKgU7HdR8b5MFXhjM1r40ySpdSZAZw9AnC7pKZAgEIIrED00Yf6JwJ5I'
         // STRIPE_SECRET=sk_test_51RjPdv2NCEAbWISBwN5pbl4w8mTlPzQmLVwGJyP5ZxwqvCfx6bJM9aABHsLuKBXwh5dKJa3ekNxP0TUnraIVpF8L00ybOoYGPN'
       }>
       <Provider store={store}>
