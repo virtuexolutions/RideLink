@@ -38,6 +38,7 @@ import {
 
 const TrackingScreen = props => {
   const ridedata = props?.route?.params?.data;
+  console.log('🚀 ~ TrackingScreen ~ ridedata:', ridedata);
 
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -52,7 +53,13 @@ const TrackingScreen = props => {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const [updatedStatus, setupdatedStatus] = useState(true);
+  const [updatedStatus, setupdatedStatus] = useState(
+    ridedata?.ride_info?.status,
+  );
+  console.log(
+    '🚀 ~ TrackingScreen ~ updatedStatus ====================:',
+    updatedStatus,
+  );
 
   const [canCancel, setCanCancel] = useState(true);
 
@@ -312,7 +319,6 @@ const TrackingScreen = props => {
         if (data1?.ride_info?.status) {
           setupdatedStatus(data1?.ride_info?.status);
         }
-      
       }
     });
 
@@ -484,9 +490,11 @@ const TrackingScreen = props => {
           </View>
           {updatedStatus == 'riderOntheWay' && (
             <CustomText
-            onPress={() =>{
-              navigationService.navigate('ChooseDeclineReasonScreen' ,{data : ridedata?.ride_info })
-            }}
+              onPress={() => {
+                navigationService.navigate('ChooseDeclineReasonScreen', {
+                  data: ridedata?.ride_info,
+                });
+              }}
               style={{
                 backgroundColor: Color.black,
                 padding: moderateScale(5, 0.6),
@@ -500,71 +508,65 @@ const TrackingScreen = props => {
               }}>
               cancel
             </CustomText>
-            )} 
+          )}
         </View>
-        {isNearDestination ||updatedStatus == 'complete' && (
-          <View
-            style={{
-              backgroundColor: 'red',
-              width: windowWidth,
-              // height: windowHeight,
-              position: 'absolute',
-              bottom: 90,
-            }}>
-            <CustomButton
+        {isNearDestination ||
+          (updatedStatus == 'complete' && (
+            <View
               style={{
+                backgroundColor: 'red',
+                width: windowWidth,
+                // height: windowHeight,
                 position: 'absolute',
-                bottom: 30,
-              }}
-              text={'PAY Now'}
-              fontSize={moderateScale(14, 0.3)}
-              textColor={Color.white}
-              borderRadius={moderateScale(30, 0.3)}
-              width={windowWidth * 0.85}
-              marginTop={moderateScale(10, 0.3)}
-              height={windowHeight * 0.07}
-              bgColor={Color.themeBlack}
-              textTransform={'capitalize'}
-              isBold
-              onPress={() =>
-                navigationService.navigate('PaymentScreen', {
-                  data: ridedata, status :updatedStatus
-                })
-              }
-            />
-          </View>
-        )}
-
-        {ridedata?.ride_info?.status == 'riderArrived' && (
-          <View key="riderArrivedView" style={styles.waiting_main_view}>
-            <View style={styles.waiting_sub_view}>
-              <View style={styles.animation_view}>
-                <LottieView
-                  key="riderArrivedLottie"
-                  autoPlay
-                  loop
-                  style={styles.waiting_animation}
-                  source={require('../Assets/Images/cab_arrived_animation.json')}
-                />
-              </View>
-              {/* <CountDown
-              until={300} // 5 minutes = 300 seconds
-              onFinish={handleCountdownFinish}
-              size={30}
-              digitStyle={{backgroundColor: '#FFF'}}
-              digitTxtStyle={{color: '#1CC625'}}
-              timeToShow={['M', 'S']}
-              timeLabels={{m: 'Min', s: 'Sec'}}
-              showSeparator
-            /> */}
-              <CustomText
+                bottom: 90,
+              }}>
+              <CustomButton
+                style={{
+                  position: 'absolute',
+                  bottom: 30,
+                }}
+                text={'PAY Now'}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.85}
+                marginTop={moderateScale(10, 0.3)}
+                height={windowHeight * 0.07}
+                bgColor={Color.themeBlack}
+                textTransform={'capitalize'}
                 isBold
-                style={{fontSize: moderateScale(16, 0.6), color: Color.black}}>
-                Your rider has arrived
-              </CustomText>
+                onPress={() =>
+                  navigationService.navigate('PaymentScreen', {
+                    data: ridedata,
+                    status: updatedStatus,
+                  })
+                }
+              />
             </View>
-          </View>
-        )}
+          ))}
+        {updatedStatus == 'riderArrived' || updatedStatus === 'arrive' && (
+            <View key="riderArrivedView" style={styles.waiting_main_view}>
+              <View style={styles.waiting_sub_view}>
+                <View style={styles.animation_view}>
+                  <LottieView
+                    key="riderArrivedLottie"
+                    autoPlay
+                    loop
+                    style={styles.waiting_animation}
+                    source={require('../Assets/Images/cab_arrived_animation.json')}
+                  />
+                </View>
+                <CustomText
+                  isBold
+                  style={{
+                    fontSize: moderateScale(16, 0.6),
+                    color: Color.black,
+                  }}>
+                  Your rider has arrived
+                </CustomText>
+              </View>
+            </View>
+          )}
       </View>
     </SafeAreaView>
   );
