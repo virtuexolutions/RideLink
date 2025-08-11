@@ -300,11 +300,11 @@ const PrivacyPolicy = () => {
         })}
         <View style={styles.contactContainer}>
           <Icon as={Entypo} color={Color.black} name="mail" />
-          <CustomText>{'privacy@ridelynk.com'}</CustomText>
+          <CustomText style={{color:Color.themeBgColor}}>{'privacy@ridelynk.com'}</CustomText>
         </View>
         <View style={styles.contactContainer}>
           <Icon as={FontAwesome6} color={Color.red} name="phone" />
-          <CustomText>{'(712) 259-4334'}</CustomText>
+          <CustomText style={{color:Color.themeBgColor}}>{'(712) 259-4334'}</CustomText>
         </View>
         <View style={{height: windowHeight * 0.045}} />
       </ScrollView>
