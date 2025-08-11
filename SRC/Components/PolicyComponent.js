@@ -12,7 +12,7 @@ const PolicyComponent = ({item}) => {
       marginLeft: moderateScale(10, 0.3),
       marginRight: 6,
     }}>
-    <CustomText style={styles.heading}>{item.heading}</CustomText>
+    <CustomText style={styles.heading}>{`${item.id} ${item.heading}`}</CustomText>
 
     <CustomText style={styles.description}>
       {item.description}
