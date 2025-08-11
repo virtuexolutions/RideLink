@@ -19,6 +19,8 @@ import CustomImage from './SRC/Components/CustomImage';
 import CustomText from './SRC/Components/CustomText';
 import {moderateScale} from 'react-native-size-matters';
 import {StripeProvider} from '@stripe/stripe-react-native';
+import PrivacyPolicy from './SRC/Screens/PrivacyPolicy';
+import TermsAndConditions from './SRC/Screens/TermsAndConditions';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -182,6 +184,8 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   return <AppNavigator />;
+  // return <PrivacyPolicy />;
+  // return <TermsAndConditions />;
 };
 
 const useloader = value => {

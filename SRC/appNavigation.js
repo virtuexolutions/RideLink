@@ -32,6 +32,8 @@ import TrackingScreen from './Screens/TrackingScreen';
 import VerifyEmail from './Screens/VerifyEmail';
 import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
+import TermsAndConditions from './Screens/TermsAndConditions';
+import PrivacyPolicy from './Screens/PrivacyPolicy';
 
 enableScreens();
 const AppNavigator = () => {
@@ -80,7 +82,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
           <RootNav.Screen name="TrackingScreen" component={TrackingScreen} />
-          <RootNav.Screen name="Home" component={Home} />
+          {/* <RootNav.Screen name="Home" component={Home} /> */}
 
           <RootNav.Screen
             name="ParcelTrackingScreen"
@@ -250,6 +252,14 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen
         name="ReferFriendScreen"
         component={ReferFriendScreen}
+      />
+      <DrawerNavigation.Screen
+        name="TermsAndConditions"
+        component={TermsAndConditions}
+      />
+      <DrawerNavigation.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicy}
       />
 
       <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />

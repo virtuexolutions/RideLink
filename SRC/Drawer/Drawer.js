@@ -19,9 +19,16 @@ const Drawer = React.memo(() => {
   const adminData = [
     {
       id: 1,
+      name: 'Home',
+      onPress: () => {
+        navigation.navigate('Home');
+      },
+    },
+    {
+      id: 111,
       name: 'Inbox',
       onPress: () => {
-        navigation.navigate('HomeScreen');
+        // navigation.navigate('Home');
       },
     },
     {

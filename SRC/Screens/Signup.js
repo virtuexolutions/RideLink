@@ -25,6 +25,7 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {SignupSchema} from '../Constant/schema';
 import {setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { setUserToken } from '../Store/slices/auth-slice';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const Signup = () => {
       phone: values.contact,
       agree_terms_condition: values.termsAccepted,
       confirm_password: values.confirmPassword,
-      role: user_type,
+      role: "customer",
     };
     const url = 'register';
     setIsLoading(true);
@@ -53,6 +54,7 @@ const Signup = () => {
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserToken({token : response?.data?.token}));
     }
   };
 
@@ -302,11 +304,11 @@ const Signup = () => {
           </CustomText>
         </CustomText>
 
-        <ImagePickerModal
+        {/* <ImagePickerModal
           show={imagePicker}
           setShow={setImagePicker}
           setFileObject={setImage}
-        />
+        /> */}
       </ScrollView>
     </ScreenBoiler>
   );

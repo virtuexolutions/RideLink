@@ -544,29 +544,29 @@ const TrackingScreen = props => {
               />
             </View>
           ))}
-        {updatedStatus == 'riderArrived' || updatedStatus === 'arrive' && (
-            <View key="riderArrivedView" style={styles.waiting_main_view}>
-              <View style={styles.waiting_sub_view}>
-                <View style={styles.animation_view}>
-                  <LottieView
-                    key="riderArrivedLottie"
-                    autoPlay
-                    loop
-                    style={styles.waiting_animation}
-                    source={require('../Assets/Images/cab_arrived_animation.json')}
-                  />
-                </View>
-                <CustomText
-                  isBold
-                  style={{
-                    fontSize: moderateScale(16, 0.6),
-                    color: Color.black,
-                  }}>
-                  Your rider has arrived
-                </CustomText>
+        {(updatedStatus == 'riderArrived' || updatedStatus === 'arrive') && (
+          <View key="riderArrivedView" style={styles.waiting_main_view}>
+            <View style={styles.waiting_sub_view}>
+              <View style={styles.animation_view}>
+                <LottieView
+                  key="riderArrivedLottie"
+                  autoPlay
+                  loop
+                  style={styles.waiting_animation}
+                  source={require('../Assets/Images/cab_arrived_animation.json')}
+                />
               </View>
+              <CustomText
+                isBold
+                style={{
+                  fontSize: moderateScale(16, 0.6),
+                  color: Color.black,
+                }}>
+                Your rider has arrived
+              </CustomText>
             </View>
-          )}
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
