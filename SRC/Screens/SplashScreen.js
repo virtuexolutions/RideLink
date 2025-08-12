@@ -18,8 +18,7 @@ const SplashScreen = () => {
       </View>
       <CustomText style={styles.text}>
         
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-        efficitur consectetur ligula eget ultrices.
+Book rides with ease and track your journey in real-time.
       </CustomText>
     </View>
   );
