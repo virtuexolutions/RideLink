@@ -1,5 +1,4 @@
 import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
 import {Icon} from 'native-base';
 import React, {useState} from 'react';
 import {
@@ -16,23 +15,19 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
+import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {Post} from '../Axios/AxiosInterceptorFunction';
 import {setUserData} from '../Store/slices/common';
-import CustomText from '../Components/CustomText';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const Profile = () => {
   const navigation = useNavigation();
-  const {user_type} = useSelector(state => state.authReducer);
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ Profile ~ token:', token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ Profile ~ userData:', userData);
-  console.log('🚀 ~ Profile ~ user_type:', user_type);
   const [username, setUserName] = useState(
     userData?.name ? userData?.name : '',
   );
@@ -42,26 +37,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
-  console.log('🚀 ~ Profile ~ image:', image);
 
-  // const profileUpdate = async () => {
-  //   const url = 'auth/profile';
-  //   const formData = new FormData();
-  //   // formData.append('photo', image);
-  //   // formData.append('name', username);
-  //   // formData.append('phone', phone);
-  //   setIsLoading(true);
-  //  return console.log(
-  //     '🚀 ~ profileUpdate ~ formData:',
-  //     JSON.stringify(formData, null, 2),
-  //   );
-  //   const response = await Post(url, formData, apiHeader(token));
-  //   setIsLoading(false);
-  //   if (response?.data != undefined) {
-  //     dispatch(setUserData(response?.data));
-  //     navigation.navigate('Home');
-  //   }
-  // };
   const profileUpdate = async () => {
     const formData = new FormData();
     const body = {
@@ -81,7 +57,6 @@ const Profile = () => {
       Platform.OS == 'android'
         ? ToastAndroid.show('profile updated Successfully', ToastAndroid.SHORT)
         : alert('profile updated Successfully');
-      console.log('🚀 ~ profileUpdate ~ response:', response?.data?.user_info);
       navigation.navigate('HomeScreen');
     }
     dispatch(setUserData(response?.data?.user_info));
@@ -249,14 +224,10 @@ const Profile = () => {
             width={windowWidth * 0.75}
             height={windowHeight * 0.06}
             marginTop={moderateScale(25, 0.3)}
-            bgColor={user_type == 'Rider' ? Color.darkBlue : Color.themeBlack}
+            bgColor={Color.themeBlack}
             isBold
-            // isGradient
           />
         </View>
-        {/* );
-          }} */}
-        {/* </Formik> */}
       </View>
       <ImagePickerModal
         show={imagePicker}

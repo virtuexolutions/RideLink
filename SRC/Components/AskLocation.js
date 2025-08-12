@@ -1,17 +1,17 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import CustomText from './CustomText';
-import {Icon} from 'native-base';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {moderateScale} from 'react-native-size-matters';
-import SearchLocationModal from './SearchLocationModal';
-import {position} from 'native-base/lib/typescript/theme/styled-system';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Color from '../Assets/Utilities/Color';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import AskLocationComponent from './AskLocationComponent';
+import CustomText from './CustomText';
+import SearchLocationModal from './SearchLocationModal';
 
 const AskLocation = ({
+  useCurrentLocation,
   setCurrentPosition,
   currentPosition,
   address,
@@ -41,6 +41,8 @@ const AskLocation = ({
   setAdditionalLocation,
   fromrequest,
 }) => {
+  console.log("🚀 ~ pickupLocationName:", pickupLocationName)
+  console.log("🚀 ~ pickupLocation:", pickupLocation)
   const [addLocation, setAddLocation] = useState(false);
   return (
     <View style={[styles.location_View, main_view_style]}>
@@ -75,50 +77,56 @@ const AskLocation = ({
       {islocation && (
         <View style={styles.seatView}>
           <View>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingVertical: moderateScale(5, 0.6),
+            <TouchableOpacity
+              onPress={() => {
+                setLocationType('pickup');
+                setIsModalVisible(true);
               }}>
-              <Icon
-                name="map-marker"
-                as={FontAwesome}
-                size={moderateScale(16, 0.6)}
-                color={Color.yellow}
-              />
-              <CustomText
-                numberOfLines={1}
-                style={[
-                  styles.text1,
-                  {
-                    paddingBottom: moderateScale(10, 0.6),
-                    fontSize: moderateScale(10, 0.6),
-                    width: windowWidth * 0.7,
-                    textAlign: 'left',
-                  },
-                ]}>
-                {pickupLocationName
-                  ? pickupLocationName
-                  : pickupLocation?.name || 'I’m going from ....'}
-              </CustomText>
-              <TouchableOpacity
+              <View
                 style={{
-                  position: 'absolute',
-                  right: -10,
-                  marginTop: moderateScale(10, 0.6),
+                  flexDirection: 'row',
+                  paddingVertical: moderateScale(5, 0.6),
                 }}>
                 <Icon
-                  onPress={() => {
-                    setLocationType('pickup');
-                    setIsModalVisible(true);
-                  }}
-                  name="plus"
+                  name="map-marker"
                   as={FontAwesome}
-                  size={moderateScale(12, 0.6)}
-                  color={Color.black}
+                  size={moderateScale(16, 0.6)}
+                  color={Color.yellow}
                 />
-              </TouchableOpacity>
-            </View>
+                <CustomText
+                  numberOfLines={1}
+                  style={[
+                    styles.text1,
+                    {
+                      paddingBottom: moderateScale(10, 0.6),
+                      fontSize: moderateScale(10, 0.6),
+                      width: windowWidth * 0.7,
+                      textAlign: 'left',
+                    },
+                  ]}>
+                  {pickupLocationName
+                    ? pickupLocationName
+                    : pickupLocation?.name || 'I’m going from ....'}
+                </CustomText>
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    right: -10,
+                    marginTop: moderateScale(10, 0.6),
+                  }}>
+                  <Icon
+                    onPress={() => {
+                      setLocationType('pickup');
+                      setIsModalVisible(true);
+                    }}
+                    name="plus"
+                    as={FontAwesome}
+                    size={moderateScale(12, 0.6)}
+                    color={Color.black}
+                  />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
             <CustomText
               isBold
               style={[
@@ -141,54 +149,60 @@ const AskLocation = ({
                 marginLeft: moderateScale(14, 0.6),
               }}
             />
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingVertical: moderateScale(10, 0.6),
+            <TouchableOpacity
+              onPress={() => {
+                setLocationType('dropoff');
+                setIsModalVisible(true);
               }}>
-              <Icon
-                name="map-marker"
-                as={FontAwesome}
-                size={moderateScale(16, 0.6)}
-                color={Color.red}
-              />
-              <CustomText
-                numberOfLines={1}
-                style={[
-                  styles.text1,
-                  {
-                    fontSize: moderateScale(10, 0.6),
-                    width: windowWidth * 0.7,
-                    textAlign: 'left',
-                  },
-                ]}>
-                {dropLocationName
-                  ? dropLocationName
-                  : dropLocation?.name || 'I’m going to ....'}
-              </CustomText>
-              <TouchableOpacity
+              <View
                 style={{
-                  position: 'absolute',
-                  right: -10,
-                  marginTop: moderateScale(10, 0.6),
+                  flexDirection: 'row',
+                  paddingVertical: moderateScale(10, 0.6),
                 }}>
                 <Icon
-                  onPress={() => {
-                    setLocationType('dropoff');
-                    setIsModalVisible(true);
-                  }}
-                  name="plus"
+                  name="map-marker"
                   as={FontAwesome}
-                  size={moderateScale(12, 0.6)}
-                  color={Color.black}
+                  size={moderateScale(16, 0.6)}
+                  color={Color.red}
                 />
-              </TouchableOpacity>
-            </View>
+                <CustomText
+                  numberOfLines={1}
+                  style={[
+                    styles.text1,
+                    {
+                      fontSize: moderateScale(10, 0.6),
+                      width: windowWidth * 0.7,
+                      textAlign: 'left',
+                    },
+                  ]}>
+                  {dropLocationName
+                    ? dropLocationName
+                    : dropLocation?.name || 'I’m going to ....'}
+                </CustomText>
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    right: -10,
+                    marginTop: moderateScale(10, 0.6),
+                  }}>
+                  <Icon
+                    onPress={() => {
+                      setLocationType('dropoff');
+                      setIsModalVisible(true);
+                    }}
+                    name="plus"
+                    as={FontAwesome}
+                    size={moderateScale(12, 0.6)}
+                    color={Color.black}
+                  />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       )}
       <SearchLocationModal
-        onPressonPressCurrentLocation={onPressCurrentLocation}
+        onPressCurrentLocation={onPressCurrentLocation}
         setcurrentPossition={setCurrentPosition}
         currentPosition={currentPosition}
         setAddress={setAddress}
@@ -202,6 +216,7 @@ const AskLocation = ({
         setAdditionalLocation={setAdditionalLocation}
         additionalLocation={additionalLocation}
         addLocation={addLocation}
+        
       />
       <AskLocationComponent
         visible={addLocation}

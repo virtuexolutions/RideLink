@@ -1,28 +1,36 @@
+import {CardField, createToken} from '@stripe/stripe-react-native';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Platform,
   SafeAreaView,
   StyleSheet,
-  Text,
+  ToastAndroid,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import Header from '../Components/Header';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import PaymentMethodCard from '../Components/PaymentMethodCard';
-import CreditCardComponent from '../Components/CreditCardComponent';
-import CustomText from '../Components/CustomText';
-import CustomButton from '../Components/CustomButton';
-import navigationService from '../navigationService';
-import {CardField, createToken} from '@stripe/stripe-react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {moderateScale} from 'react-native-size-matters';
+import Color from '../Assets/Utilities/Color';
+import CustomButton from '../Components/CustomButton';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
+import PaymentMethodCard from '../Components/PaymentMethodCard';
+import navigationService from '../navigationService';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
 
 const PaymentScreen = props => {
   const data = props?.route?.params?.data;
+  const status = props?.route?.params?.status;
+
+  const token = useSelector(state => state.authReducer.token);
   const [loading, setLoading] = useState(false);
   const [stripeToken, setStripeToken] = useState(null);
-
+  console.log("🚀 ~ stripeToken:", stripeToken)
+  const [isloading, setIsLoading] = useState(null);
+  const [cardDetails, setCardDetails] = useState(null);
   const strpieToken = async () => {
     setLoading(true);
     const responsetoken = await createToken({
@@ -30,28 +38,55 @@ const PaymentScreen = props => {
     });
 
     if (responsetoken != undefined) {
+    
       setStripeToken(responsetoken?.token?.id);
       setLoading(false);
     }
   };
+  const payNow = async () => {
+    const url = `auth/customer/ride_update/${data?.ride_info?.ride_id}`;
+    const body = {
+      rider_id :data?.ride_info?.rider?.id,
+      status: status, 
+      amount: data?.ride_info?.amount,
+      stripeToken: stripeToken,
+    };
+    for (let key in body) {
+      if (key == '') {
+        Platform.OS == 'android'
+          ? ToastAndroid.show(' Add Card', ToastAndroid.SHORT)
+          : Alert.alert(' Add Card');
+      }
+    }
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      navigationService.navigate('RateScreen', {data: data});
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header showBack={true} title={'Offer Your Fare'} />
       <View style={styles.main_view}>
         <PaymentMethodCard
           fare={data?.ride_info?.amount}
-          paymentMethod={data?.ride_info?.payment_method}
-          isEnabled={data?.ride_info?.nearest_cab}
+          // paymentMethod={'card'}
+          paymentMethod={
+            // data?.ride_info?.type.toLowerCase() == 'delivery'
+            // ?
+            data?.ride_info?.payment_method
+            // : ''
+          }
+          isEnabled={true}
         />
-        {/* <CreditCardComponent /> */}
+
         <LinearGradient
-          colors={['#1f1f1f', '#cfcfcf']} // Adjust these colors for a closer match
+          colors={['#1f1f1f', '#cfcfcf']}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
-          style={styles.addcard}
-          // style={styles.modal}
-        >
-          {/* <View style={styles.modal}> */}
+          style={styles.addcard}>
           <View style={styles.header}>
             <CustomText
               style={{
@@ -68,13 +103,11 @@ const PaymentScreen = props => {
             placeholders={{
               number: '4242 4242 4242 4242',
             }}
-            // placeholdersColor={'black'}
             cardStyle={{
               backgroundColor: Color.white,
               borderRadius: moderateScale(15, 0.6),
               width: windowWidth * 0.5,
               borderRadius: moderateScale(35, 0.6),
-              // placeholderColor:'red',
               textColor: 'black',
               placeholderColor: Color.darkGray,
             }}
@@ -83,10 +116,13 @@ const PaymentScreen = props => {
               height: windowHeight * 0.06,
               marginVertical: moderateScale(10, 0.3),
             }}
-            onCardChange={cardDetails => {}}
+            onCardChange={cardDetails => {
+              setCardDetails(cardDetails)
+            }}
             onFocus={focusedField => {}}
           />
           <CustomButton
+          // disabled={stripeToken}
             textColor={Color.black}
             text={
               loading ? (
@@ -104,11 +140,9 @@ const PaymentScreen = props => {
             fontSize={moderateScale(14, 0.3)}
             textTransform={'uppercase'}
             bgColor={'white'}
-            // isGradient={true}
             isBold
             disabled={loading}
           />
-          {/* </View> */}
         </LinearGradient>
 
         <CustomText isBold style={styles.heading}>
@@ -145,10 +179,18 @@ const PaymentScreen = props => {
           borderRadius={moderateScale(30, 0.3)}
           textColor={Color.white}
           textTransform={'none'}
-          text={'PAY NOW'}
+          text={
+            isloading ? (
+              <ActivityIndicator size={'small'} color={Color.white} />
+            ) : (
+              'PAY NOW'
+            )
+          }
           marginTop={moderateScale(25, 0.6)}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={() => navigationService.navigate('RateScreen', {data: data})}
+          onPress={() => {
+            payNow();
+          }}
         />
       </View>
     </SafeAreaView>

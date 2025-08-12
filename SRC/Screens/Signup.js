@@ -1,5 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {Formik} from 'formik';
+import {Icon} from 'native-base';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -9,41 +11,31 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-// import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Formik } from 'formik';
-import { Icon } from 'native-base';
+import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import ScreenBoiler from '../Components/ScreenBoiler';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import { SignupSchema } from '../Constant/schema';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import { setUserData } from '../Store/slices/common';
+import {SignupSchema} from '../Constant/schema';
+import {setUserData} from '../Store/slices/common';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { setUserToken } from '../Store/slices/auth-slice';
 
 const Signup = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [username, setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(null);
+
   const [imagePicker, setImagePicker] = useState(false);
-  const [image, setImage] = useState({});
-  const [term, setTerm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  console.log('🚀 ~ Signup ~ isLoading:', isLoading);
-  const { user_type } = useSelector(state => state.authReducer);
-  console.log(user_type, 'userrtypeeeeee');
+  const {user_type} = useSelector(state => state.authReducer);
 
   const onPressregister = async values => {
-    console.log(values, 'valuyessssssssss');
     const body = {
       name: values.name,
       email: values.email,
@@ -51,20 +43,18 @@ const Signup = () => {
       phone: values.contact,
       agree_terms_condition: values.termsAccepted,
       confirm_password: values.confirmPassword,
-      role: user_type,
+      role: "customer",
     };
-    console.log('🚀 ~ Signup ~ body:', body);
     const url = 'register';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader());
-    console.log('🚀 ~ Signup ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
-      navigation.navigate('AddYourCar');
       Platform.OS == 'android'
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserToken({token : response?.data?.token}));
     }
   };
 
@@ -110,7 +100,6 @@ const Signup = () => {
             termsAccepted: false,
           }}
           validationSchema={SignupSchema}
-          // onSubmit={console.log('//////////////////////////')}>
           onSubmit={onPressregister}>
           {({
             values,
@@ -120,14 +109,8 @@ const Signup = () => {
             touched,
             setFieldValue,
           }) => {
-            // console.log('Errors:', errors);
             return (
-              <View
-                style={[
-                  user_type === 'Rider'
-                    ? styles.fields_box
-                    : styles.input_container,
-                ]}>
+              <View style={[styles.input_container]}>
                 <TextInputWithTitle
                   title={'name *'}
                   placeholder={'James W. Brown'}
@@ -142,7 +125,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{ right: 10 }}
+                  titleStlye={{right: 10}}
                 />
                 {touched.name && errors.name && (
                   <CustomText style={styles.schemaText}>
@@ -164,7 +147,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{ right: 10 }}
+                  titleStlye={{right: 10}}
                 />
                 {touched.email && errors.email && (
                   <CustomText
@@ -177,11 +160,6 @@ const Signup = () => {
                     {errors.email}
                   </CustomText>
                 )}
-                {/* {touched.email && errors.email && (
-                <CustomText style={styles.schemaText}>
-                  {errors.email}
-                </CustomText>
-              )} */}
                 <TextInputWithTitle
                   title={'contact * '}
                   titleText={'Username'}
@@ -197,7 +175,7 @@ const Signup = () => {
                   borderColor={Color.lightGrey}
                   marginTop={moderateScale(8, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{ right: 10 }}
+                  titleStlye={{right: 10}}
                 />
                 {touched.contact && errors.contact && (
                   <CustomText style={styles.schemaText}>
@@ -221,7 +199,7 @@ const Signup = () => {
                   marginTop={moderateScale(8, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{ right: 10 }}
+                  titleStlye={{right: 10}}
                 />
                 {touched.password && errors.password && (
                   <CustomText style={styles.schemaText}>
@@ -245,7 +223,7 @@ const Signup = () => {
                   marginTop={moderateScale(8, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{ right: 10 }}
+                  titleStlye={{right: 10}}
                 />
                 {touched.password && errors.password && (
                   <CustomText style={styles.schemaText}>
@@ -270,28 +248,24 @@ const Signup = () => {
                   <CustomText style={styles.term_text}>
                     By Click You Agree To Our
                     <CustomText
-                      style={{ fontSize: moderateScale(11, 0.6), color: 'red' }}>
+                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
                       {' '}
                       terms & conditions{' '}
                     </CustomText>{' '}
                     As Well As Our
                     <CustomText
-                      style={{ fontSize: moderateScale(11, 0.6), color: 'red' }}>
+                      style={{fontSize: moderateScale(11, 0.6), color: 'red'}}>
                       {' '}
                       Privacy Policy.
                     </CustomText>
                   </CustomText>
                 </View>
                 {touched.termsAccepted && errors.termsAccepted && (
-                  // console.log('=====================' , errors)
                   <CustomText style={styles.schemaText}>
                     {errors.termsAccepted}
                   </CustomText>
                 )}
                 <CustomButton
-                  // onPress={() => {
-                  //   console.log('hell/lllllllllllllllllllllllllll');
-                  // }}
                   onPress={handleSubmit}
                   text={
                     isLoading ? (
@@ -303,19 +277,15 @@ const Signup = () => {
                   fontSize={moderateScale(14, 0.3)}
                   textColor={Color.white}
                   borderWidth={1.5}
-                  borderColor={
-                    Color.white
-                  }
+                  borderColor={Color.white}
                   borderRadius={moderateScale(30, 0.3)}
                   width={windowWidth * 0.8}
                   marginTop={moderateScale(10, 0.3)}
                   height={windowHeight * 0.075}
-                  bgColor={
-                    Color.btn_Color
-                  }
+                  bgColor={Color.btn_Color}
                   textTransform={'capitalize'}
                   elevation
-                // isBold
+                  // isBold
                 />
               </View>
             );
@@ -334,11 +304,11 @@ const Signup = () => {
           </CustomText>
         </CustomText>
 
-        <ImagePickerModal
+        {/* <ImagePickerModal
           show={imagePicker}
           setShow={setImagePicker}
           setFileObject={setImage}
-        />
+        /> */}
       </ScrollView>
     </ScreenBoiler>
   );
@@ -358,7 +328,6 @@ const styles = ScaledSheet.create({
     borderWidth: 0.3,
     borderColor: '#28272369',
     borderRadius: 20,
-    // height: windowHeight * 0.65,
     paddingVertical: moderateScale(10, 0.6),
     width: windowWidth * 0.9,
     alignItems: 'center',
@@ -379,7 +348,6 @@ const styles = ScaledSheet.create({
     borderColor: Color.mediumGray,
     borderRadius: 20,
     paddingVertical: moderateScale(10, 0.6),
-    // height: windowHeight * 0.65,
     width: windowWidth * 0.9,
     alignItems: 'center',
     paddingTop: moderateScale(15, 0.6),
@@ -415,7 +383,6 @@ const styles = ScaledSheet.create({
     fontSize: moderateScale(10, 0.6),
     color: 'red',
     alignSelf: 'flex-start',
-    // backgroundColor: 'red',
   },
 });
 

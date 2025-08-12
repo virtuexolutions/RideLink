@@ -17,7 +17,7 @@ import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
-import DropDownSingleSelect from './DropDownSingleSelect';
+import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import CustomButton from '../Components/CustomButton';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';

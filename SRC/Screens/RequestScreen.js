@@ -1,15 +1,12 @@
 import {useIsFocused} from '@react-navigation/native';
 import {getDistance, isValidCoordinate} from 'geolib';
-import haversine from 'haversine';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
-  FlatList,
   Platform,
   SafeAreaView,
   StyleSheet,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
@@ -18,61 +15,37 @@ import MapViewDirections from 'react-native-maps-directions';
 import {moderateScale} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Get} from '../Axios/AxiosInterceptorFunction';
 import AskLocation from '../Components/AskLocation';
+import CabList from '../Components/CabList.js';
 import CustomButton from '../Components/CustomButton';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
-import navigationService from '../navigationService';
+import RequestForDelivery from '../Components/RequestForDelivery.js';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 
-const RequestScreen = () => {
+const RequestScreen = props => {
+  const data = props?.route?.params?.data;
+  const rbRef = useRef(null);
+  const deliveryRef = useRef(null);
+
   const isFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const mapRef = useRef(null);
 
-  const cablist = [
-    {
-      id: 1,
-      name: 'X Regular',
-      price: '$ 10.00',
-    },
-    {
-      id: 2,
-      name: 'Mini',
-      price: '$ 20.00',
-    },
-    {
-      id: 3,
-      name: 'Standered Ac',
-      price: '$ 30.00',
-    },
-    {
-      id: 4,
-      name: 'Luxury Ac',
-      price: '$ 40.00',
-    },
-  ];
-
-  const locationPermission = useSelector(state => state.commonReducer.location);
-  const [cabType, setCabType] = useState(null);
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropLocation, setDropLocation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('pickup');
-  const [completePayment, setCompletePayment] = useState(false);
   const [fare, setFare] = useState(0);
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
   const [address, setAddress] = useState('');
   const [additionalLocation, setAdditionalLocation] = useState(false);
+  const [isCurrentLocation, setIsCurrentLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
   });
-  const [points, setPoints] = useState({});
+  console.log('🚀 ~ currentPosition:=============== >>>>', currentPosition);
   const [multipleLocation, setMultipleLocation] = useState([]);
-  const [nearestRider, setNearestRider] = useState([]);
   const origin = {
     latitude: parseFloat(pickupLocation?.lat),
     longitude: parseFloat(pickupLocation?.lng),
@@ -86,30 +59,8 @@ const RequestScreen = () => {
     longitude: parseFloat(item?.lng),
   }));
 
-  const fareStructure = {
-    1: {baseFare: 10, additionalFarePerMile: 1},
-    2: {
-      baseFare: 10,
-      additionalFarePerMile: 2,
-      minDistance: 10,
-      maxDistance: 75,
-    },
-    3: {
-      baseFare: 10,
-      additionalFarePerMile: 1.75,
-      minDistance: 76,
-      maxDistance: 150,
-    },
-    4: {baseFare: 10, additionalFarePerMile: 1.5, minDistance: 151},
-  };
-
-  // useEffect(() => {
-  //   requestLocationPermission();
-  // }, [isFocused]);
-
   useEffect(() => {
     getCurrentLocation();
-    // getcabsData()
   }, [isFocused]);
   const getCurrentLocation = async () => {
     try {
@@ -144,7 +95,7 @@ const RequestScreen = () => {
   };
 
   useEffect(() => {
-    if (currentPosition) {
+    if (isValidCoordinate(currentPosition)) {
       mapRef.current?.animateToRegion(
         {
           latitude: currentPosition?.latitude,
@@ -155,45 +106,54 @@ const RequestScreen = () => {
         1000,
       );
     }
-  }, []);
+  }, [currentPosition]);
 
-  const calculateFare = distance => {
-    let fare = 0;
-    let fareType;
-    let calfare;
+  const calculateRideFare = async (distance, time) => {
+    const baseFare = 2.5;
+    const costPerMile = 1.25;
+    const costPerMinute = 0.3;
+    const bookingFee = 1.75;
+    const minimumFare = 6.0;
 
-    Object.keys(fareStructure).forEach(key => {
-      const fareTypeObj = fareStructure[key];
-      if (
-        (!fareTypeObj.minDistance || distance >= fareTypeObj.minDistance) &&
-        (!fareTypeObj.maxDistance || distance <= fareTypeObj.maxDistance)
-      ) {
-        fareType = fareTypeObj;
-      }
-    });
+    let fare = baseFare + costPerMile * distance + costPerMinute * time;
 
-    if (fareType) {
-      fare =
-        fareType.baseFare + (distance - 1) * fareType.additionalFarePerMile;
-      calfare = fare.toFixed(0);
+    // fare *= surgeMultiplier
+    fare += bookingFee;
+
+    if (fare < minimumFare) {
+      fare = minimumFare;
     }
-    return calfare;
+    return fare.toFixed(2);
   };
 
   useEffect(() => {
-    if (dropLocation && pickupLocation != null) {
-      const checkDistanceBetween = getDistance(pickupLocation, dropLocation);
+    if (
+      dropLocation &&
+      (isCurrentLocation ? currentPosition : pickupLocation) != null
+    ) {
+      const checkDistanceBetween = getDistance(
+        isCurrentLocation ? currentPosition : pickupLocation,
+        dropLocation,
+      );
       let km = Math.round(checkDistanceBetween / 1000);
 
       const distanceInMiles = km / 1.60934;
-      const calculatedFare = calculateFare(distanceInMiles);
-      setFare(calculatedFare);
+
+      const fetchFare = async () => {
+        const calculatedFare = await calculateRideFare(distanceInMiles, time);
+        setFare(calculatedFare);
+      };
       setDistance(km);
       const getTravelTime = async () => {
-        // const apikey ='AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM'
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
         try {
-          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickupLocation.lat},${pickupLocation.lng}&destinations=${dropLocation.lat},${dropLocation.lng}&key=${GOOGLE_MAPS_API_KEY}`;
+          const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${
+            isCurrentLocation ? currentPosition?.latitude : pickupLocation.lat
+          },${
+            isCurrentLocation ? currentPosition?.longitude : pickupLocation.lng
+          }&destinations=${dropLocation.lat},${
+            dropLocation.lng
+          }&key=${GOOGLE_MAPS_API_KEY}`;
           const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -202,8 +162,9 @@ const RequestScreen = () => {
           if (data.status === 'OK') {
             const distanceMatrix = data.rows[0].elements[0];
             const travelTime = distanceMatrix.duration.text;
-            console.log(travelTime, 'travelTime');
-            return setTime(travelTime);
+            const Time = parseInt(travelTime.match(/\d+/)[0]);
+            console.log('yeh rha time ', Time);
+            return setTime(Time);
           } else {
             console.error('Error fetching travel time:', data.status);
             return null;
@@ -213,20 +174,24 @@ const RequestScreen = () => {
         }
       };
       getTravelTime();
+      fetchFare();
     }
   }, [dropLocation]);
 
   useEffect(() => {
-    const reigion = {
-      latitude: origin?.latitude,
-      longitude: origin?.longitude,
-      latitudeDelta: 0.0522,
-      longitudeDelta: 0.0521,
-    };
-    mapRef.current?.animateToRegion(reigion, 1000);
+    if (isValidCoordinate(origin)) {
+      const reigion = {
+        latitude: origin?.latitude,
+        longitude: origin?.longitude,
+        latitudeDelta: 0.0522,
+        longitudeDelta: 0.0521,
+      };
+      mapRef.current?.animateToRegion(reigion, 1000);
+    }
   }, [origin]);
 
   const getAddressFromCoordinates = async (latitude, longitude) => {
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
     try {
       const response = await fetch(url);
@@ -242,58 +207,7 @@ const RequestScreen = () => {
     }
   };
 
-  // const nearestRide = async () => {
-  //   const url = 'auth/customer/near_riders_list';
-  //   const response = await Get(url, token);
-  //   if (response != undefined) {
-  //     setNearestRider(response?.data?.data);
-  //   }
-  // };
-
-  // // useEffect(() => {
-  // //   // const riderPosition = nearestRider.watchPosition
-  // //   // this.watchId = navigator.Wa
-  // //   this.watchId = navigator.geolocation.watchPosition(
-  // //         (position) => {
-  // //           const region = regionFrom(
-  // //             position.coords.latitude,
-  // //             position.coords.longitude,
-  // //             position.coords.accuracy
-  // //           );
-  // //           // update the UI
-  // //           this.setState({
-  // //             region: region,
-  // //             accuracy: position.coords.accuracy
-  // //           });
-
-  // //           if(this.state.has_passenger && this.state.passenger){
-  // //             // next: add code for sending driver's current location to passenger
-  // //           }
-  // //         },
-  // //         (error) => this.setState({ error: error.message }),
-  // //         {
-  // //           enableHighAccuracy: true, // allows you to get the most accurate location
-  // //           timeout: 20000, // (milliseconds) in which the app has to wait for location before it throws an error
-  // //           maximumAge: 1000, // (milliseconds) if a previous location exists in the cache, how old for it to be considered acceptable
-  // //           distanceFilter: 10 // (meters) how many meters the user has to move before a location update is triggered
-  // //         },
-  // //       );
-  // // }, [])
-
-  // useEffect(() => {
-  //   nearestRide();
-  // }, [isFocused]);
-
-  // const sortedRiders = nearestRider
-  //   ?.map(rider => ({
-  //     ...rider,
-  //     distance: haversine(currentPosition, {
-  //       latitude: nearestRider.lat,
-  //       longitude: nearestRider.lng,
-  //     }),
-  //   }))
-  //   ?.sort((a, b) => a.distance - b.distance);
-  const apikey = 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM';
+  const apikey = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
 
   const handleMultipleStopsUpdate = updatedStops => {
     setMultipleLocation(updatedStops);
@@ -311,79 +225,59 @@ const RequestScreen = () => {
           latitudeDelta: 0.0522,
           longitudeDelta: 0.0521,
         }}>
-        {Object.keys(origin)?.length > 0 && (
-          <>
-            <Marker
-              coordinate={origin}
-              title="pickup  Location"
-              pinColor={Color.red}
-            />
-          </>
-        )}
-
-        {multipleLocation.map((stop, index) => (
-          <Marker
-            key={index}
-            coordinate={{latitude: stop.lat, longitude: stop.lng}}
-            title={`Stop ${index + 1}`}
-            description={
-              stop.name ||
-              `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
-            }
-            pinColor={Color.black}
-          />
-        ))}
-
-        <MapViewDirections
-          key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
-          origin={origin}
-          waypoints={waypoints}
-          destination={destination}
-          strokeColor={Color.black}
-          strokeWidth={6}
-          apikey={apikey}
-          optimizeWaypoints={false}
-          onStart={params => {
-            // console.log(
-            //   `Started routing between "${params?.origin}" and "${params?.destination}"`,
-            // );
-          }}
-          onError={e => {
-            console.log('map vview direction erorrrrrrrrrrrrrr', e);
-          }}
-          tappable={true}
-          onReady={result => {
-            mapRef.current.fitToCoordinates(result.coordinates, {
-              edgePadding: {
-                right: 50,
-                left: 50,
-                top: 300,
-                bottom: 100,
-              },
-            });
-          }}
-        />
-        {/* {sortedRiders?.map((item, index) => (
-          <Marker
-            coordinate={{
-              latitude: parseFloat(item?.lat),
-              longitude: parseFloat(item?.lng),
-            }}>
-            <View
-              style={{
-                width: windowWidth * 0.09,
-                height: windowHeight * 0.035,
-              }}>
-              <CustomImage
-                style={{
-                  height: '100%',
-                  width: '100%',
-                }}
-                source={require('../Assets/Images/car_icon.png')}
+        {Object.keys(isCurrentLocation ? currentPosition : origin)?.length >
+          0 &&
+          isValidCoordinate(isCurrentLocation ? currentPosition : origin) && (
+            <>
+              <Marker
+                coordinate={isCurrentLocation ? currentPosition : origin}
+                title="pickup  Location"
+                pinColor={Color.red}
               />
-            </View>
-          </Marker>
-        ))} */}
+            </>
+          )}
+
+        {Array.isArray(multipleLocation) &&
+          multipleLocation?.map((stop, index) => (
+            <Marker
+              key={index}
+              coordinate={{latitude: stop.lat, longitude: stop.lng}}
+              title={`Stop ${index + 1}`}
+              description={
+                stop.name ||
+                `Stop at latitude: ${stop.lat}, longitude: ${stop.lng}`
+              }
+              pinColor={Color.black}
+            />
+          ))}
+        {!['', null, undefined].includes(origin) &&
+          !['', null, undefined].includes(destination) && (
+            <MapViewDirections
+              key={`${origin?.latitude}-${origin?.longitude}-${destination?.latitude}-${destination?.longitude}-${waypoints?.length}`}
+              origin={isCurrentLocation ? currentPosition : origin}
+              waypoints={waypoints}
+              destination={destination}
+              strokeColor={Color.black}
+              strokeWidth={6}
+              apikey={apikey}
+              optimizeWaypoints={false}
+              onStart={params => {}}
+              onError={e => {
+                console.log('map vview direction erorrrrrrrrrrrrrr', e);
+              }}
+              tappable={true}
+              onReady={result => {
+                mapRef.current.fitToCoordinates(result.coordinates, {
+                  edgePadding: {
+                    right: 50,
+                    left: 50,
+                    top: 300,
+                    bottom: 100,
+                  },
+                });
+              }}
+            />
+          )}
         {destination != null &&
           Object.keys(destination)?.length > 0 &&
           isValidCoordinate(destination) && (
@@ -394,55 +288,16 @@ const RequestScreen = () => {
             />
           )}
       </MapView>
-      <View style={{position: 'absolute', bottom: 20, alignItems: 'center'}}>
-        <FlatList
-          horizontal
-          data={cablist}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => {
-            return (
-              <View style={styles.cab_view}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginTop: moderateScale(10, 0.6),
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <View>
-                    <CustomText style={styles.text}>{item?.name}</CustomText>
-                    <CustomText style={styles.price}>{item?.price}</CustomText>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setCabType(item);
-                      }}
-                      style={[
-                        styles.btn,
-                        {
-                          backgroundColor:
-                            cabType?.id == item?.id ? '#949392' : Color.black,
-                        },
-                      ]}>
-                      <CustomText style={styles.btn_text}>Book Ride</CustomText>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.image_view}>
-                    <CustomImage
-                      resizeMode="contain"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      source={require('../Assets/Images/carimage.png')}
-                    />
-                  </View>
-                </View>
-              </View>
-            );
-          }}
-        />
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          alignItems: 'center',
+          width: windowWidth,
+        }}>
         <AskLocation
           onPressCurrentLocation={() => {
+            setIsCurrentLocation(true);
             getCurrentLocation();
             setIsModalVisible(false);
           }}
@@ -457,6 +312,7 @@ const RequestScreen = () => {
           setPickupLocation={setPickupLocation}
           setIsModalVisible={setIsModalVisible}
           heading={'Where are you Going?'}
+          pickupLocationName={isCurrentLocation && address}
           locationType={locationType}
           setLocationType={setLocationType}
           multipleLocation={multipleLocation}
@@ -479,35 +335,72 @@ const RequestScreen = () => {
           marginBottom={moderateScale(10, 0.6)}
           onPress={() => {
             if (
-              cabType != null &&
-              dropLocation != null &&
-              pickupLocation != null
+              // cabType != null &&
+              (dropLocation != null && pickupLocation) ||
+              address != null
             ) {
-              navigationService.navigate('FareScreen', {
-                rideData: {
-                  distance: parseInt(distance),
-                  time: time,
-                  fare: Number(fare),
-                  pickup: origin,
-                  dropoff: destination,
-                  currentPosition: currentPosition,
-                  pickupLocation: pickupLocation,
-                  dropoffLocation: dropLocation,
-                  CabType: cabType,
-                  multiplePickups: multipleLocation,
-                },
-              })
-
+              // if (data?.title == 'ride') {
+              rbRef?.current?.open();
+              // navigationService.navigate('FareScreen', {
+              //   rideData: {
+              //     distance: parseInt(distance),
+              //     time: time,
+              //     fare: Number(fare),
+              //     pickup: origin,
+              //     dropoff: destination,
+              //     currentPosition: currentPosition,
+              //     pickupLocation: pickupLocation,
+              //     dropoffLocation: dropLocation,
+              //     CabType: cabType,
+              //     data: data,
+              //     multiplePickups: multipleLocation,
+              //   },
+              // });
+              // } else {
+              //   deliveryRef.current.open();
+              // }
             } else {
               Platform.OS == 'android'
-              ? ToastAndroid.show('required feild is empty ', ToastAndroid.SHORT)
-              : Alert.alert('required feild is empty');
-            
+                ? ToastAndroid.show(
+                    'required feild is empty',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('required feild is empty');
             }
           }}
         />
       </View>
-      {/* </ImageBackground> */}
+      <RequestForDelivery
+        rbRef={deliveryRef}
+        item={{
+          pickupLocation: pickupLocation,
+          dropLocation: dropLocation,
+          fare: fare,
+          data: data,
+        }}
+      />
+      <CabList
+        rbRef={rbRef}
+        data={{
+          distance: parseInt(distance),
+          time: time,
+          fare: Number(fare),
+          pickup: origin,
+          dropoff: destination,
+          currentPosition: currentPosition,
+          pickupLocation: isCurrentLocation
+            ? {
+                lat: currentPosition?.latitude,
+                lng: currentPosition?.longitude,
+                name: address,
+              }
+            : pickupLocation,
+          dropoffLocation: dropLocation,
+          iscurrent: isCurrentLocation ? true : false,
+          data: data,
+          multiplePickups: multipleLocation,
+        }}
+      />
     </SafeAreaView>
   );
 };

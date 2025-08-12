@@ -30,7 +30,6 @@ const Header = props => {
   const notification = useSelector(state => state.commonReducer.notification);
   const cartData = useSelector(state => state.commonReducer.cart);
   const navigationN = useNavigation();
-  // const navigation = useNavigation();
 
   const [isModalVisible, setModalVisible] = useState(false);
   const {
@@ -58,8 +57,8 @@ const Header = props => {
     {label: 'Change Password', value: 'ChangePassword'},
     {label: 'Terms & Conditions', value: 'TermsAndConditions'},
     {label: 'Financial Breakdown', value: 'FinancialBreakDown'},
-    {label: 'Logout', value: 'Logout'},
-  ];
+    {label: 'Logout', value: 'Logout'}
+  ]
 
   const Confirm = () => {
     Alert.alert('Action required', 'Login to Continue', [
@@ -110,9 +109,7 @@ const Header = props => {
                 <Icon
                   // style={styles.menu}
                   name={'menu'}
-                  as={Feather
-                    
-                  }
+                  as={Feather}
                   size={moderateScale(21, 0.3)}
                   color={Color.white}
                   // onPress={() => {
@@ -142,7 +139,6 @@ const Header = props => {
                 }}
               />
             )}
-            ,
           </>
         )}
       </View>
@@ -153,14 +149,11 @@ const Header = props => {
           resizeMode={'contain'}
           style={{
             width: windowWidth * 0.21,
-            // backgroundColor : 'red' ,
             height: windowHeight * 0.05,
           }}
           // source={require('../Assets/Images/customerservice.png')}
         />
       )}
-
-      {/* {/ <CustomText isBold style={{color : Color.white , fontSize : moderateScale(20,0.6)}} >Hola!!</CustomText> /} */}
       {!hideUser && cart ? (
         <View
           style={{
@@ -211,7 +204,7 @@ const Header = props => {
             }}
           />
         </View>
-      ) : (
+      ) : hideUser ? (<View style={{            width: windowHeight * 0.055,}}/>)  :(
         <View
           style={{
             width: windowHeight * 0.055,
@@ -240,8 +233,8 @@ const Header = props => {
         </View>
       )}
     </View>
-  );
-};
+  )
+}
 const styles = ScaledSheet.create({
   header1: {
     width: windowWidth,

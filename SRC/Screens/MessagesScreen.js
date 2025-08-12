@@ -1,8 +1,8 @@
-import { Pusher } from '@pusher/pusher-websocket-react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Icon } from 'native-base';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import {Pusher} from '@pusher/pusher-websocket-react-native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {SafeAreaView} from 'react-native';
 import {
   Actions,
   Bubble,
@@ -11,106 +11,133 @@ import {
   InputToolbar,
   Send,
 } from 'react-native-gifted-chat';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Get, Post } from '../Axios/AxiosInterceptorFunction';
-import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import Header from '../Components/Header';
 import {baseUrl} from '../Config';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import uuid from 'react-native-uuid';
 
-const MessagesScreen = ({ route }) => {
+const MessagesScreen = ({route}) => {
   const focused = useIsFocused();
   const {data} = route.params;
-  const userRole = useSelector(state => state.commonReducer.selectedRole);
   const userData = useSelector(state => state.commonReducer.userData);
   const token = useSelector(state => state.authReducer.token);
   const pusher = Pusher.getInstance();
-  let myChannel = null;
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const myChannel = useRef(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setIsLoading] = useState(false);
-  const user_type = useSelector(state => state.authReducer.user_type);
 
   useEffect(() => {
-    console.log('useEffect runs');
-    async function connectPusher() {
+    const connectPusher = async () => {
       try {
+        console.log('Initializing Pusher...');
         await pusher.init({
           apiKey: '2cbabf5fca8e6316ecfe',
           cluster: 'ap2',
+          encrypted: true,
         });
-        myChannel = await pusher.subscribe({
+
+        await pusher.connect();
+        console.log('Pusher Connected!');
+        myChannel.current = await pusher.subscribe({
           channelName: `my-channel-${userData?.id}`,
           onSubscriptionSucceeded: channelName => {
-            console.log(`And here are the channel members: ${myChannel}`);
-            console.log(
-              `Subscribed to ${JSON.stringify(channelName, null, 2)}`,
-            );
+            console.log(`Subscribed to ${channelName}`);
           },
           onEvent: event => {
-            userData?.id;
-            console.log('Got channel event:', event?.data);
-            const dataString = JSON.parse(event?.data);
-            if (dataString?.message.target_id == userData?.id) {
-              setMessages(previousMessages =>
-                GiftedChat.append(previousMessages, dataString?.message),
+            console.log('Received Event:', event);
+            try {
+              const dataString = JSON.parse(event.data);
+              if (!dataString?.message?._id) {
+                dataString.message._id = Math.random()
+                  .toString(36)
+                  .substring(7);
+              }
+              if (dataString?.message?.target_id === userData?.id) {
+                getChatListingData();
+                setMessages(previousMessages =>
+                  GiftedChat.append(previousMessages, dataString?.message),
+                );
+              }
+              console.log(
+                'Pusher Connection State:',
+                pusher.connectionState.state,
               );
+            } catch (error) {
+              console.error('Error parsing event data:', error);
             }
           },
         });
-        console.log(pusher.connectionState, 'pusherrrrrrrstate');
-        await pusher.connect();
-        console.log('hello from pusher');
-      } catch (e) {
-        console.log(`ERROR: ${e}`);
+      } catch (error) {
+        console.error('Pusher Connection Error:', error);
       }
-    }
-    connectPusher();
-    getChatListingData();
-    return async () => {
-      await pusher.unsubscribe({channelName: `my-channel-${userData?.id}`});
+      getChatListingData();
     };
-  }, []);
+
+    connectPusher();
+
+    return () => {
+      if (myChannel.current) {
+        pusher.unsubscribe({channelName: `my-channel-${userData?.id}`});
+      }
+    };
+  }, [focused]);
 
   const startChat = async body => {
     const url = 'auth/send_message';
-    const response = await Post(url, body, apiHeader(token));
-    if (response != undefined) {
+    try {
+      const response = await Post(url, body, apiHeader(token));
+      if (!response || response.error) {
+        console.error(
+          'Send Message API Error:',
+          response?.error || 'No response',
+        );
+      }
+    } catch (error) {
+      console.error('Send Message API Failed:', error);
     }
   };
 
   const getChatListingData = async () => {
-    const url = `auth/message_list?user_id=${userData?.id}&target_id=${data?.id}`;
+    console.log('Fetching chat list...');
+    const url = `auth/message_list?user_id=${userData?.id}&target_id=${data?.ride_info?.rider?.id}&chat_id=${userData?.id}`;
     setIsLoading(true);
-    const response = await Get(url, token);
-    setIsLoading(false);
-    if (response != undefined) {
-      const finalData = response?.data?.data
-        .map(message => ({
-          ...message,
-          _id: message._id || Math.random().toString(36).substring(7),
-        }))
-        .reverse();
-      setMessages(finalData);
+    try {
+      const response = await Get(url, token);
+      if (!response?.data?.data) {
+        console.error('No chat data found.');
+        return;
+      }
+      const formattedMessages = response?.data?.data?.map(msg => ({
+        _id: msg.id,
+        text: msg.text,
+        createdAt: new Date(msg.created_at),
+        user: {
+          _id: msg.user_id,
+          name: JSON.parse(msg.user).name,
+        },
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Chat List Fetch Failed:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const onSend = useCallback(
     (messages = []) => {
+      if (!messages?.length) return;
       const newMessage = {
         _id: Math.random().toString(36).substring(7),
         text: messages[0].text,
-        createAt: new Date(),
+        createdAt: new Date(),
         user: {
           _id: userData?.id,
-          name: `${userData?.name}`,
+          name: userData?.name,
           avatar: baseUrl + userData?.photo,
         },
       };
@@ -118,9 +145,8 @@ const MessagesScreen = ({ route }) => {
         GiftedChat.append(previousMessages, newMessage),
       );
       startChat({
-        chat_id: userData?.id,
-        // target_id: data?.user?.id,
-        target_id: 5,
+        user_id: userData?.id,
+        target_id: data?.ride_info?.rider?.id,
         ...newMessage,
       });
     },
@@ -128,40 +154,8 @@ const MessagesScreen = ({ route }) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Color.white }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: Color.white}}>
       <Header headerColor={['white', 'white']} title={'Chat'} showBack={true} />
-      <View style={styles.row}>
-        <View>
-          <CustomText
-            isBold
-            style={{
-              fontSize: moderateScale(20, 0.6),
-              color: Color.darkGray,
-            }}>
-            {data?.rider?.name}
-          </CustomText>
-        </View>
-        <View
-          style={{
-            width: moderateScale(60, 0.6),
-            height: moderateScale(60, 0.6),
-            borderRadius: moderateScale(30, 0.6),
-          }}>
-          <CustomImage
-            source={{
-              uri:
-                user_type === 'Rider'
-                  ? baseUrl + data?.userData?.photo
-                  : baseUrl + data?.rider?.photo,
-            }}
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: moderateScale(30, 0.6),
-            }}
-          />
-        </View>
-      </View>
       <GiftedChat
         textInputStyle={{
           color: Color.black,
@@ -171,33 +165,35 @@ const MessagesScreen = ({ route }) => {
         messages={messages}
         isTyping={false}
         alignTop
-        renderInputToolbar={props => {
+        renderActions={props => {
           return (
-            <InputToolbar
+            <Actions
               {...props}
+              icon={() => (
+                <Icon
+                  as={MaterialCommunityIcons}
+                  name="sticker-emoji"
+                  size={26}
+                  color={Color.darkBlue}
+                />
+              )}
+              iconTextStyle={{
+                color: Color.black,
+                fontSize: moderateScale(24, 0.2),
+                textAlign: 'center',
+              }}
               containerStyle={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                backgroundColor: Color.lightGrey,
-                padding: moderateScale(5, 0.6),
-                // height: moderateScale(40, 0.6),
+                bottom: -8,
+                left: 2,
+                width: windowWidth * 0.11,
+                height: windowWidth * 0.11,
+                borderRadius: (windowWidth * 0.11) / 2,
+                alignItems: 'center',
                 justifyContent: 'center',
-                marginHorizontal: moderateScale(6, 0.6),
-                borderRadius: moderateScale(12, 0.6),
-                bottom: 10,
-              }}>
-              <Composer
-                {...props}
-                textInputStyle={{
-                  flex: 1,
-                  color: 'black',
-                  padding: 10,
-                  alignSelf: 'flex-start',
-                }}></Composer>
-            </InputToolbar>
+              }}
+            />
           );
         }}
-        alwaysShowSend={true}
         renderSend={props => {
           return (
             <Send
@@ -213,72 +209,84 @@ const MessagesScreen = ({ route }) => {
                 name="send"
                 as={Feather}
                 size={moderateScale(22)}
-                color={Color.darkBlue}
+                color={Color.black}
               />
             </Send>
+          );
+        }}
+        renderInputToolbar={props => {
+          return (
+            <InputToolbar
+              {...props}
+              containerStyle={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                backgroundColor: Color.lightGrey,
+                height: moderateScale(50, 0.6),
+                justifyContent: 'center',
+                marginHorizontal: moderateScale(6, 0.6),
+                borderRadius: moderateScale(12, 0.6),
+                bottom: 10,
+                marginTop: moderateScale(15, 0.6),
+              }}>
+              <Composer
+                {...props}
+                textInputStyle={{
+                  flex: 1,
+                  color: 'black',
+                  padding: 10,
+                  alignSelf: 'flex-start',
+                }}></Composer>
+            </InputToolbar>
           );
         }}
         renderBubble={props => {
           return (
             <Bubble
               {...props}
-              wrapperStyle={{
-                right: {
-                  backgroundColor: Color.blue,
-                  borderRadius: 20,
-                  paddingVertical: 8,
-                  paddingHorizontal: 12,
-                  borderTopLeftRadius: 15,
-                  borderTopRightRadius: 0,
-                  borderBottomLeftRadius: 15,
-                  borderBottomRightRadius: 15,
-                },
-                left: {
-                  backgroundColor: Color.lightBlue,
-                  borderTopLeftRadius: 15,
-                  borderTopRightRadius: 15,
-                  borderBottomLeftRadius: 15,
-                  borderBottomRightRadius: 0,
-                  marginLeft: moderateScale(30, 0.6),
-                  marginTop: moderateScale(12, 0.6),
-                },
-              }}
               containerStyle={{
                 left: {
-                  position: 'absolute',
-                  left: 10,
-                },
-                right: {
-                  marginRight: moderateScale(10, 0.6),
+                  paddingVertical: moderateScale(10, 0.6),
                 },
               }}
-            />
+              wrapperStyle={{
+                left: {
+                  width: windowWidth * 0.45,
+                  borderRadius: moderateScale(6, 0.2),
+                  backgroundColor: Color.lightBlue,
+                  alignItems: 'center',
+                  paddingVertical: moderateScale(8, 0.5),
+                  borderTopLeftRadius: 10,
+                  borderTopRightRadius: 10,
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 0,
+                },
+                right: {
+                  width: windowWidth * 0.45,
+                  borderTopLeftRadius: 10,
+                  borderTopRightRadius: 0,
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 10,
+                  backgroundColor: Color.blue,
+                  paddingVertical: moderateScale(8, 0.5),
+                },
+              }}
+              textStyle={{
+                right: {
+                  color: 'black',
+                },
+                left: {
+                  color: 'black',
+                },
+              }}></Bubble>
           );
         }}
-        renderActions={props => (
-          <Actions
-            {...props}
-            icon={() => (
-              <Icon
-                style={{
-                  top: 5,
-                }}
-                as={MaterialCommunityIcons}
-                name="sticker-emoji"
-                size={22}
-                color={Color.darkBlue}
-              />
-            )}
-            onPressActionButton={() => {
-              console.log('Action button pressed');
-            }}
-          />
-        )}
-        onSend={messages => onSend(messages)}
+        onSend={text => onSend(text)}
+        alwaysShowSend={true}
         user={{
           _id: userData?.id,
           name: userData?.name,
-          avatar: baseUrl + userData?.photo,
+          // avatar: `${baseUrl}/${profileData?.photo}`,
         }}
       />
     </SafeAreaView>
@@ -336,7 +344,7 @@ const styles = ScaledSheet.create({
   },
   userName: {
     fontWeight: 'bold',
-    color: '#007aff', // Adjust color for the name
+    color: '#007aff', 
   },
   messageText: {
     color: '#333333',

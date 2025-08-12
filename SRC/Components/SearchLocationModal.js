@@ -16,6 +16,7 @@ import {useDispatch} from 'react-redux';
 import {setDropoffLocation} from '../Store/slices/common';
 
 const SearchLocationModal = ({
+  
   isModalVisible,
   setIsModalVisible,
   setAddress,
@@ -65,8 +66,9 @@ const SearchLocationModal = ({
               justifyContent: 'flex-start',
               alignItems: 'center',
               flexDirection: 'row',
+              // backgroundColor :'red'
             }}>
-            <CustomText>Use Your Current Location</CustomText>
+            <CustomText   onPress={onPressCurrentLocation}>Use Your Current Location</CustomText>
           </TouchableOpacity>
         )}
         <GooglePlacesAutocomplete
@@ -111,7 +113,7 @@ const SearchLocationModal = ({
                 });
           }}
           query={{
-            key: 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM',
+            key: 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8',
             language: 'en',
           }}
           isRowScrollable={true}

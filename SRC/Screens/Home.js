@@ -1,25 +1,21 @@
-import { useIsFocused } from '@react-navigation/native';
-import { ScrollView } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import {ScrollView} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   I18nManager,
   ImageBackground,
-  Platform,
-  RefreshControl,
   SafeAreaView,
   StyleSheet,
-  ToastAndroid,
   View,
 } from 'react-native';
 
 import {moderateScale} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Get, Post } from '../Axios/AxiosInterceptorFunction';
+import {Get} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
@@ -27,23 +23,21 @@ import DeliveryBox from '../Components/DeliveryBox';
 import Header from '../Components/Header';
 import SearchbarComponent from '../Components/SearchbarComponent';
 import Userbox from '../Components/Userbox';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import navigationService from '../navigationService';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+
 const Home = () => {
   const token = useSelector(state => state.authReducer.token);
-  const {user_type} = useSelector(state => state.authReducer);
-  const rideData = useSelector(state => state.commonReducer.rideInfo);
   const isFocused = useIsFocused();
-  const [refreshing, setRefreshing] = useState(false);
-  const [activebutton, setactivebutton] = useState('current');
-  const [currentPosition, setCurrentPosition] = useState({});
+  const [activebutton, setactivebutton] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [histry_list, setHistoryList] = useState([]);
-
   const deliveryList = [
     {
       id: 1,
       image: require('../Assets/Images/carimage.png'),
-      title: 'Ride',
+      title: 'ride',
     },
     {
       id: 2,
@@ -53,23 +47,12 @@ const Home = () => {
     {
       id: 3,
       image: require('../Assets/Images/catimage.png'),
-      title: 'Pets',
+      title: 'Pets Delivery',
     },
   ];
-
-  useEffect(() => {
-    userRequestHistory();
-  }, []);
-
   const userRequestHistory = async () => {
-    const url = `auth/customer/ride_list?type=${activebutton}`;
-    setHistoryLoading(true);
-    const response = await Get(url, token);
-    console.log('🚀 ~ userRequestHistory ~ response:', response?.data);
-    setHistoryLoading(false);
-    if (response != undefined) {
-      setHistoryList(response?.data);
-    }
+    const url = `auth/customer/ride_list?type[0]=${activebutton}`;
+    userRequestHistory();
   };
 
   return (
@@ -96,32 +79,12 @@ const Home = () => {
               width: '100%',
             }}
             source={require('../Assets/Images/bgcimage.png')}>
-            <View
-              style={{
-                flexDirection: 'row',
-                height: '100%',
-                alignItems: 'center',
-              }}>
-              <View
-                style={{
-                  marginTop: windowHeight * 0.12,
-                  paddingLeft: moderateScale(10, 0.6),
-                }}>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(10, 0.6),
-                    color: Color.themeBlack,
-                    width: windowWidth * 0.42,
-                  }}>
+            <View style={styles.row_con}>
+              <View style={styles.row}>
+                <CustomText style={styles.h1}>
                   Request A Ride, Hop In, And Go.
                 </CustomText>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(24, 0.6),
-                    color: Color.themeBlack,
-                    width: windowWidth * 0.45,
-                    fontWeight: 'bold',
-                  }}>
+                <CustomText style={styles.txt}>
                   Go Anywhere With Ridelynk
                 </CustomText>
               </View>
@@ -148,42 +111,42 @@ const Home = () => {
                 justifyContent: 'center',
               }}
               renderItem={({item}) => {
-                return <DeliveryBox data={item} />
+                return <DeliveryBox data={item} />;
               }}
             />
           </View>
           <View style={styles.button_Box}>
             <CustomButton
               onPress={() => {
-                setactivebutton('current');
+                setactivebutton('ride');
               }}
-              text={'Current '}
+              text={'ride '}
               fontSize={moderateScale(14, 0.3)}
               textColor={
-                activebutton === 'current' ? Color.white : Color.btn_Color
+                activebutton === 'ride' ? Color.white : Color.btn_Color
               }
               borderRadius={moderateScale(30, 0.3)}
               width={windowWidth * 0.42}
               height={windowHeight * 0.053}
               bgColor={
-                activebutton === 'current' ? Color.btn_Color : 'transparent'
+                activebutton === 'ride' ? Color.btn_Color : 'transparent'
               }
               textTransform={'capitalize'}
             />
             <CustomButton
               onPress={() => {
-                setactivebutton('history')
+                setactivebutton('delivery');
               }}
-              text={'History'}
+              text={'delivery'}
               fontSize={moderateScale(14, 0.3)}
               textColor={
-                activebutton === 'history' ? Color.white : Color.btn_Color
+                activebutton === 'delivery' ? Color.white : Color.btn_Color
               }
               borderRadius={moderateScale(30, 0.3)}
               width={windowWidth * 0.42}
               height={windowHeight * 0.055}
               bgColor={
-                activebutton === 'history' ? Color.btn_Color : 'transparent'
+                activebutton === 'delivery' ? Color.btn_Color : 'transparent'
               }
               textTransform={'capitalize'}
             />
@@ -207,11 +170,24 @@ const Home = () => {
                   no data found
                 </CustomText>
               }
-              style={{paddingBottom: moderateScale(150, 0.6)}}
+              style={{paddingBottom: moderateScale(250, 0.6)}}
               contentContainerStyle={{gap: moderateScale(10, 0.6)}}
               data={histry_list}
               renderItem={({item}) => {
-                return <Userbox data={item} />
+                return (
+                  <Userbox
+                    data={item?.ride_info}
+                    onPressDetails={() => {
+                      activebutton === 'ride'
+                        ? navigationService.navigate('TrackingScreen', {
+                            data: item?.ride_info,
+                          })
+                        : navigationService.navigate('ParcelTrackingScreen', {
+                            data: item,
+                          });
+                    }}
+                  />
+                );
               }}
             />
           )}
@@ -284,5 +260,29 @@ const styles = StyleSheet.create({
   location: {
     fontSize: moderateScale(12, 0.6),
     color: Color.grey,
+  },
+  date: {
+    fontSize: moderateScale(11, 0.6),
+    color: Color.veryLightGray,
+  },
+  row: {
+    marginTop: windowHeight * 0.12,
+    paddingLeft: moderateScale(10, 0.6),
+  },
+  txt: {
+    fontSize: moderateScale(24, 0.6),
+    color: Color.themeBlack,
+    width: windowWidth * 0.45,
+    fontWeight: 'bold',
+  },
+  h1: {
+    fontSize: moderateScale(10, 0.6),
+    color: Color.themeBlack,
+    width: windowWidth * 0.42,
+  },
+  row_con: {
+    flexDirection: 'row',
+    height: '100%',
+    alignItems: 'center',
   },
 });

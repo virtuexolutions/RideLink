@@ -35,14 +35,12 @@ const WalkThroughScreen = props => {
     {
       key: '2',
       image: require('../Assets/Images/walk2.jpg'),
-      // image1: require('../Assets/Images/icon2.png'),
       title: 'LOREM IPSUM DOLOR SIT',
       text: `Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Pellentesque Eu Pulvinar Metus, Fringilla Semper Enim. Etiam Viverra Porttitor Nunc Laoreet Faucibus. Fusce Accumsan Mauris At Sem Finibus Gravida. Donec Cursus Tincidunt Eros In Efficitur. Maecenas Cursus Pretium Dui, In Tristique Turpis Finibus Nec. Class Aptent.`,
     },
     {
       key: '3',
       image: require('../Assets/Images/walk3.jpg'),
-      // image1: require('../Assets/Images/icon2.png'),
       title: 'DODGE CARAVAN',
       text: `Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Pellentesque Eu Pulvinar Metus, Fringilla Semper Enim. Etiam Viverra Porttitor Nunc Laoreet Faucibus. Fusce Accumsan Mauris At Sem Finibus Gravida. Donec Cursus Tincidunt Eros In Efficitur. Maecenas Cursus Pretium Dui, In Tristique Turpis Finibus Nec. Class Aptent.`,
     },
@@ -80,12 +78,7 @@ const WalkThroughScreen = props => {
     return (
       <TouchableOpacity 
       onPress={onPress}
-
-      // onPress={() =>{
-      //   slidesref.current.goToSlide(activeindex + 1) 
-
-      // }}
-        style={{
+    style={{
           height: windowHeight * 0.09,
           width: windowHeight * 0.09,
           borderRadius: (windowHeight * 0.09) / 2,
@@ -94,10 +87,8 @@ const WalkThroughScreen = props => {
           alignItems: 'center',
           justifyContent: 'center',
           borderColor: Color.black,
-          // position: 'absolute',
           bottom: 10,
           alignSelf : 'center'
-          // left: windowWidth* 0.5,
         }}>
        <CustomText style={{
         fontSize : moderateScale(14,0.6)
@@ -119,7 +110,6 @@ const WalkThroughScreen = props => {
   const RenderSkipBtn = () => {
     return (
       <CustomText
-      // onPress={onPress}
         onPress={() => {
           dispatch(setWalkThrough(true));
 
@@ -129,19 +119,11 @@ const WalkThroughScreen = props => {
       </CustomText>
     );
   };
-  // const RenderBackBtn = () => {
-  //   return (
-  //     <CustomText style={[styles.generalBtn, styles.btnLeft]}>Back</CustomText>
-  //   );
-  // };
+
   return (
 
       <View style={styles.container1}>
-        {/* <CustomImage
-          source={backgroundImage}
-          resizeMode="contain"
-          style={styles.bgImage}
-        /> */}
+     
         <AppIntroSlider
           renderItem={RenderSlider}
           data={slides}
@@ -164,19 +146,15 @@ const WalkThroughScreen = props => {
               <RenderNextBtn onPress={() => {
               if (slidesref.current) {
                 if (activeindex < slides.length - 1) {
-                  slidesref.current.goToSlide(activeindex + 1, true); // Navigate to next slide
+                  slidesref.current.goToSlide(activeindex + 1, true); 
                 } else {
-                  dispatch(setWalkThrough(true)); // Final action
+                  dispatch(setWalkThrough(true)); 
                 }}}}
-                // slidesref.current.goToSlide(activeindex < 2 ?  activeindex + 1 : dispatch(setWalkThrough(true)))
                 />
             </View>
           )
         }}
-        // onPress={() => slidesref.current.goToSlide(1, true)}
-          // showDoneButton={false}
-          // showSkipButton={true}
-          // showPrevButton={true}
+      
           showNextButton={true}
           activeDotStyle={{backgroundColor: Color.themeBlack}}
           dotStyle={{
@@ -184,10 +162,7 @@ const WalkThroughScreen = props => {
             borderWidth: 1,
             borderColor: Color.themeBlack,
           }}
-          // renderDoneButton={RenderDoneBtn}
-          // renderNextButton={RenderNextBtn}
-          // renderSkipButton={RenderSkipBtn}
-          // renderPrevButton={RenderBackBtn}
+      
         />
 
       </View>
