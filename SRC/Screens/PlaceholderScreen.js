@@ -38,7 +38,7 @@ const PlaceHolderScreen = () => {
         const goHomeStatuses = [
           'pending',
           'cancel',
-          'completed',
+          'complete',
           'reviewed',
           'ride_completed',
           'delivered'
@@ -51,11 +51,6 @@ const PlaceHolderScreen = () => {
         if (goHomeStatuses.includes(status)) {
           navigationService.navigate('Home');
         } 
-        // else if (status == 'pending') {
-        //   navigationService.navigate('MapScreen' ,{
-
-        //   })
-        // }
         else {
           navigationService.navigate('TrackingScreen', {
             data: ride,

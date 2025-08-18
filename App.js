@@ -13,12 +13,14 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import {Alert, TouchableOpacity, View} from 'react-native';
+import {Alert, LogBox, TouchableOpacity, View} from 'react-native';
 import navigationService from './SRC/navigationService';
 import CustomImage from './SRC/Components/CustomImage';
 import CustomText from './SRC/Components/CustomText';
 import {moderateScale} from 'react-native-size-matters';
 import {StripeProvider} from '@stripe/stripe-react-native';
+import PrivacyPolicy from './SRC/Screens/PrivacyPolicy';
+import TermsAndConditions from './SRC/Screens/TermsAndConditions';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
@@ -76,7 +78,8 @@ const App = () => {
   //       }
   //     });
   // });
-
+LogBox.ignoreLogs(['Warning: ...', 'VirtualizedLists should never be nested']);
+LogBox.ignoreAllLogs();
   useEffect(() => {
     requestUserPermission();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -105,10 +108,7 @@ const App = () => {
   return (
     <StripeProvider
       publishableKey={
-        "pk_test_51McSueJ0WRwehn2Uuf4rm6WNHPQvaJY9NGU235gUEqPA3AJuc9Mq1x98Y8B8uE5eMfivo5l2xK4Vau21zau7ZBDp00g7qWfkx3"
-    
-        // 'pk_test_51RjPdv2NCEAbWISBZn1SsmYnvJ5xkgrB0XYUWgutWOTKgU7HdR8b5MFXhjM1r40ySpdSZAZw9AnC7pKZAgEIIrED00Yf6JwJ5I'
-        // STRIPE_SECRET=sk_test_51RjPdv2NCEAbWISBwN5pbl4w8mTlPzQmLVwGJyP5ZxwqvCfx6bJM9aABHsLuKBXwh5dKJa3ekNxP0TUnraIVpF8L00ybOoYGPN'
+        'pk_test_51RjPdv2NCEAbWISBZn1SsmYnvJ5xkgrB0XYUWgutWOTKgU7HdR8b5MFXhjM1r40ySpdSZAZw9AnC7pKZAgEIIrED00Yf6JwJ5I'
       }>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
@@ -183,6 +183,8 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   return <AppNavigator />;
+  // return <PrivacyPolicy />;
+  // return <TermsAndConditions />;
 };
 
 const useloader = value => {

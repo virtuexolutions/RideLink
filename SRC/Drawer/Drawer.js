@@ -17,11 +17,18 @@ const Drawer = React.memo(() => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
   const adminData = [
+    {
+      id: 1,
+      name: 'Home',
+      onPress: () => {
+        navigation.navigate('Home');
+      },
+    },
     // {
-    //   id: 1,
+    //   id: 111,
     //   name: 'Inbox',
     //   onPress: () => {
-    //     navigation.navigate('HomeScreen');
+    //     // navigation.navigate('Home');
     //   },
     // },
     // {
@@ -39,21 +46,21 @@ const Drawer = React.memo(() => {
     //     navigation.navigate('MyJourneys');
     //   },
     // },
-    {
-      id: 4,
-      name: 'wallet',
-      onPress: () => {
-        navigation.navigate('MyWallet');
-      },
-    },
+    // {
+    //   id: 4,
+    //   name: 'wallet',
+    //   onPress: () => {
+    //     navigation.navigate('MyWallet');
+    //   },
+    // },
 
-    {
-      id: 4,
-      name: 'History',
-      onPress: () => {
-        navigation.navigate('History');
-      },
-    },
+    // {
+    //   id: 4,
+    //   name: 'History',
+    //   onPress: () => {
+    //     navigation.navigate('History');
+    //   },
+    // },
     {
       id: 5,
       name: 'Accounts ',
@@ -132,7 +139,7 @@ const Drawer = React.memo(() => {
                 style={{
                   width: windowWidth * 0.7,
                   borderColor: Color.black,
-                  margin: moderateScale(5, 0.3),
+                  margin: moderateScale(10, 0.3),
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',

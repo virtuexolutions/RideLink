@@ -67,7 +67,7 @@ const Home = () => {
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={''} />
-      <SearchbarComponent
+      {/* <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
           height: windowHeight * 0.058,
@@ -78,7 +78,7 @@ const Home = () => {
         name={'search'}
         as={Feather}
         color={Color.grey}
-      />
+      /> */}
 
       <View style={styles.main_Container}>
         <View style={styles.ridelink_Box}>

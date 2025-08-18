@@ -38,7 +38,9 @@ const RateScreen = props => {
                 source={require('../Assets/Images/riderphoto.png')}
               />
             </View>
-            <CustomText style={styles.name}>{data?.ride_info?.rider?.name}</CustomText>
+            <CustomText style={styles.name}>
+              {data?.ride_info?.rider?.name}
+            </CustomText>
             <TouchableOpacity style={styles.button}>
               <CustomText style={styles.ride_status}>COMPLETE</CustomText>
             </TouchableOpacity>
@@ -129,15 +131,6 @@ const RateScreen = props => {
             </CustomText>
           </View>
         </View>
-        {/* <Rating
-          type="custom"
-          startingValue={55}
-          ratingCount={5}
-          ratingColor={Color.yellow}
-          imageSize={moderateScale(35, 0.3)}
-          tintColor={Color.white}
-          style={{marginTop: moderateScale(30, 0.6)}}
-        /> */}
         <View style={styles.btn_view}>
           <CustomButton
             text={'review'}
@@ -152,12 +145,12 @@ const RateScreen = props => {
             textTransform={'capitalize'}
             elevation={false}
             onPress={() => {
-              navigationService.navigate('Home')
-              // rbRef.current.open();
+              // navigationService.navigate('Home');
+              rbRef.current.open();
             }}
           />
 
-          {/* <ReviewModal setRef={rbRef} rbRef={rbRef} item={data} /> */}
+          <ReviewModal setRef={rbRef} rbRef={rbRef} item={data} />
         </View>
       </View>
     </SafeAreaView>
@@ -239,7 +232,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12, 0.6),
     color: Color.themeBlack,
     fontWeight: 'bold',
-    width :windowWidth*0.6,
+    width: windowWidth * 0.6,
     // backgroundColor :'red'
   },
   value: {

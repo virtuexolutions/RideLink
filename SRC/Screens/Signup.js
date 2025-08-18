@@ -305,11 +305,11 @@ const Signup = () => {
           </CustomText>
         </CustomText>
 
-        <ImagePickerModal
+        {/* <ImagePickerModal
           show={imagePicker}
           setShow={setImagePicker}
           setFileObject={setImage}
-        />
+        /> */}
       </ScrollView>
     </ScreenBoiler>
   );

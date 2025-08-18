@@ -204,7 +204,7 @@ const Header = props => {
             }}
           />
         </View>
-      ) : (
+      ) : hideUser ? (<View style={{            width: windowHeight * 0.055,}}/>)  :(
         <View
           style={{
             width: windowHeight * 0.055,

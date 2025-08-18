@@ -23,6 +23,7 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const MapScreen = props => {
   const ridedata = props?.route?.params?.ridedata;
+  console.log("🚀 ~ MapScreen ~ ridedata:", ridedata)
 
   const fromDelivery = props?.route?.params?.fromDelivery;
   const paymentMethod = props?.route?.params?.paymentMethod;

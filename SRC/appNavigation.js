@@ -82,18 +82,18 @@ const AppNavigator = () => {
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
           <RootNav.Screen name="TrackingScreen" component={TrackingScreen} />
-          <RootNav.Screen name="Home" component={Home} />
+          {/* <RootNav.Screen name="Home" component={Home} /> */}
 
           <RootNav.Screen
             name="ParcelTrackingScreen"
             component={ParcelTrackingScreen}
           />
           {/* <RootNav.Screen name="History" component={History} /> */}
-          <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-          <RootNav.Screen
+          {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
+          {/* <RootNav.Screen
             name="TermsAndConditions"
             component={TermsAndConditions}
-          />
+          /> */}
           {/* <RootNav.Screen name="HelpAndSupport" component={HelpAndSupport} /> */}
           {/* <RootNav.Screen
             name="ReferFriendScreen"
@@ -251,6 +251,14 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen
         name="ReferFriendScreen"
         component={ReferFriendScreen}
+      />
+      <DrawerNavigation.Screen
+        name="TermsAndConditions"
+        component={TermsAndConditions}
+      />
+      <DrawerNavigation.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicy}
       />
 
       <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />

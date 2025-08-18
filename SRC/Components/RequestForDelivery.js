@@ -26,6 +26,7 @@ import ImagePickerModal from './ImagePickerModal';
 import TextInputWithTitle from './TextInputWithTitle';
 
 const RequestForDelivery = ({setRef, rbRef, item}) => {
+  console.log("🚀 ~ RequestForDelivery ~ item:", item)
   const token = useSelector(state => state.authReducer.token);
   const [pickupEntrance, setPickupEnternce] = useState('');
   const [pickupAppartment, setPickupAppartment] = useState('');

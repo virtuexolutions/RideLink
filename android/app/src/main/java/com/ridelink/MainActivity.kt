@@ -1,4 +1,4 @@
-package com.ridelink
+package com.ridelinkUser
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
