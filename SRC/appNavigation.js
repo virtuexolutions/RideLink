@@ -34,6 +34,7 @@ import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
 import TermsAndConditions from './Screens/TermsAndConditions';
 import PrivacyPolicy from './Screens/PrivacyPolicy';
+import PhoneRegistration from './Screens/PhoneRegistration';
 
 enableScreens();
 const AppNavigator = () => {
@@ -83,10 +84,13 @@ const AppNavigator = () => {
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
           <RootNav.Screen name="TrackingScreen" component={TrackingScreen} />
           {/* <RootNav.Screen name="Home" component={Home} /> */}
-
           <RootNav.Screen
             name="ParcelTrackingScreen"
             component={ParcelTrackingScreen}
+          />
+          <RootNav.Screen
+            name="PhoneRegistration"
+            component={PhoneRegistration}
           />
           {/* <RootNav.Screen name="History" component={History} /> */}
           {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
@@ -256,10 +260,7 @@ export const MyDrawer = () => {
         name="TermsAndConditions"
         component={TermsAndConditions}
       />
-      <DrawerNavigation.Screen
-        name="PrivacyPolicy"
-        component={PrivacyPolicy}
-      />
+      <DrawerNavigation.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 
       <DrawerNavigation.Screen name="MapScreen" component={MapScreen} />
 

@@ -153,7 +153,7 @@ const PaymentMethodCard = ({
               </TouchableOpacity>
               <CustomText style={styles.sub_text}>Credit Card</CustomText>
             </View>
-            {!fromPayment && (
+            {/* {!fromPayment && (
               <View
                 style={[
                   styles.payment_subview,
@@ -166,7 +166,7 @@ const PaymentMethodCard = ({
                 </TouchableOpacity>
                 <CustomText style={styles.sub_text}>Paypal</CustomText>
               </View>
-            )}
+            )} */}
           </View>
           {!fromPayment && (
             <>

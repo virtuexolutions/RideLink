@@ -433,7 +433,7 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
           paddingHorizontal: moderateScale(10, 0.6),
           paddingTop: moderateScale(10, 0.6),
         }}>
-        <CustomText>{`$${data?.fare +item?.price}`} </CustomText>
+        <CustomText>{`$${Math.round((data?.fare || 0) + (item?.price || 0))}`} </CustomText>
       </View>
     </TouchableOpacity>
   );

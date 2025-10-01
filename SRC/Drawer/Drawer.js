@@ -2,12 +2,12 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {moderateScale} from 'react-native-size-matters';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import {setUserToken} from '../Store/slices/auth';
+import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
 import {SetUserRole} from '../Store/slices/auth-slice';
 import {setUserLogOut} from '../Store/slices/common';
 import {windowHeight, windowWidth} from '../Utillity/utils';
@@ -15,6 +15,9 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
+   const isSiginWithGoogle = useSelector(
+    state => state.commonReducer.isSiginWithGoogle,
+  );
   const navigation = useNavigation();
   const adminData = [
     {
@@ -198,9 +201,15 @@ const Drawer = React.memo(() => {
           </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => {
-              dispatch(setUserToken(''));
-              dispatch(SetUserRole(''));
-              dispatch(setUserLogOut());
+                  if (!isSiginWithGoogle) {
+                console.log('logout and empty userdata');
+                dispatch(setUserToken({token: ''}));
+                dispatch(setUserLogOut());
+                dispatch(setUserLogoutAuth());
+              } else {
+                console.log('logout and remove token ');
+                dispatch(setUserToken({token: ''}));
+              }
             }}
             style={{
               width: windowWidth * 0.7,
