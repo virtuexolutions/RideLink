@@ -15,7 +15,8 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
-   const isSiginWithGoogle = useSelector(
+    const userData = useSelector(state => state.commonReducer.userData);
+  const isSiginWithGoogle = useSelector(
     state => state.commonReducer.isSiginWithGoogle,
   );
   const navigation = useNavigation();
@@ -27,33 +28,13 @@ const Drawer = React.memo(() => {
         navigation.navigate('Home');
       },
     },
-    // {
-    //   id: 111,
-    //   name: 'Inbox',
-    //   onPress: () => {
-    //     // navigation.navigate('Home');
-    //   },
-    // },
+
     // {
     //   id: 2,
     //   name: 'Refer Friends',
     //   onPress: () => {
     //     // setIsModalVisible(true);
     //     navigation.navigate('ReferFriendScreen');
-    //   },
-    // },
-    // {
-    //   id: 3,
-    //   name: 'Oppurtunities',
-    //   onPress: () => {
-    //     navigation.navigate('MyJourneys');
-    //   },
-    // },
-    // {
-    //   id: 4,
-    //   name: 'wallet',
-    //   onPress: () => {
-    //     navigation.navigate('MyWallet');
     //   },
     // },
 
@@ -76,6 +57,27 @@ const Drawer = React.memo(() => {
       name: 'Change password ',
       onPress: () => {
         navigation.navigate('ChangePassword');
+      },
+    },
+    {
+      id: 111,
+      name: 'notification',
+      onPress: () => {
+        // navigation.navigate('Notification');
+      },
+    },
+    {
+      id: 3,
+      name: 'promotion /discounts and referrlas',
+      onPress: () => {
+        // navigation.navigate('MyJourneys');
+      },
+    },
+    {
+      id: 4,
+      name: 'customer support',
+      onPress: () => {
+        // navigation.navigate('SupportScreen');
       },
     },
     {
@@ -126,7 +128,7 @@ const Drawer = React.memo(() => {
             }}
           />
           <CustomText isBold style={styles.heading_text}>
-            PAT H. JHONSON
+           {userData?.name}
           </CustomText>
         </View>
         <View
@@ -201,7 +203,7 @@ const Drawer = React.memo(() => {
           </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => {
-                  if (!isSiginWithGoogle) {
+              if (!isSiginWithGoogle) {
                 console.log('logout and empty userdata');
                 dispatch(setUserToken({token: ''}));
                 dispatch(setUserLogOut());

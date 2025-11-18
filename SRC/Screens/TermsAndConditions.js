@@ -9,225 +9,177 @@ import {Icon} from 'native-base';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import {useNavigation} from '@react-navigation/native';
 import TernsComponent from '../Components/TernsComponent';
+import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const TermsAndConditions = () => {
+const TermsAndConditions = props => {
+  const isSignup = props?.route?.params?.isSignup;
+  console.log(isSignup, 'isSignup');
   // const navigation = useNavigation();
   const terms = [
     {
-      id: 1,
-      heading: 'Definitions',
-      description: 'For the purpose of these Terms:',
-      subTerms: [
-        'RideLynk” Company” means RideLynk Inc., its subsidiaries, affiliates, officers, directors, employees, agents, and licensors.',
-        'Platform means the RideLynk app, website, and any related tools, features, and services.',
-        'User means any person who accesses or uses the Platform, including Passengers and Drivers.',
-        'Passenger means an individual using the Platform to request rides.',
-        'Driver means an independent contractor who uses the Platform to provide transportation services.',
-        'Services means connecting Passengers with Drivers for pre-arranged rides.',
-      ],
-    },
-    {
       id: 2,
-      heading: 'Eligibility',
+      heading: 'Definitions',
       description: '',
-      subTerms: [
-        'You must be at least 18 years old to create a Passenger account and at least 21 years old to register as a Driver.',
-        'You must have the legal capacity to enter into these Terms.',
-        'Drivers must hold a valid driver’s license, vehicle registration, and insurance as required by law.',
-        'We may deny, suspend, or terminate your account at our sole discretion if you provide false information or violate these Terms.',
+      subterms: [
+        `"Agreement" means these Terms of Service.`,
+        `"Driver" means an individual who provides transportation services to Riders via the RideLynk Platform.`,
+        `"Rider" means an individual who requests transportation services via the RideLynk Platform.`,
+        `"Rideshare Services" means the transportation services provided by Drivers or via Autonomous Vehicles through the RideLynk Platform.`,
+        `"Rideshare Provider" means a Driver or operator of an Autonomous Vehicle providing Rideshare Services.`,
+        `"RideLynk Platform" means the technology, applications, and websites that connect Riders with Rideshare Providers and facilitate other services.`,
+        `"RideLynk Services" means services provided directly by RideLynk via the Platform, excluding Rideshare Services and Third-Party Services.`,
+        `"Third-Party Services" means services provided by entities other than RideLynk that are accessible through the RideLynk Platform.`,
+        `"User" means any individual (Driver, Rider, or other user, excluding Excluded Individuals) who uses the RideLynk Platform.`,
+        `"User Account" means the account created by a User to access the RideLynk Platform.`,
+        `"Your Information" means any information you provide, publish, or post to or through the RideLynk Platform.`,
       ],
     },
     {
       id: 3,
-      heading: 'Account Registration & Security',
-      description: '',
-      subTerms: [
-        'Users must create an account with accurate personal information.',
-        'You are responsible for maintaining the confidentiality of your account credentials.',
-        'You agree to immediately notify RideLynk of any unauthorized access or breach.',
-        'RideLynk is not responsible for losses resulting from unauthorized use of your account.',
-      ],
+      heading: 'The RideLynk Platform Description',
+      description: `The RideLynk Platform is a technology-based marketplace that facilitates connections between Riders seeking transportation and Rideshare Providers. RideLynk is not a transportation carrier, common carrier, or employer of Drivers. The provision of Rideshare Services is solely between the Rider and the Rideshare Provider; RideLynk acts solely as an intermediary technology platform.`,
+      subterms: [],
     },
     {
       id: 4,
-      heading: 'Nature of the Relationship',
+      heading: 'Eligibility and User Accounts',
       description: '',
-      subTerms: [
-        'RideLynk does not provide transportation services and is not a transportation carrier.',
-        'All rides are provided by independent third-party Drivers.',
-        'RideLynk acts solely as a technology platform to connect Passengers with Drivers.',
-        'No agency, partnership, joint venture, or employment relationship exists between RideLynk and Drivers.',
+      subterms: [
+        `4.1 Eligibility. To use the RideLynk Platform, you must be at least 18 years old and have the legal capacity to enter into a binding contract.`,
+        `4.2 Minors. A parent or legal guardian may create an account for a 16 or 17-year-old minor, subject to specific restrictions, including that the minor may not request or accept Rideshare Services unless accompanied by the guardian. The guardian assumes all liability for the minor's use of the Platform.`,
+        `4.3 Account Creation. You must create a User Account to access the Platform. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You may not assign or transfer your account to any other person.`,
+        `4.4 Accuracy. You agree to provide and maintain accurate, current, and complete information in your User Account.`,
       ],
     },
     {
       id: 5,
-      heading: 'Use of the Platform',
-      description: 'You agree to:',
-      subTerms: [
-        'Use the Platform only for lawful purposes.',
-        'Not engage in fraudulent, abusive, or harmful conduct.',
-        'Not attempt to disrupt, hack, or interfere with the Platform.',
-        'Follow community guidelines for respectful and safe conduct.',
-      ],
+      heading: 'License Grant',
+      description: `Subject to your compliance with this Agreement, RideLynk grants you a limited, non-exclusive, non-sublicensable, revocable, non-transferable license to access and use the RideLynk Platform for your personal, non-commercial use.`,
+      subterms: [],
     },
     {
       id: 6,
-      heading: 'Booking & Ride Process',
-      description: '',
-      subTerms: [
-        'Ride requests are matched with available Drivers.',
-        'Estimated fares may vary due to traffic, demand, tolls, and route changes.',
-        'Passengers must be ready at the pickup location at the agreed time.',
-        'Drivers may refuse rides in certain situations (e.g., safety concerns, unruly behavior).',
+      heading: 'User Conduct and Restricted Activities',
+      description: `You agree not to engage in the following prohibited activities:`,
+      subterms: [
+        `Violate any applicable law or regulation.`,
+        `Harass, abuse, threaten, or harm other Users or third parties.`,
+        `Use the Platform for any fraudulent or misleading purpose.`,
+        `Impersonate any person or entity.`,
+        `Damage, disable, or impair the operation of the RideLynk Platform.`,
+        `Attempt to gain unauthorized access to any portion of the Platform.`,
+        `Use any automated system or software to extract data from the Platform ("scraping").`,
+        `Discriminate against anyone on the basis of race, religion, national origin, disability, sexual orientation, sex, marital status, gender identity, age, or any other characteristic protected under applicable law.`,
+        `Transport unaccompanied minors or unaccompanied goods.`,
       ],
     },
     {
       id: 7,
-      heading: 'Fees & Payments',
+      heading: 'Payments and Charges',
       description: '',
-      subTerms: [
-        'Passengers agree to pay the fare displayed in the app, plus applicable taxes, tolls, and fees.',
-        'Payments are processed electronically through our secure payment gateway.',
-        'Drivers are compensated according to the agreed commission rate, minus RideLynk’s service fee.',
-        'Surge pricing may apply during high-demand periods.',
+      subterms: [
+        `7.1 Charges. You are responsible for all Charges incurred under your User Account. Charges include Fares (quoted or variable), applicable fees, tolls, surcharges, taxes, and any tips you elect to pay.`,
+        `7.2 Quotes. Quoted Fares are subject to change until a ride is confirmed. Variable Fares are calculated based on time and distance.`,
+        `7.3 Additional Fees. Additional fees may apply, including Cancellation Fees, Damage Fees, and Abuse Fees.`,
+        `7.4 Payment Authorization. You authorize RideLynk to charge your designated payment method for all incurred Charges.`,
+        `7.5 No Refunds. All Charges are non-refundable except as required by law.`,
+        `7.6 Coupons. Any coupons or credits provided are valid only for use on the Platform, subject to specific terms, and are not transferable or redeemable for cash.`,
       ],
     },
     {
       id: 8,
-      heading: 'Cancellations & No-Show Policy',
+      heading: 'Driver Terms',
       description: '',
-      subTerms: [
-        'Passengers may cancel a ride before a Driver is dispatched without penalty.',
-        'Late cancellations or no-shows may incur a cancellation fee.',
-        'Drivers who frequently cancel without valid reason may face account suspension.',
+      subterms: [
+        `8.1 Driver Addendum. Drivers are subject to the additional terms of the Driver Addendum, which is incorporated into this Agreement by reference.`,
+        `8.2 Representations and Warranties. By providing Rideshare Services, you represent and warrant that you: (a) possess a valid driver's license and all necessary authorizations; (b) maintain valid and adequate insurance; (c) own or have legal right to operate your vehicle, which is in safe and legal operating condition; and (d) will comply with all applicable laws and RideLynk policies.`,
+        `8.3 Relationship. Drivers are independent contractors and not employees, agents, or joint venturers of RideLynk.`,
       ],
     },
     {
       id: 9,
-      heading: 'Driver Obligations',
+      heading: 'Intellectual Property',
       description: '',
-      subTerms: [
-        'Maintain a clean, roadworthy, and insured vehicle.',
-        'Comply with all traffic laws and regulations.',
-        'Treat passengers respectfully and ensure their safety.',
-        'Not engage in discriminatory, inappropriate, or dangerous behavior.',
+      subterms: [
+        `9.1 Ownership. The RideLynk Platform, including all content, software, and trademarks ("RideLynk Marks"), is the exclusive property of RideLynk and its licensors and is protected by intellectual property laws.`,
+        `9.2 License to RideLynk. You grant RideLynk a worldwide, royalty-free, sublicensable license to use, host, store, and display Your Information for the purpose of operating, improving, and promoting the Platform.`,
+        `9.3 Driver License. RideLynk grants Drivers a limited, revocable, non-exclusive license to display RideLynk Marks solely on RideLynk-branded items provided by RideLynk for the purpose of providing Rideshare Services.`,
       ],
     },
     {
       id: 10,
-      heading: 'Passenger Obligations',
-      description: '',
-      subTerms: [
-        'Treat Drivers with respect and maintain safe behavior during rides.',
-        'Not damage vehicles or leave personal belongings behind.',
-        'Not engage in unlawful activity during rides.',
-        'Ensure payment information is valid and up to date.',
-      ],
+      heading: 'Communications',
+      description: `By creating an account, you consent to receive operational and promotional communications (e.g., emails, SMS, push notifications) from RideLynk. You may opt-out of promotional communications at any time. Standard message and data rates may apply.`,
+      subterms: [],
     },
     {
       id: 11,
-      heading: 'Prohibited Conduct',
-      description: 'You may not:',
-      subTerms: [
-        'Use the Platform for illegal activities.',
-        'Carry hazardous, illegal, or prohibited substances.',
-        'Harass, threaten, or harm Drivers, Passengers, or RideLynk staff.',
-        'Attempt to bypass RideLynk’s payment system.',
-      ],
+      heading: 'Privacy',
+      description: `Your privacy is important to us. Our collection and use of your personal information is governed by our Privacy Policy.`,
+      subterms: [],
     },
     {
       id: 12,
-      heading: 'Safety & Emergency Situations',
-      description: '',
-      subTerms: [
-        'RideLynk may provide in-app safety features, such as emergency assistance buttons.',
-        'In emergencies, contact local authorities immediately.',
-        'RideLynk may suspend accounts for safety violations.',
-      ],
+      heading: 'Disclaimer of Warranties',
+      description: `The RideLynk platform is provided "as is" and "as available" without warranties of any kind, either express or implied. To the fullest extent permissible by law, RideLynk disclaims all warranties, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, and non-infringement. RideLynk does not guarantee the quality, suitability, safety, or ability of third-party providers, including drivers.`,
+      subterms: [],
     },
     {
       id: 13,
-      heading: 'Ratings & Feedback',
-      description: '',
-      subTerms: [
-        'Passengers and Drivers may rate and review each other.',
-        'Feedback must be honest, respectful, and not defamatory.',
-        'Repeated low ratings may result in account deactivation.',
-      ],
+      heading: 'Limitation of Liability',
+      description: `To the maximum extent permitted by applicable law, RideLynk shall not be liable for any indirect, incidental, special, exemplary, punitive, or consequential damages arising out of or related to your use of the platform, including loss of data, loss of profits, or service interruption, even if RideLynk has been advised of the possibility of such damages.`,
+      subterms: [],
     },
     {
       id: 14,
-      heading: 'Privacy & Data Use',
-      description: '',
-      subTerms: [
-        'RideLynk collects and processes personal data in accordance with our Privacy Policy.',
-        'Your data may be shared with third parties (e.g., payment processors, insurance providers) as needed to provide services.',
-        'Location data is collected during active rides for safety, navigation, and compliance purposes.',
-      ],
+      heading: 'Indemnification',
+      description: `You agree to indemnify and hold harmless RideLynk and its officers, directors, employees, and agents from any and all claims, damages, obligations, losses, liabilities, costs, and expenses (including reasonable attorney's fees) arising from: (a) your use of the Platform; (b) your breach of this Agreement; or (c) your violation of any law or the rights of a third party.`,
+      subterms: [],
     },
     {
       id: 15,
-      heading: 'Disclaimers & Limitation of Liability',
-      description: '',
-      subTerms: [
-        'RideLynk provides the Platform “AS IS” without warranties of any kind.',
-        'We are not responsible for acts, errors, or omissions of Drivers or Passengers.',
-        'RideLynk’s liability is limited to the maximum extent permitted by law.',
-        'You assume full responsibility for your use of the Platform.',
-      ],
+      heading: 'Term and Termination',
+      description: `This Agreement is effective upon your acceptance and remains in effect until terminated. You may terminate this Agreement by closing your account. RideLynk may terminate or suspend your access to the Platform immediately, without notice, for any reason, including if you breach this Agreement.`,
+      subterms: [],
     },
     {
       id: 16,
-      heading: 'Indemnification',
-      description:
-        'You agree to defend, indemnify, and hold harmless RideLynk from claims, damages, liabilities, and expenses arising from:',
-      subTerms: [
-        'Your use of the Platform.',
-        'Your violation of these Terms.',
-        'Your infringement of third-party rights.',
-      ],
+      heading: 'Governing Law',
+      description: `This Agreement shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflict of law principles.`,
+      subterms: [],
     },
     {
       id: 17,
-      heading: 'Termination',
+      heading: 'Dispute Resolution and Arbitration Agreement (MANDATORY)',
       description: '',
-      subTerms: [
-        'RideLynk may suspend or terminate your account at any time for violations of these Terms or applicable laws.',
-        'You may terminate your account by contacting customer support.',
-        'Provisions that by their nature should survive termination (e.g., payment obligations, liability limitations) will continue.',
+      subterms: [
+        `17.1 Agreement to Arbitrate. You and RideLynk mutually agree to resolve any disputes through final and binding arbitration on an individual basis, rather than in court. This includes any claims arising from this Agreement or your use of the Platform.`,
+        `17.2 Waiver of Class Actions. You and RideLynk agree that each may bring claims against the other only in your or its individual capacity, and not as a plaintiff or class member in any purported class or representative proceeding.`,
+        `17.3 Opt-Out for Drivers. Drivers and Driver applicants have the right to opt-out of this arbitration agreement for certain claims by providing written notice to RideLynk within 30 days of agreeing to these Terms.`,
+        `17.4 Process. A party intending to seek arbitration must first send a written notice of the dispute to the other party. The arbitration will be administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules.`,
+        `17.5 Exceptions. This arbitration agreement does not preclude you from bringing an individual action in small claims court or bringing issues to the attention of federal, state, or local agencies.`,
       ],
     },
     {
       id: 18,
-      heading: 'Dispute Resolution',
+      heading: 'General Provisions',
       description: '',
-      subTerms: [
-        'Disputes shall first be attempted to be resolved through direct negotiation.',
-        'If unresolved, disputes may be subject to binding arbitration under [Jurisdiction’s] rules.',
-        'Class actions are not permitted under these Terms.',
-      ],
-    },
-    {
-      id: 19,
-      heading: 'Governing Law',
-      description:
-        'These Terms are governed by and construed in accordance with the laws of [Insert Jurisdiction], without regard to its conflict of law rules.',
-      subTerms: [],
-    },
-    {
-      id: 20,
-      heading: 'Changes to Terms',
-      description: '',
-      subTerms: [
-        'RideLynk may update these Terms from time to time.',
-        'Continued use of the Platform after changes constitutes acceptance of the updated Terms.',
-        'We will notify Users of significant changes via email or in-app notification.',
+      subterms: [
+        `18.1 Entire Agreement. This Agreement constitutes the entire agreement between you and RideLynk and supersedes all prior agreements.`,
+        `18.2 Severability. If any provision of this Agreement is found to be unenforceable, the remaining provisions will remain in full force and effect.`,
+        `18.3 No Waiver. RideLynk's failure to enforce any right or provision in this Agreement shall not constitute a waiver of such right or provision.`,
+        `18.4 Assignment. You may not assign or transfer this Agreement without RideLynk's prior written consent. RideLynk may assign this Agreement without restriction.`,
+        `18.5 Notices. RideLynk may provide notices to you via email, through the Platform, or by other reasonable means.`,
+        `18.6 Modifications. RideLynk reserves the right to modify this Agreement at any time. Modifications will be effective upon posting. Your continued use of the Platform constitutes acceptance of the modified terms.`,
+        // `Contact Information: RideLynk Inc., 2018 156th Ave NE, Building F, Suite 172, Bellevue, WA 98007, Email: Support@RideLynk.com, Phone: (712) 259-4334.`,
       ],
     },
   ];
 
   return (
-    <>
+    <SafeAreaView>
       {/* <View
         style={{
           flexDirection: 'row',
@@ -264,7 +216,11 @@ const TermsAndConditions = () => {
           Terms & condition
         </CustomText>
       </View> */}
-      <Header title={'Terms & COnditions'} showBack={false} hideUser={true} />
+      <Header
+        title={'Terms & COnditions'}
+        showBack={isSignup ? true : false}
+        hideUser={true}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{
@@ -277,6 +233,7 @@ const TermsAndConditions = () => {
           }
         }>
         <CustomText
+          isBold
           style={{
             marginTop: moderateScale(30, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
@@ -286,18 +243,76 @@ const TermsAndConditions = () => {
             textAlign: 'justify',
             fontSize: moderateScale(12, 0.6),
           }}>
-          {
-            'IMPORTANT NOTICE: These Terms & Conditions (“Terms”) govern your use of the RideLynk mobile application, website, and services (collectively, the “Platform”). By accessing, downloading, registering, or using RideLynk, you agree to these Terms. If you do not agree, you may not access or use our Platform.'
-          }
+          {' 1. Acceptance of Terms '}
+        </CustomText>
+        <CustomText
+          style={{
+            // marginTop: moderateScale(30, 0.3),
+            marginHorizontal: moderateScale(10, 0.3),
+            color: Color.black,
+            textTransform: 'none',
+            // width : windowWidth ,
+            textAlign: 'justify',
+            fontSize: moderateScale(12, 0.6),
+          }}>
+          This Terms of Service agreement ("Agreement") constitutes a legally
+          binding contract between you and RideLynk, Inc., its parents,
+          subsidiaries, representatives, affiliates, officers, and directors
+          (collectively, "RideLynk," "we," "us," or "our"). This Agreement
+          governs your access to and use of the RideLynk applications, websites,
+          technology, artificial intelligence tools, facilities, and platform
+          (collectively, the "RideLynk Platform")
+        </CustomText>
+        <CustomText
+          isBold
+          style={{
+            marginTop: moderateScale(10, 0.3),
+            marginHorizontal: moderateScale(10, 0.3),
+            color: Color.black,
+            textTransform: 'none',
+            // width : windowWidth ,
+            textAlign: 'justify',
+            fontSize: moderateScale(12, 0.6),
+          }}>
+          PLEASE READ THIS AGREEMENT CAREFULLY, AS IT CONTAINS IMPORTANT
+          INFORMATION REGARDING YOUR LEGAL RIGHTS, INCLUDING A DISPUTE
+          RESOLUTION CLAUSE THAT REQUIRES BINDING ARBITRATION ON AN INDIVIDUAL
+          BASIS INSTEAD OF JURY TRIALS OR CLASS ACTIONS (SEE SECTION 17).
+        </CustomText>
+        <CustomText
+          style={{
+            // marginTop: moderateScale(30, 0.3),
+            marginHorizontal: moderateScale(10, 0.3),
+            color: Color.black,
+            textTransform: 'none',
+            // width : windowWidth ,
+            textAlign: 'justify',
+            fontSize: moderateScale(12, 0.6),
+          }}>
+          By creating an account, accessing, or using the RideLynk Platform, you
+          expressly acknowledge that you have read, understood, and agree to be
+          bound by all terms and conditions of this Agreement. If you do not
+          agree to these terms, you may not use the RideLynk Platform.
         </CustomText>
         {terms.map((term, index) => {
-          return (
-           <TernsComponent termData={term}/>
-          );
+          return <TernsComponent termData={term} />;
         })}
-        <View style={{height:windowHeight * 0.05}}/>
+        <View style={styles.contactContainer}>
+          <Icon as={Entypo} color={Color.black} name="mail" />
+          <CustomText style={{color: Color.black}}>
+            {'Support@ridelynk.com'}
+          </CustomText>
+        </View>
+        <View style={styles.contactContainer}>
+          <Icon as={FontAwesome6} color={Color.red} name="phone" />
+          <CustomText style={{color: Color.black}}>
+            {'(712) 259-4334'}
+          </CustomText>
+        </View>
+        <View style={{height: windowHeight * 0.045}} />
+        <View style={{height: windowHeight * 0.05}} />
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -319,5 +334,10 @@ const styles = ScaledSheet.create({
     backgroundColor: Color.themeBlack,
     justifyContent: 'center',
   },
-  
+  contactContainer: {
+    marginLeft: moderateScale(10, 0.2),
+    marginTop: moderateScale(5, 0.2),
+    flexDirection: 'row',
+    gap: moderateScale(10, 0.2),
+  },
 });

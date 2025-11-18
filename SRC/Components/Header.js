@@ -57,8 +57,8 @@ const Header = props => {
     {label: 'Change Password', value: 'ChangePassword'},
     {label: 'Terms & Conditions', value: 'TermsAndConditions'},
     {label: 'Financial Breakdown', value: 'FinancialBreakDown'},
-    {label: 'Logout', value: 'Logout'}
-  ]
+    {label: 'Logout', value: 'Logout'},
+  ];
 
   const Confirm = () => {
     Alert.alert('Action required', 'Login to Continue', [
@@ -204,7 +204,9 @@ const Header = props => {
             }}
           />
         </View>
-      ) : hideUser ? (<View style={{            width: windowHeight * 0.055,}}/>)  :(
+      ) : hideUser ? (
+        <View style={{width: windowHeight * 0.055}} />
+      ) : (
         <View
           style={{
             width: windowHeight * 0.055,
@@ -233,8 +235,8 @@ const Header = props => {
         </View>
       )}
     </View>
-  )
-}
+  );
+};
 const styles = ScaledSheet.create({
   header1: {
     width: windowWidth,

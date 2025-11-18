@@ -35,6 +35,8 @@ import WalkThroughScreen from './Screens/WalkthroughScreen';
 import TermsAndConditions from './Screens/TermsAndConditions';
 import PrivacyPolicy from './Screens/PrivacyPolicy';
 import PhoneRegistration from './Screens/PhoneRegistration';
+import Notification from './Screens/Notification';
+import SupportScreen from './Screens/SupportScreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -73,13 +75,13 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyEmail" component={VerifyEmail} />
           <RootNav.Screen name="ResetPassword" component={ResetPassword} />
           <RootNav.Screen name="RequestScreen" component={RequestScreen} />
-          <RootNav.Screen name="ChangePassword" component={ChangePassword} />
+          {/* <RootNav.Screen name="ChangePassword" component={ChangePassword} /> */}
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="MapScreen" component={MapScreen} />
           <RootNav.Screen name="RideScreen" component={RideScreen} />
           <RootNav.Screen name="PaymentScreen" component={PaymentScreen} />
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
-          <RootNav.Screen name="Profile" component={Profile} />
+          {/* <RootNav.Screen name="Profile" component={Profile} /> */}
           <RootNav.Screen name="RateScreen" component={RateScreen} />
           <RootNav.Screen name="MessagesScreen" component={MessagesScreen} />
           <RootNav.Screen name="TrackingScreen" component={TrackingScreen} />
@@ -92,7 +94,7 @@ const AppNavigator = () => {
             name="PhoneRegistration"
             component={PhoneRegistration}
           />
-          {/* <RootNav.Screen name="History" component={History} /> */}
+          {/* <RootNav.Screen name="Notification" component={Notification} /> */}
           {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
           {/* <RootNav.Screen
             name="TermsAndConditions"
@@ -116,6 +118,11 @@ const AppNavigator = () => {
             name="ChooseDeclineReasonScreen"
             component={ChooseDeclineReasonScreen}
           />
+          {/* <RootNav.Screen
+            name="TermsAndConditions"
+            component={TermsAndConditions}
+          /> */}
+          {/* <RootNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} /> */}
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -247,11 +254,15 @@ export const MyDrawer = () => {
         component={PlaceholderScreen}
       />
       <DrawerNavigation.Screen name="Home" component={Home} />
-
+      <DrawerNavigation.Screen name={'Profile'} component={Profile} />
+      <DrawerNavigation.Screen name={'SupportScreen'} component={SupportScreen} />
       <DrawerNavigation.Screen name={'RateScreen'} component={RateScreen} />
       <DrawerNavigation.Screen name="RideScreen" component={RideScreen} />
       <DrawerNavigation.Screen name="PaymentScreen" component={PaymentScreen} />
       <DrawerNavigation.Screen name="History" component={History} />
+      <DrawerNavigation.Screen name="Notification" component={Notification} />
+      <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />
+
       <DrawerNavigation.Screen
         name="ReferFriendScreen"
         component={ReferFriendScreen}

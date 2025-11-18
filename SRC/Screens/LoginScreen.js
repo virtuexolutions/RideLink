@@ -404,6 +404,7 @@ const styles = StyleSheet.create({
     paddingVertical: moderateScale(35, 0.6),
     textTransform: 'none',
     letterSpacing: 0.5,
+    color: Color.themeBlack,
     fontSize: moderateScale(12, 0.6),
   },
   Sign_text: {

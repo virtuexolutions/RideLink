@@ -1,37 +1,37 @@
-import {useNavigation} from '@react-navigation/native';
-import {Icon} from 'native-base';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
-  ScrollView,
   ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
-import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {setUserData} from '../Store/slices/common';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { setUserData } from '../Store/slices/common';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  
   const [username, setUserName] = useState(
     userData?.name ? userData?.name : '',
   );
-  const dispatch = useDispatch();
   const [email, setEmail] = useState(userData?.email ? userData?.email : '');
   const [phone, setPhone] = useState(userData?.phone ? userData?.phone : '');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,44 +63,15 @@ const Profile = () => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: windowWidth,
-          backgroundColor: 'white',
-          paddingHorizontal: moderateScale(10, 0.6),
-          paddingTop: moderateScale(5, 0.6),
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.back}>
-          <Icon
-            name="arrowleft"
-            as={AntDesign}
-            style={styles.icon2}
-            color={Color.white}
-            size={moderateScale(20, 0.3)}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </TouchableOpacity>
-        <CustomText
-          style={{
-            fontSize: moderateScale(18, 0.6),
-            color: Color.black,
-            width: windowWidth * 0.8,
-            textAlign: 'center',
-            paddingTop: moderateScale(8, 0.6),
-          }}>
-          account
-        </CustomText>
-      </View>
-      <View style={styles.main}>
+    <View style={styles.main}>
+      <Header
+        headerColor={'transparent'}
+        title={'profile'}
+        showBack={false}
+        hideUser={true}
+      />
+
+      {/* <View style={styles.maina}> */}
         {/* <Formik
           validationSchema={editProfileSchema}
           initialValues={{
@@ -228,47 +199,24 @@ const Profile = () => {
             isBold
           />
         </View>
-      </View>
+      {/* </View> */}
       <ImagePickerModal
         show={imagePicker}
         setShow={setImagePicker}
         setFileObject={setImage}
       />
-    </ScrollView>
+    </View>
   );
 };
 
 export default Profile;
 const styles = ScaledSheet.create({
   main: {
+    height: windowHeight,
     width: windowWidth,
-    minHeight: windowHeight,
-    paddingBottom: moderateScale(40, 0.6),
-    paddingTop: windowHeight * 0.2,
-    // justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Color.white,
-  },
-  birthday: {
-    width: windowWidth * 0.75,
-    height: windowHeight * 0.06,
-    marginTop: moderateScale(10, 0.3),
-    borderRadius: moderateScale(10, 0.6),
-    borderWidth: 1,
     backgroundColor: 'white',
-    borderColor: Color.lightGrey,
-    flexDirection: 'row',
-    paddingHorizontal: moderateScale(10, 0.6),
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: Color.themeDarkGray,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-    elevation: 9,
+    paddingTop: windowHeight * 0.03,
   },
 
   edit: {
@@ -284,22 +232,9 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
-  back: {
-    width: moderateScale(35, 0.6),
-    height: moderateScale(35, 0.6),
-    borderRadius: moderateScale(5, 0.6),
-    borderWidth: 0.5,
-    borderColor: '#FFFFFF',
-    // position: 'absolute',
-    // left: moderateScale(10, 0.6),
-    // top: moderateScale(10, 0.6),
-    zIndex: 1,
-    margin: 5,
-    alignItems: 'center',
-    backgroundColor: Color.themeBlack,
-    justifyContent: 'center',
-  },
+
   fields_box: {
+    marginTop: windowHeight * 0.12,
     borderWidth: 0.3,
     borderColor: '#28272369',
     borderRadius: 20,

@@ -1,8 +1,11 @@
 import React, {useRef, useState} from 'react';
 import {
+  Alert,
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,12 +18,11 @@ import CustomText from './CustomText';
 import CustomImage from './CustomImage';
 import CustomButton from './CustomButton';
 import navigationService from '../navigationService';
-import {Icon} from 'native-base';
+import {Icon, Toast} from 'native-base';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RequestForDelivery from './RequestForDelivery';
 
 const CabList = ({data, setRef, rbRef, setClientReview}) => {
-  console.log('🚀 ~ CabList ~ data:', data);
   const token = useSelector(state => state.authReducer.token);
 
   const deliveryRef = useRef(null);
@@ -106,84 +108,84 @@ const CabList = ({data, setRef, rbRef, setClientReview}) => {
   // ];
 
   const standardCabs = [
-  {
-    id: 1,
-    cabName: 'Lynk X',
-    feature: 'Budget-friendly everyday rides.',
-    capacity: 4,
-    price: 3,
-  },
-  {
-    id: 2,
-    cabName: 'Lynk Plus',
-    feature: 'Spacious, newer vehicles with extra comfort.',
-    capacity: 4,
-    price: 4,
-  },
-  {
-    id: 3,
-    cabName: 'Lynk XL',
-    feature: 'Budget-friendly larger vehicles for up to 6 passengers.',
-    capacity: 6,
-    price: 5,
-  },
-];
+    {
+      id: 1,
+      cabName: 'Lynk X',
+      feature: 'Budget-friendly everyday rides.',
+      capacity: 4,
+      price: 3,
+    },
+    {
+      id: 2,
+      cabName: 'Lynk Plus',
+      feature: 'Spacious, newer vehicles with extra comfort.',
+      capacity: 4,
+      price: 4,
+    },
+    {
+      id: 3,
+      cabName: 'Lynk XL',
+      feature: 'Budget-friendly larger vehicles for up to 6 passengers.',
+      capacity: 6,
+      price: 5,
+    },
+  ];
 
-const economyCabs = [
-  {
-    id: 1,
-    cabName: 'LynkEase',
-    feature: 'Smooth, quiet rides with additional comfort.',
-    capacity: 4,
-    price: 6,
-  },
-  {
-    id: 2,
-    cabName: 'Lynk Eco',
-    feature: 'Eco-friendly rides in hybrid or electric vehicles',
-    capacity: 4,
-    price: 7,
-  },
-  {
-    id: 3,
-    cabName: 'Lynk Pet',
-    feature: 'Pet-friendly rides for passengers traveling with pets.',
-    capacity: 4,
-    price: 7.5,
-  },
-];
+  const economyCabs = [
+    {
+      id: 1,
+      cabName: 'LynkEase',
+      feature: 'Smooth, quiet rides with additional comfort.',
+      capacity: 4,
+      price: 6,
+    },
+    {
+      id: 2,
+      cabName: 'Lynk Eco',
+      feature: 'Eco-friendly rides in hybrid or electric vehicles',
+      capacity: 4,
+      price: 7,
+    },
+    {
+      id: 3,
+      cabName: 'Lynk Pet',
+      feature: 'Pet-friendly rides for passengers traveling with pets.',
+      capacity: 4,
+      price: 7.5,
+    },
+  ];
 
-const premiumCabs = [
-  {
-    id: 1,
-    cabName: 'Lynk SUV',
-    feature: 'High-end luxury rides with professional drivers.',
-    capacity: 6,
-    price: 8,
-  },
-  {
-    id: 2,
-    cabName: 'Lynk Max',
-    feature: 'Vans or large vehicles for events and group travel.',
-    capacity: 6,
-    price: 9,
-  },
-  {
-    id: 3,
-    cabName: 'Taxi',
-    feature: 'Traditional friendly Local Taxi.',
-    capacity: 4,
-    price: 4.5,
-  },
-  {
-    id: 4,
-    cabName: 'LynkAccess',
-    feature:
-      'Wheelchair-accessible vehicles for passengers with disabilities.',
-    capacity: 4,
-    price: 8.5,
-  },
-];
+  const premiumCabs = [
+    {
+      id: 1,
+      cabName: 'Lynk SUV',
+      feature: 'High-end luxury rides with professional drivers.',
+      capacity: 6,
+      price: 8,
+    },
+    {
+      id: 2,
+      cabName: 'Lynk Max',
+      feature: 'Vans or large vehicles for events and group travel.',
+      capacity: 6,
+      price: 9,
+    },
+    {
+      id: 3,
+      cabName: 'Taxi',
+      feature: 'Traditional friendly Local Taxi.',
+      capacity: 4,
+      price: 4.5,
+    },
+    {
+      id: 4,
+      cabName: 'LynkAccess',
+      feature:
+        'Wheelchair-accessible vehicles for passengers with disabilities.',
+      capacity: 4,
+      price: 8.5,
+    },
+  ];
 
   return (
     <RBSheet
@@ -284,12 +286,24 @@ const premiumCabs = [
             text={'Choose Lynk Cab'}
             isBold
             onPress={() => {
-              selectedCab != null && data?.data?.title == 'ride'
-                ? navigationService.navigate('FareScreen', {
-                    rideData: {...data , fare: data?.fare + selectedCab?.price ,cabtype: selectedCab},
-                  })
-                : deliveryRef.current.open();
-
+              if (selectedCab != null) {
+                data?.data?.title == 'ride'
+                  ? navigationService.navigate('FareScreen', {
+                      rideData: {
+                        ...data,
+                        fare: data?.fare + selectedCab?.price,
+                        cabtype: selectedCab,
+                      },
+                    })
+                  : deliveryRef.current.open();
+              } else {
+                Platform.OS == 'android'
+                  ? ToastAndroid.show(
+                      'Select Your Ideal Cab for a Smooth Ride',
+                      ToastAndroid.SHORT,
+                    )
+                  : Alert.alert('Select Your Ideal Cab for a Smooth Ride');
+              }
               // rbRef.current.close()
             }}
           />
@@ -433,7 +447,9 @@ export const Card = ({setSelectedCab, selectedCab, item, data}) => {
           paddingHorizontal: moderateScale(10, 0.6),
           paddingTop: moderateScale(10, 0.6),
         }}>
-        <CustomText>{`$${Math.round((data?.fare || 0) + (item?.price || 0))}`} </CustomText>
+        <CustomText>
+          {`$${Math.round((data?.fare || 0) + (item?.price || 0))}`}{' '}
+        </CustomText>
       </View>
     </TouchableOpacity>
   );

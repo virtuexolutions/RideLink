@@ -210,9 +210,11 @@ export default Home;
 
 const styles = StyleSheet.create({
   safe_area: {
-    width: windowWidth,
-    height: windowHeight,
     backgroundColor: Color.white,
+      height: windowHeight,
+    width: windowWidth,
+    alignItems: 'center',
+    paddingTop: windowHeight * 0.03,
   },
   indicatorStyle: {
     paddingRight: 5,

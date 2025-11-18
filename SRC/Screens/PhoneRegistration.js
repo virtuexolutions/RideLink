@@ -212,7 +212,7 @@ const PhoneRegistration = () => {
             width={windowWidth * 0.85}
             height={windowHeight * 0.065}
             marginTop={moderateScale(30, 0.3)}
-            bgColor={Color.darkBlue}
+            bgColor={Color.themeBlack}
             textTransform={'capitalize'}
           />
         </>
@@ -286,7 +286,7 @@ const PhoneRegistration = () => {
             onPress={() => {
               contactOtpVerify();
             }}
-            bgColor={Color.darkBlue}
+            bgColor={Color.themeBlack}
           />
         </View>
       )}
