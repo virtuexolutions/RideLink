@@ -23,6 +23,7 @@ import {moderateScale} from 'react-native-size-matters';
 import {StripeProvider} from '@stripe/stripe-react-native';
 import PrivacyPolicy from './SRC/Screens/PrivacyPolicy';
 import TermsAndConditions from './SRC/Screens/TermsAndConditions';
+import { FirebaseApp, initializeApp } from '@react-native-firebase/app';
 
 const App = () => {
   const [publishableKey, setPublishableKey] = useState('');
