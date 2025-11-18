@@ -23,10 +23,8 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const MapScreen = props => {
   const ridedata = props?.route?.params?.ridedata;
-  console.log(
-    '🚀 ~ ridedata======================================== >>:',
-    ridedata,
-  );
+  console.log("🚀 ~ MapScreen ~ ridedata:", ridedata)
+
   const fromDelivery = props?.route?.params?.fromDelivery;
   const paymentMethod = props?.route?.params?.paymentMethod;
   const delivery_Id = props?.route?.params?.delivery_Id;
@@ -42,7 +40,9 @@ const MapScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [rideId, setRideID] = useState('');
   const [rideStatus, setRideStatus] = useState('');
+  console.log("🚀 ~ rideStatus=================== <<<<<<<:", rideStatus)
   const [modalVisible, setModalVisible] = useState(false);
+  console.log('🚀 ~ modalVisible:', modalVisible);
   const [isVisible, setIsVisible] = useState(false);
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
@@ -167,6 +167,7 @@ const MapScreen = props => {
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
+        console.log("🚀 ~ useEffect ~ data================= >>>>>>>>>>", data?.ride_info?.status)
 
         if (data?.ride_info?.status && data?.ride_info?.status !== 'pending') {
           setRideuptedData(data);
@@ -210,7 +211,7 @@ const MapScreen = props => {
           style={{left: 5}}
         />
       </View>
-      <View style={{position: 'absolute', bottom: 20}}>
+      <View style={{position: 'absolute', bottom: 30}}>
         {!fromDelivery && !isModalVisible && (
           <CustomButton
             width={windowWidth * 0.9}
@@ -259,12 +260,13 @@ const MapScreen = props => {
           setDeclineModal(true);
         }}
         data={rideupdatedData}
-        onPressAccept={() =>
+        onPressAccept={() =>{
+          console.log('bhai rider agyag hai iiiiiiiiiiiii')
           navigationService.navigate('TrackingScreen', {
             data: rideupdatedData,
             type: '',
           })
-        }
+        }}
       />
       <DeclineModal
         isVisible={declineModal}

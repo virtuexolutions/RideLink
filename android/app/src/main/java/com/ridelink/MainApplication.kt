@@ -1,4 +1,4 @@
-package com.ridelink
+package com.ridelinkUser
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,20 +1,24 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
-import { useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import { setUserToken } from '../Store/slices/auth';
-import { SetUserRole } from '../Store/slices/auth-slice';
-import { setUserLogOut } from '../Store/slices/common';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
+import {SetUserRole} from '../Store/slices/auth-slice';
+import {setUserLogOut} from '../Store/slices/common';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
+    const userData = useSelector(state => state.commonReducer.userData);
+  const isSiginWithGoogle = useSelector(
+    state => state.commonReducer.isSiginWithGoogle,
+  );
   const navigation = useNavigation();
   const adminData = [
     {
@@ -24,43 +28,23 @@ const Drawer = React.memo(() => {
         navigation.navigate('Home');
       },
     },
-    {
-      id: 111,
-      name: 'Inbox',
-      onPress: () => {
-        // navigation.navigate('Home');
-      },
-    },
-    {
-      id: 2,
-      name: 'Refer Friends',
-      onPress: () => {
-        // setIsModalVisible(true);
-        navigation.navigate('ReferFriendScreen');
-      },
-    },
-    {
-      id: 3,
-      name: 'Oppurtunities',
-      onPress: () => {
-        navigation.navigate('MyJourneys');
-      },
-    },
-    {
-      id: 4,
-      name: 'wallet',
-      onPress: () => {
-        navigation.navigate('MyWallet');
-      },
-    },
 
-    {
-      id: 4,
-      name: 'History',
-      onPress: () => {
-        navigation.navigate('History');
-      },
-    },
+    // {
+    //   id: 2,
+    //   name: 'Refer Friends',
+    //   onPress: () => {
+    //     // setIsModalVisible(true);
+    //     navigation.navigate('ReferFriendScreen');
+    //   },
+    // },
+
+    // {
+    //   id: 4,
+    //   name: 'History',
+    //   onPress: () => {
+    //     navigation.navigate('History');
+    //   },
+    // },
     {
       id: 5,
       name: 'Accounts ',
@@ -73,6 +57,27 @@ const Drawer = React.memo(() => {
       name: 'Change password ',
       onPress: () => {
         navigation.navigate('ChangePassword');
+      },
+    },
+    {
+      id: 111,
+      name: 'notification',
+      onPress: () => {
+        // navigation.navigate('Notification');
+      },
+    },
+    {
+      id: 3,
+      name: 'promotion /discounts and referrlas',
+      onPress: () => {
+        // navigation.navigate('MyJourneys');
+      },
+    },
+    {
+      id: 4,
+      name: 'customer support',
+      onPress: () => {
+        // navigation.navigate('SupportScreen');
       },
     },
     {
@@ -123,13 +128,13 @@ const Drawer = React.memo(() => {
             }}
           />
           <CustomText isBold style={styles.heading_text}>
-            PAT H. JHONSON
+           {userData?.name}
           </CustomText>
-          <CustomText style={styles.text}>Diver : Car Name</CustomText>
         </View>
         <View
           style={{
             height: '60%',
+            marginTop: moderateScale(20, 0.6),
           }}>
           {adminData.map((item, index) => (
             <>
@@ -156,7 +161,7 @@ const Drawer = React.memo(() => {
           ))}
         </View>
         <View style={styles.end_view}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               navigation.navigate('HelpAndSupport');
             }}
@@ -195,19 +200,24 @@ const Drawer = React.memo(() => {
               }}>
               Learning Center
             </CustomText>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => {
-              dispatch(setUserToken(''));
-              dispatch(SetUserRole(''));
-              dispatch(setUserLogOut());
+              if (!isSiginWithGoogle) {
+                console.log('logout and empty userdata');
+                dispatch(setUserToken({token: ''}));
+                dispatch(setUserLogOut());
+                dispatch(setUserLogoutAuth());
+              } else {
+                console.log('logout and remove token ');
+                dispatch(setUserToken({token: ''}));
+              }
             }}
             style={{
               width: windowWidth * 0.7,
               borderColor: Color.black,
               margin: moderateScale(5, 0.3),
               flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: 'space-between',
             }}>
             <CustomText

@@ -12,7 +12,7 @@ const PolicyComponent = ({item}) => {
       marginLeft: moderateScale(10, 0.3),
       marginRight: 6,
     }}>
-    <CustomText style={styles.heading}>{`${item.id} ${item.heading}`}</CustomText>
+    <CustomText style={styles.heading} isBold>{`${item.id} ${item.heading}`}</CustomText>
 
     <CustomText style={styles.description}>
       {item.description}
@@ -56,19 +56,19 @@ export default PolicyComponent
 const styles = StyleSheet.create({
     heading: {
         fontSize: moderateScale(14, 0.25),
-        color: Color.themeBgColor,
+        color: Color.black,
         textAlign: 'left',
       },
       description: {
         marginTop: moderateScale(5, 0.2),
         fontSize: moderateScale(12, 0.25),
         // lineHeight: moderateScale(12,0,2),
-        color: Color.themeBgColor,
+        color: Color.black,
         textAlign: 'justify',
       },
       subHeading: {
         fontSize: moderateScale(12, 0.25),
-        color: Color.themeBgColor,
+        color: Color.black,
         textTransform: 'none',
         marginTop: moderateScale(5, 0.2),
     
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
       },
       bulletPoints: {
         fontSize: moderateScale(12, 0.25),
-        color: Color.themeBgColor,
+        color: Color.black,
         marginTop: moderateScale(5, 0.2),
         textAlign: 'left',
       },

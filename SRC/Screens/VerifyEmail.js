@@ -22,6 +22,7 @@ import {Formik} from 'formik';
 import {Icon} from 'native-base';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {forgotpasswordSchema} from '../Constant/schema';
+import Header from '../Components/Header';
 
 const VerifyEmail = props => {
   const dispatch = useDispatch();
@@ -51,22 +52,12 @@ const VerifyEmail = props => {
         barStyle={'dark-content'}
       />
       <View style={styles.main_container}>
-        <TouchableOpacity
-          onPress={() => {
-            navigationN.goBack();
-          }}
-          activeOpacity={0.8}
-          style={styles.back}>
-          <Icon
-            name={'arrowleft'}
-            as={AntDesign}
-            size={moderateScale(22, 0.3)}
-            color={Color.white}
-            onPress={() => {
-              navigationN.goBack();
-            }}
-          />
-        </TouchableOpacity>
+         <Header
+        headerColor={'transparent'}
+        // title={'Change Password'}
+        showBack={true}
+        hideUser={true}
+      />
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.container}>
@@ -137,7 +128,12 @@ const styles = ScaledSheet.create({
   main_container: {
     height: windowHeight,
     width: windowWidth,
+    
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
     backgroundColor: 'white',
+    paddingTop: windowHeight * 0.03,
   },
   txt2: {
     color: Color.black,
@@ -151,18 +147,7 @@ const styles = ScaledSheet.create({
     marginVertical: moderateScale(15, 0.3),
     lineHeight: moderateScale(17, 0.3),
   },
-  back: {
-    position: 'absolute',
-    top: moderateScale(20, 0.3),
-    left: moderateScale(20, 0.3),
-    height: moderateScale(30, 0.3),
-    width: moderateScale(30, 0.3),
-    borderRadius: moderateScale(5, 0.3),
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Color.themeBlack,
-    zIndex: 1,
-  },
+
   text_input: {
     alignItems: 'center',
     borderWidth: 1,
@@ -178,7 +163,8 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: windowHeight,
+    marginTop :  windowHeight *0.15,
+    // height: windowHeight,
   },
   schemaText: {
     fontSize: moderateScale(10, 0.6),

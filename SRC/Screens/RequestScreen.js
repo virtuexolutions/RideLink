@@ -38,6 +38,7 @@ const RequestScreen = props => {
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
   const [address, setAddress] = useState('');
+  console.log("🚀 ~ RequestScreen ~ address:", address)
   const [additionalLocation, setAdditionalLocation] = useState(false);
   const [isCurrentLocation, setIsCurrentLocation] = useState(false);
   const [currentPosition, setCurrentPosition] = useState({
@@ -336,11 +337,17 @@ const RequestScreen = props => {
           onPress={() => {
             if (
               // cabType != null &&
-              (dropLocation != null && pickupLocation) ||
-              address != null
+              (dropLocation == null ||
+              address == null && pickupLocation == null ) 
             ) {
+                Platform.OS == 'android'
+                ? ToastAndroid.show(
+                    'required feild is empty',
+                    ToastAndroid.SHORT,
+                  )
+                : Alert.alert('required feild is empty');
+           
               // if (data?.title == 'ride') {
-              rbRef?.current?.open();
               // navigationService.navigate('FareScreen', {
               //   rideData: {
               //     distance: parseInt(distance),
@@ -360,12 +367,7 @@ const RequestScreen = props => {
               //   deliveryRef.current.open();
               // }
             } else {
-              Platform.OS == 'android'
-                ? ToastAndroid.show(
-                    'required feild is empty',
-                    ToastAndroid.SHORT,
-                  )
-                : Alert.alert('required feild is empty');
+               rbRef?.current?.open();
             }
           }}
         />

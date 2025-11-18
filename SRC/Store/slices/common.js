@@ -17,7 +17,12 @@ const initialState = {
   location: '',
   pickupLocatin: {},
   dropoffLocation: {},
-  rideInfo: {},
+  numberVerify: false,
+  setPhoneUserData: {},
+  isSiginWithGoogle: false,
+  phoneUserData: {},
+  setPhoneUserData: {},
+  isSiginWithGoogle: false,
 };
 console.log("🚀 ~ rideInfo:",initialState?.rideInfo)
 
@@ -197,9 +202,16 @@ const CommonSlice = createSlice({
       state.location = action.payload;
       console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
     },
-    setRideinfo(state, action) {
-      state.rideInfo = action.payload;
-      console.log("🚀 ~ setRideinfo ~ action.payload:", action.payload)
+      setIsNumberVerify(state, action) {
+      state.numberVerify = action?.payload;
+    },
+    
+  setIsSiginWithGoogle(state, action) {
+      state.isSiginWithGoogle = action?.payload;
+    },
+
+    setPhoneUserData(state, action) {
+      state.phoneUserData = action?.payload;
     },
   },
 });
@@ -230,7 +242,9 @@ export const {
   setLoaction,
   setPickupLocation,
   setDropoffLocation,
-  setRideinfo ,
+  setIsNumberVerify,
+  setPhoneUserData,
+  setIsSiginWithGoogle
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

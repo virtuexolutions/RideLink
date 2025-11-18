@@ -18,8 +18,11 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Color from '../Assets/Utilities/Color';
 import Header from '../Components/Header';
 import PolicyComponent from '../Components/PolicyComponent';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const PrivacyPolicy = () => {
+const PrivacyPolicy = props => {
+  const isSignup = props?.route?.params?.isSignup;
+
   // const navigation = useNavigation();
   const policyArray = [
     {
@@ -220,7 +223,7 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <>
+    <SafeAreaView>
       {/* <View
         style={{
           flexDirection: 'row',
@@ -258,12 +261,17 @@ const PrivacyPolicy = () => {
         </CustomText>
       </View> */}
 
-      <Header title={'privacy Policy'} showBack={false} hideUser={true} />
+      <Header
+        title={'privacy Policy'}
+        showBack={isSignup ? true : false}
+        hideUser={true}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{
           height: windowHeight,
           width: windowWidth,
+          backgroundColor: Color.white,
         }}
         contentContainerStyle={{
           paddingBottom: moderateScale(20, 0.2),
@@ -272,7 +280,7 @@ const PrivacyPolicy = () => {
           style={{
             marginTop: moderateScale(30, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
-            color: Color.themeBgColor,
+            color: Color.black,
             textAlign: 'justify',
             fontSize: moderateScale(12, 0.6),
           }}>
@@ -284,7 +292,7 @@ const PrivacyPolicy = () => {
           style={{
             marginTop: moderateScale(10, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
-            color: Color.themeBgColor,
+            color: Color.black,
             textAlign: 'justify',
 
             fontSize: moderateScale(12, 0.6),
@@ -294,22 +302,24 @@ const PrivacyPolicy = () => {
           }
         </CustomText>
         {policyArray.map((item, index) => {
-          return (
-           <PolicyComponent item={item}/>
-          );
+          return <PolicyComponent item={item} />;
         })}
         <View style={styles.contactContainer}>
           <Icon as={Entypo} color={Color.black} name="mail" />
-          <CustomText style={{color:Color.themeBgColor}}>{'privacy@ridelynk.com'}</CustomText>
+          <CustomText style={{color: Color.black}}>
+            {'privacy@ridelynk.com'}
+          </CustomText>
         </View>
         <View style={styles.contactContainer}>
           <Icon as={FontAwesome6} color={Color.red} name="phone" />
-          <CustomText style={{color:Color.themeBgColor}}>{'(712) 259-4334'}</CustomText>
+          <CustomText style={{color: Color.black}}>
+            {'(712) 259-4334'}
+          </CustomText>
         </View>
         <View style={{height: windowHeight * 0.045}} />
       </ScrollView>
       {/* </ScrollView> */}
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -331,7 +341,7 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
+
   contactContainer: {
     marginLeft: moderateScale(10, 0.2),
     marginTop: moderateScale(5, 0.2),

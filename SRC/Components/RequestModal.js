@@ -75,7 +75,11 @@ const RequestModal = ({
             <View style={styles.image_view}>
               <CustomImage
                 style={styles.image}
-                source={{uri: `${baseUrl}/${data?.ride_info?.rider?.photo}`}}
+                source={
+                  data?.ride_info?.rider?.photo
+                    ? {uri: `${baseUrl}/${data?.ride_info?.rider?.photo}`}
+                    : require('../Assets/Images/user.png')
+                }
               />
             </View>
             <View style={styles.text_view}>
@@ -265,6 +269,8 @@ const styles = StyleSheet.create({
     height: moderateScale(50, 0.6),
     borderRadius: windowWidth,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Color.black,
   },
   image: {
     width: '100%',

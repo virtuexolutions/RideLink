@@ -29,23 +29,23 @@ const WalkThroughScreen = props => {
     {
       key: '1',
       image: require('../Assets/Images/walk1.jpg'),
-      title: 'CHEVY CRUZ',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas efficitur consectetur ligula eget ultrices. Cras ac risus sodales, posuere nibh et, molestie',
+      title: 'Easy Ride Booking & Tracking',
+      text: 'Book your ride in seconds and travel with confidence. Track your driver’s location, route, and arrival time in real-time, ensuring a safe and transparent journey every time.',
     },
     {
       key: '2',
       image: require('../Assets/Images/walk2.jpg'),
-      title: 'LOREM IPSUM DOLOR SIT',
-      text: `Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Pellentesque Eu Pulvinar Metus, Fringilla Semper Enim. Etiam Viverra Porttitor Nunc Laoreet Faucibus. Fusce Accumsan Mauris At Sem Finibus Gravida. Donec Cursus Tincidunt Eros In Efficitur. Maecenas Cursus Pretium Dui, In Tristique Turpis Finibus Nec. Class Aptent.`,
+      title: 'Quick & Secure Parcel Delivery',
+      text: `Send anything, anytime. From important documents to special gifts, Ridelynk ensures your parcels reach their destination safely, quickly, and without hassle.`,
     },
     {
       key: '3',
       image: require('../Assets/Images/walk3.jpg'),
-      title: 'DODGE CARAVAN',
-      text: `Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Pellentesque Eu Pulvinar Metus, Fringilla Semper Enim. Etiam Viverra Porttitor Nunc Laoreet Faucibus. Fusce Accumsan Mauris At Sem Finibus Gravida. Donec Cursus Tincidunt Eros In Efficitur. Maecenas Cursus Pretium Dui, In Tristique Turpis Finibus Nec. Class Aptent.`,
+      title: 'Comfortable Pet Transportation',
+      text: `Because pets are family too! We provide safe, stress-free rides for your furry friends—whether it’s a vet visit, grooming session, or a fun trip.`,
     },
   ];
-  console.log(slidesref.current ,'indexxxxxxx')
+  // console.log(slidesref.current ,'indexxxxxxx')
 
   const RenderSlider = ({item}) => {
     return (

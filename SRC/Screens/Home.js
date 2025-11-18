@@ -52,13 +52,22 @@ const Home = () => {
   ];
   const userRequestHistory = async () => {
     const url = `auth/customer/ride_list?type[0]=${activebutton}`;
-    userRequestHistory();
+    setHistoryLoading(true);
+    const response = await Get(url, token);
+    setHistoryLoading(false);
+    if (response != undefined) {
+      setHistoryList(response?.data?.ride_info);
+    }
   };
+
+  // useEffect(() => {
+  //   userRequestHistory();
+  // }, [isFocused, activebutton]);
 
   return (
     <SafeAreaView style={styles.safe_area}>
       <Header title={''} />
-      <SearchbarComponent
+      {/* <SearchbarComponent
         SearchStyle={{
           width: windowWidth * 0.9,
           height: windowHeight * 0.058,
@@ -69,7 +78,8 @@ const Home = () => {
         name={'search'}
         as={Feather}
         color={Color.grey}
-      />
+      /> */}
+
       <View style={styles.main_Container}>
         <View style={styles.ridelink_Box}>
           <ImageBackground
@@ -151,7 +161,7 @@ const Home = () => {
               textTransform={'capitalize'}
             />
           </View>
-          {historyLoading ? (
+          {/* {historyLoading ? (
             <ActivityIndicator
               style={styles.indicatorStyle}
               size="small"
@@ -190,7 +200,7 @@ const Home = () => {
                 );
               }}
             />
-          )}
+          )} */}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -201,9 +211,11 @@ export default Home;
 
 const styles = StyleSheet.create({
   safe_area: {
-    width: windowWidth,
-    height: windowHeight,
     backgroundColor: Color.white,
+      height: windowHeight,
+    width: windowWidth,
+    alignItems: 'center',
+    paddingTop: windowHeight * 0.03,
   },
   indicatorStyle: {
     paddingRight: 5,

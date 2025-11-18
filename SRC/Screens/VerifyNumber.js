@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   ToastAndroid,
   TouchableOpacity,
@@ -25,6 +26,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Icon} from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CustomStatusBar from '../Components/CustomStatusBar';
+import Header from '../Components/Header';
 
 const VerifyNumber = props => {
   const SelecteduserRole = useSelector(
@@ -77,6 +79,13 @@ const VerifyNumber = props => {
     const url = 'password/code/check';
     setIsLoading(true);
     console.log(code);
+    if (code.length < 4) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(`Please enter valid otp`, ToastAndroid.SHORT)
+        : Alert.alert(`Please enter valid otp`);
+      setIsLoading(false);
+      return;
+    }
     const response = await Post(url, {code: code}, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
@@ -99,39 +108,18 @@ const VerifyNumber = props => {
   }, [timerLabel]);
 
   return (
-    <>
+    <View style={styles.main_container}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
 
-      <TouchableOpacity
-        onPress={() => {
-          navigationN.goBack();
-        }}
-        activeOpacity={0.8}
-        style={{
-          position: 'absolute',
-          top: moderateScale(20, 0.3),
-          left: moderateScale(20, 0.3),
-          height: moderateScale(30, 0.3),
-          width: moderateScale(30, 0.3),
-          borderRadius: moderateScale(5, 0.3),
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: Color.themeBlack,
-          zIndex: 1,
-        }}>
-        <Icon
-          name={'arrowleft'}
-          as={AntDesign}
-          size={moderateScale(22, 0.3)}
-          color={Color.white}
-          onPress={() => {
-            navigationN.goBack();
-          }}
-        />
-      </TouchableOpacity>
+      <Header
+        headerColor={'transparent'}
+        // title={'Change Password'}
+        showBack={true}
+        hideUser={true}
+      />
 
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
@@ -141,6 +129,7 @@ const VerifyNumber = props => {
           alignItems: 'center',
           width: '100%',
           height: windowHeight,
+          // backgroundColor :'red'
         }}>
         <CustomText style={styles.h1}>Verification</CustomText>
         <CustomText style={styles.h2}>Sent a verification code </CustomText>
@@ -199,11 +188,19 @@ const VerifyNumber = props => {
           bgColor={Color.themeBlack}
         />
       </KeyboardAwareScrollView>
-    </>
+    </View>
   );
 };
 
 const styles = ScaledSheet.create({
+    main_container: {
+    height: windowHeight,
+    width: windowWidth,
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingTop: windowHeight * 0.03,
+  },
+
   txt2: {
     color: Color.black,
     fontSize: moderateScale(25, 0.6),
@@ -233,7 +230,8 @@ const styles = ScaledSheet.create({
   codeFieldRoot: {
     marginTop: moderateScale(20, 0.3),
     marginBottom: moderateScale(15, 0.3),
-    width: windowWidth * 0.7,
+    width: windowWidth * 0.6,
+    alignSelf :'flex-start',
     marginLeft: 'auto',
     marginRight: 'auto',
   },
@@ -264,7 +262,7 @@ const styles = ScaledSheet.create({
     letterSpacing: 0.6,
   },
   h2: {
-    fontSize: moderateScale(20.6),
+    fontSize: moderateScale(18.6),
     color: Color.mediumGray,
     textAlign: 'left',
     width: '80%',
