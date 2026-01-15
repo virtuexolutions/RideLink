@@ -24,11 +24,13 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 const MessagesScreen = ({route}) => {
   const focused = useIsFocused();
   const {data} = route.params;
+  console.log("🚀 ~ MessagesScreen ~ data============ >:", data?.rider?.id)
   const userData = useSelector(state => state.commonReducer.userData);
   const token = useSelector(state => state.authReducer.token);
   const pusher = Pusher.getInstance();
   const myChannel = useRef(null);
   const [messages, setMessages] = useState([]);
+  console.log("🚀 ~ MessagesScreen ~ messages:", messages)
 
   useEffect(() => {
     const connectPusher = async () => {
@@ -103,7 +105,7 @@ const MessagesScreen = ({route}) => {
 
   const getChatListingData = async () => {
     console.log('Fetching chat list...');
-    const url = `auth/message_list?user_id=${userData?.id}&target_id=${data?.ride_info?.rider?.id}&chat_id=${userData?.id}`;
+    const url = `auth/message_list?user_id=${userData?.id}&target_id=${data?.rider?.id}&chat_id=${userData?.id}`;
     setIsLoading(true);
     try {
       const response = await Get(url, token);
@@ -146,7 +148,7 @@ const MessagesScreen = ({route}) => {
       );
       startChat({
         user_id: userData?.id,
-        target_id: data?.ride_info?.rider?.id,
+        target_id: data?.rider?.id,
         ...newMessage,
       });
     },

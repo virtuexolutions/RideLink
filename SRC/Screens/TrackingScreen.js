@@ -38,7 +38,7 @@ import {
 
 const TrackingScreen = props => {
   const ridedata = props?.route?.params?.data;
-  console.log('🚀 ~ TrackingScreen ~ ridedata:', ridedata);
+  console.log("🚀 ~ TrackingScreen ~ ridedata:", ridedata)
 
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -56,10 +56,7 @@ const TrackingScreen = props => {
   const [updatedStatus, setupdatedStatus] = useState(
     ridedata?.ride_info?.status,
   );
-  console.log(
-    '🚀 ~ TrackingScreen ~ updatedStatus ====================:',
-    updatedStatus,
-  );
+  console.log("🚀 ~ TrackingScreen ~ updatedStatus:", updatedStatus)
 
   const [canCancel, setCanCancel] = useState(true);
 
@@ -308,14 +305,10 @@ const TrackingScreen = props => {
     const reference = database().ref(
       `/requests/${ridedata?.ride_info?.ride_id}`,
     );
-    console.log('🚀 ~ useEffect ~ reference:', reference);
     const listener = reference.on('value', snapshot => {
       if (snapshot.exists()) {
         const data1 = snapshot.val();
-        console.log(
-          '🚀 ~ useEffect ~ data:================sss=============',
-          data1?.ride_info?.status,
-        );
+        console.log("🚀 ~ TrackingScreen ~ data1:", data1)
         if (data1?.ride_info?.status) {
           setupdatedStatus(data1?.ride_info?.status);
         }
@@ -474,7 +467,7 @@ const TrackingScreen = props => {
               <Icon
                 onPress={() => {
                   navigationService.navigate('MessagesScreen', {
-                    data: ridedata,
+                    data: ridedata?.ride_info,
                     fromDelivery: true,
                   });
                 }}
@@ -581,6 +574,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     paddingVertical: moderateScale(30, 0.6),
     alignItems: 'center',
+
     justifyContent: 'center',
   },
 
@@ -609,6 +603,8 @@ const styles = StyleSheet.create({
   safe_are: {
     width: windowWidth,
     height: windowHeight,
+      backgroundColor :Color.white, 
+    paddingTop: windowHeight * 0.03,
   },
 
   main_view: {

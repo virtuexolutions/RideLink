@@ -253,6 +253,7 @@ const styles = ScaledSheet.create({
     shadowRadius: 6.68,
 
     elevation: 11,
+    
   },
   text: {
     fontSize: moderateScale(18, 0.6),
@@ -295,12 +296,15 @@ const styles = ScaledSheet.create({
   },
   header2: {
     width: windowWidth,
-    backgroundColor: Color.white,
+    // backgroundColor: Color.white,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: moderateScale(20, 0.3),
     paddingVertical: moderateScale(15, 0.3),
     alignItems: 'center',
+    // paddingTop: windowHeight * 0.044,
+    // backgroundColor :'red',
+
   },
   notificationCircle: {
     position: 'absolute',

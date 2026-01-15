@@ -23,6 +23,7 @@ const PlaceHolderScreen = () => {
   useEffect(() => {
     rideRequestList();
   }, [isFocused]);
+  
   const rideRequestList = async () => {
     const url = `auth/customer/all_ride_list`;
     setIsLoading(true);
@@ -31,43 +32,38 @@ const PlaceHolderScreen = () => {
       const response = await Get(url, token);
 
       const rides = response?.data?.ride_info;
-
-      if (Array.isArray(rides) && rides.length > 0) {
-        const ride = rides[0]; // Assuming only 1 ride at a time
-        const status = ride?.ride_info?.status?.toLowerCase();
+      console.log("🚀 ~ rideRequestList ~ rides:", rides)
+  if (Array.isArray(rides) && rides.length > 0) {
+        const activeStatuses = ['accept', 'arrive', 'ontheway', 'riderarrived'];
         const goHomeStatuses = [
           'pending',
           'cancel',
           'complete',
           'reviewed',
           'ride_completed',
-          'delivered'
+          'delivered',
         ];
-        console.log(
-          '================================= >>> goHomeStatuses.includes(status)',
-          goHomeStatuses.includes(status),
-          status,
+        const activeRide = rides.find(item =>
+          activeStatuses.includes(item?.ride_info?.status?.toLowerCase())
         );
-        if (goHomeStatuses.includes(status)) {
-          navigationService.navigate('Home');
-        } 
-        else {
+        console.log(activeRide, 'activeRide')
+        if (activeRide) {
           navigationService.navigate('TrackingScreen', {
-            data: ride,
+            data: activeRide?.ride_info,
             type: 'details',
           });
+        } else {
+          navigationService.navigate('Home');
         }
-
         setRequestList(rides);
       } else {
-        // setRequestList([]);
+        setRequestList([]);
         navigationService.navigate('Home');
       }
     } catch (error) {
-      console.error('Error fetching ride requests:', error);
+      console.error('❌ Error fetching ride requests:', error);
       navigationService.navigate('Home');
     }
-
     setIsLoading(false);
   };
 

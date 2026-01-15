@@ -13,6 +13,7 @@ import {
   View,
   Alert,
   ToastAndroid,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
@@ -50,7 +51,7 @@ const LoginScreen = props => {
   console.log('🚀 ~ isSiginWithGoogl ===============>e:', isSiginWithGoogle);
 
   const loginWithGoogle = async response1 => {
-    const body = {...response1?.data , role: 'customer'};
+    const body = {...response1?.data, role: 'customer'};
     const url = 'google-login';
     const response = await Post(url, body, apiHeader(token));
     if (response != undefined) {
@@ -137,7 +138,12 @@ const LoginScreen = props => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView
+      style={{
+        backgroundColor: 'white',
+
+        flex: 1,
+      }}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
@@ -356,7 +362,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Color.mediumGray,
     borderRadius: 20,
-    height: windowHeight * 0.4,
+    paddingVertical: moderateScale(15, 0.6),
+    // height: windowHeight * 0.4,
     width: windowWidth * 0.9,
     alignItems: 'center',
     paddingTop: moderateScale(15, 0.6),
@@ -391,7 +398,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   button_container: {
-    paddingTop: windowHeight * 0.08,
+    paddingTop: windowHeight * 0.07,
   },
   soc_text: {
     fontSize: moderateScale(8, 6),

@@ -1,31 +1,35 @@
-import { useIsFocused } from '@react-navigation/native';
-import { getDistance, isValidCoordinate } from 'geolib';
-import { Icon } from 'native-base';
-import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+import {getDistance, isValidCoordinate} from 'geolib';
+import {Icon} from 'native-base';
+import React, {useEffect, useRef, useState} from 'react';
+import {Linking, SafeAreaView, StyleSheet, View} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { customMapStyle } from '../Utillity/mapstyle';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {customMapStyle} from '../Utillity/mapstyle';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+
+import database from '@react-native-firebase/database';
+import CustomButton from '../Components/CustomButton';
 
 const RideScreen = ({route}) => {
   const {data, type, status} = route?.params;
-
+  console.log('first =================== > from rideScreen', data);
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
 
   const token = useSelector(state => state.authReducer.token);
   const [isNearDestination, setIsNearDestination] = useState(false);
+  const [IsRideComplete, setIsRideComplete] = useState(false);
 
   const [currentPosition, setCurrentPosition] = useState({
     // latitude: 0,
@@ -56,8 +60,6 @@ const RideScreen = ({route}) => {
       parseFloat(data?.dropoff_location_lng),
     // : parseFloat(data?.ride_info?.rider?.lng),
   };
-
- 
 
   useEffect(() => {
     getCurrentLocation();
@@ -159,6 +161,20 @@ const RideScreen = ({route}) => {
     }
   };
 
+  useEffect(() => {
+    const reference = database().ref(`/requests/${data?.ride_id}`);
+    const listener = reference.on('value', snapshot => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data?.ride_info?.status == 'complete') {
+          setIsRideComplete(true);
+        }
+      }
+    });
+
+    return () => reference.off('value', listener);
+  }, [data?.ride_id]);
+
   return (
     <SafeAreaView style={styles.safe_are}>
       <Header showBack={true} title={'Navigation to Pickup'} />
@@ -223,7 +239,7 @@ const RideScreen = ({route}) => {
           style={[
             styles.latest_ride_view,
             {
-              top: 20,
+              top: 30,
             },
           ]}>
           <View style={styles.latest_ride_subView}>
@@ -231,10 +247,10 @@ const RideScreen = ({route}) => {
               <CustomImage
                 source={require('../Assets/Images/user.png')}
                 style={{
-                  backgroundColor: 'red',
+                  // backgroundColor: 'red',
                   width: '100%',
                   height: '100%',
-                  borderRadius: windowWidth,
+                  // borderRadius: windowWidth,
                 }}
               />
             </View>
@@ -251,7 +267,7 @@ const RideScreen = ({route}) => {
                 }}>
                 {data?.rider?.name}
               </CustomText>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center' }}>
                 <CustomText
                   isBold
                   style={{
@@ -273,9 +289,11 @@ const RideScreen = ({route}) => {
             <View
               style={{
                 flexDirection: 'row',
-                width: windowWidth * 0.23,
+                // width: windowWidth * 0.3,
+                marginLeft :moderateScale(-15,.6),
+                // backgroundColor: 'red',
                 height: '100%',
-                paddingHorizontal: moderateScale(10, 0.6),
+                // paddingHorizontal: moderateScale(10, 0.6),
                 justifyContent: 'space-between',
               }}>
               <Icon
@@ -285,7 +303,7 @@ const RideScreen = ({route}) => {
                 style={styles.icons}
                 name={'call'}
                 as={Ionicons}
-                size={moderateScale(17, 0.6)}
+                size={moderateScale(22, 0.6)}
                 color={'white'}
               />
               <Icon
@@ -298,15 +316,49 @@ const RideScreen = ({route}) => {
                 style={styles.icons}
                 name={'message1'}
                 as={AntDesign}
-                size={moderateScale(17, 0.6)}
+                size={moderateScale(22, 0.6)}
                 color={'white'}
               />
             </View>
+            {/* {isriderArrive && updatedStatus == 'riderOntheWay' && ( */}
+            {/* )} */}
           </View>
         </View>
-
+        {IsRideComplete && (
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 120,
+              height: windowHeight * 0.15,
+              width: windowWidth,
+              // position:
+            }}>
+            <CustomButton
+              // style={{
+              // }}
+              text={
+                // isLoading ? (
+                //   <ActivityIndicator size={'small'} color={Color.white} />
+                // ) : (
+                'end ride'
+                // )
+              }
+              fontSize={moderateScale(14, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(30, 0.3)}
+              width={windowWidth * 0.85}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.07}
+              bgColor={Color.black}
+              textTransform={'capitalize'}
+              isBold
+              onPress={() => {
+                rideUpdate('riderArrived');
+              }}
+            />
+          </View>
+        )}
       </View>
-    
     </SafeAreaView>
   );
 };
@@ -317,6 +369,8 @@ const styles = StyleSheet.create({
   safe_are: {
     width: windowWidth,
     height: windowHeight,
+    // paddingTop: windowHeight * 0.03,
+    backgroundColor: Color.white,
   },
 
   main_view: {
@@ -392,7 +446,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: Color.white,
-    alignItems: 'center',
+    // alignItems: 'center',
     width: windowWidth * 0.95,
     marginHorizontal: moderateScale(10, 0.6),
     height: windowHeight * 0.085,
@@ -412,21 +466,26 @@ const styles = StyleSheet.create({
     width: moderateScale(50, 0.6),
     height: moderateScale(50, 0.6),
     backgroundColor: Color.white,
-    borderRadius: windowWidth,
+    // borderRadius: windowWidth,
   },
   latest_ride_subView: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    // justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: 'green ',
+    width :windowWidth *0.6,
+    // backgroundColor :'green',
+    // backgroundColor: 'green ',
   },
-
   icons: {
-    backgroundColor: Color.darkBlue,
-    height: windowHeight * 0.035,
-    width: windowHeight * 0.035,
+    backgroundColor: Color.black,
+    height: windowHeight * 0.05,
+    width: windowHeight * 0.05,
     textAlign: 'center',
-    borderRadius: (windowHeight * 0.035) / 2,
-    paddingTop: moderateScale(5, 0.6),
+    borderRadius: (windowHeight * 0.05) / 2,
+    paddingTop: moderateScale(10, 0.6),
+    // alignSelf: 'center' ,
+    // alignItems: 'center',
+
+    marginHorizontal: moderateScale(3, 0.6),
   },
 });

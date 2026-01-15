@@ -180,44 +180,9 @@ const TermsAndConditions = props => {
 
   return (
     <SafeAreaView>
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          width: windowWidth,
-          backgroundColor: 'white',
-          paddingHorizontal: moderateScale(10, 0.6),
-          paddingTop: moderateScale(5, 0.3),
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.back}>
-          <Icon
-            name="arrowleft"
-            as={AntDesign}
-            style={styles.icon2}
-            color={Color.white}
-            size={moderateScale(20, 0.3)}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </TouchableOpacity>
-        <CustomText
-          style={{
-            fontSize: moderateScale(18, 0.6),
-            color: Color.black,
-            width: windowWidth * 0.8,
-            textAlign: 'center',
-            paddingTop: moderateScale(8, 0.6),
-          }}>
-          Terms & condition
-        </CustomText>
-      </View> */}
+      
       <Header
-        title={'Terms & COnditions'}
+        title={'Terms & COndition'  }
         showBack={isSignup ? true : false}
         hideUser={true}
       />

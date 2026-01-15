@@ -139,7 +139,7 @@ const PaymentMethodCard = ({
         <>
           <CustomText style={styles.price}>
             <CustomText style={{}}>Fare : </CustomText>
-            {`$${fare}`}
+            {`$${Number(fare)?.toFixed(2)}`}
           </CustomText>
           <CustomText style={styles.text}>Payment Method</CustomText>
           <View style={styles.payment_view}>

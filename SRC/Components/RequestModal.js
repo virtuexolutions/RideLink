@@ -12,6 +12,7 @@ import CustomButton from './CustomButton';
 import {Rating} from 'react-native-ratings';
 import {getDistance} from 'geolib';
 import {baseUrl} from '../Config';
+import navigationService from '../navigationService';
 
 const RequestModal = ({
   isVisible,
@@ -20,6 +21,8 @@ const RequestModal = ({
   onPressAccept,
   onPressDecline,
 }) => {
+  console.log("🚀 ~ RequestModal ~ data:", data)
+  
   const [time, setTime] = useState('');
   const [distance, setDistance] = useState('');
   const riderOrigin = {
@@ -183,6 +186,7 @@ const RequestModal = ({
                       styles.text1,
                       {
                         width: windowWidth * 0.72,
+                        // backgroundColor :'red' 
                       },
                     ]}>
                     {data?.ride_info?.location_to}
@@ -202,7 +206,7 @@ const RequestModal = ({
               Total
             </CustomText>
             <CustomText isBold style={{fontSize: moderateScale(16, 0)}}>
-              {`$${data?.ride_info?.amount}`}
+              {`$ ${Number(data?.ride_info?.amount)?.toFixed(2)}`} 
             </CustomText>
           </View>
         </View>
@@ -217,7 +221,13 @@ const RequestModal = ({
           isBold
           style={{top: moderateScale(-35)}}
           marginBottom={moderateScale(10, 0.6)}
-          onPress={onPressAccept}
+          onPress={() => {
+            navigationService.navigate('TrackingScreen', {
+              data: data,
+              type: '',
+            })
+            console.log('bhai rider agyag hai iiiiiiiiiiiii');
+          }}
         />
         {/* <CustomButton
           width={windowWidth * 0.92}
@@ -249,12 +259,13 @@ const styles = StyleSheet.create({
   },
   sub_view: {
     width: windowWidth * 0.9,
-    height: windowHeight * 0.35,
+    height: windowHeight * 0.33,
     marginHorizontal: moderateScale(18, 0.6),
     backgroundColor: Color.white,
     borderRadius: moderateScale(20, 0.6),
-    marginTop: moderateScale(20, 0.6),
+    marginTop: moderateScale(40, 0.6),
     paddingHorizontal: moderateScale(13, 0.6),
+    // backgroundColor:'red',
     paddingVertical: moderateScale(10, 0.6),
   },
   absolute: {

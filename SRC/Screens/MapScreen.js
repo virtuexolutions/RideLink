@@ -46,6 +46,7 @@ const MapScreen = props => {
   const [isVisible, setIsVisible] = useState(false);
   const [status, setStatus] = useState('');
   const [rideupdatedData, setRideuptedData] = useState(true);
+  console.log('first ===================== >>>',rideupdatedData)
   const [currentPosition, setCurrentPosition] = useState({
     latitude: 0,
     longitude: 0,
@@ -260,13 +261,9 @@ const MapScreen = props => {
           setDeclineModal(true);
         }}
         data={rideupdatedData}
-        onPressAccept={() =>{
-          console.log('bhai rider agyag hai iiiiiiiiiiiii')
-          navigationService.navigate('TrackingScreen', {
-            data: rideupdatedData,
-            type: '',
-          })
-        }}
+        // onPressAccept={() =>{
+         
+        // }}
       />
       <DeclineModal
         isVisible={declineModal}

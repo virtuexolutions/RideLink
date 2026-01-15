@@ -41,7 +41,7 @@ const FareScreen = props => {
               isIcon
               islocation
             />
-            <TouchableOpacity style={styles.map_view}>
+            {/* <TouchableOpacity style={styles.map_view}>
               <View style={styles.map_icon_view}>
                 <Icon
                   name="map-pin"
@@ -52,7 +52,7 @@ const FareScreen = props => {
                 />
               </View>
               <CustomText style={styles.text}>Choose On Map</CustomText>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </>
         ) : (
           <>
@@ -63,7 +63,7 @@ const FareScreen = props => {
               paymentMethod={paymentMethod}
               setPaymentMethod={setPaymentMethod}
             />
-            <View style={styles.search_conatiner}>
+            {/* <View style={styles.search_conatiner}>
               <CustomText style={[styles.des, {marginTop: 0}]}>
                 Searching For You On The Map
               </CustomText>
@@ -79,10 +79,16 @@ const FareScreen = props => {
                 as={Feather}
                 color={Color.grey}
               />
-            </View>
+            </View> */}
           </>
         )}
-        <View style={{position: 'absolute', bottom: moderateScale(70, 0.6)}}>
+        <View style={{
+          position: 'absolute', 
+          bottom: moderateScale(0, 0.6),
+           
+           height :windowHeight*0.25 ,
+          //  backgroundColor :'red'
+        }}>
           <CustomButton
             width={windowWidth * 0.9}
             height={windowHeight * 0.07}
@@ -118,6 +124,8 @@ const styles = StyleSheet.create({
     width: windowWidth,
     height: windowHeight,
     backgroundColor: Color.white,
+    paddingTop: windowHeight * 0.03,
+    
   },
   main_view: {
     width: windowWidth,
